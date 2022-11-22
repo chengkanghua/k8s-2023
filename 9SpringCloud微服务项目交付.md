@@ -6,7 +6,7 @@
 
 如下是传统打车软件架构图：
 
-![img](9Spring Cloud微服务项目交付.assets/single.jpg)
+![img](9SpringCloud微服务项目交付.assets/single.jpg)
 
 这种单体应用比较适合于小项目，优点是：
 
@@ -28,7 +28,7 @@
 
 比如，前面描述的系统可被分解为：
 
-![img](9Spring Cloud微服务项目交付.assets/micro-svcs.jpg)
+![img](9SpringCloud微服务项目交付.assets/micro-svcs.jpg)
 
 每个业务逻辑都被分解为一个微服务，微服务之间通过REST API通信。一些微服务也会向终端用户或客户端开发API接口。但通常情况下，这些客户端并不能直接访问后台微服务，而是通过API Gateway来传递请求。API Gateway一般负责服务路由、负载均衡、缓存、访问控制和鉴权等任务。
 
@@ -75,7 +75,7 @@
   - Conduit
   - Istio
 
-![img](9Spring Cloud微服务项目交付.assets/81805411.jpg)
+![img](9SpringCloud微服务项目交付.assets/81805411.jpg)
 
 #### [了解Spring Cloud](http://49.7.203.222:2023/#/spring-cloud/introduction?id=了解spring-cloud)
 
@@ -119,17 +119,17 @@ https://spring.io/projects
 
 通过File > New > Project，新建工程，选择Spring Initializr
 
-![img](9Spring Cloud微服务项目交付.assets/new-springboot-1.jpg)
+![img](9SpringCloud微服务项目交付.assets/new-springboot-1.jpg)
 
 配置Project Metadata：
 
-![img](9Spring Cloud微服务项目交付.assets/new-springboot-2.jpg)
+![img](9SpringCloud微服务项目交付.assets/new-springboot-2.jpg)
 
 配置Dependencies依赖包：
 
 选择：Web分类中的Spring web和Template Engines中的Thymeleaf
 
-![img](9Spring Cloud微服务项目交付.assets/new-springboot-3.jpg)
+![img](9SpringCloud微服务项目交付.assets/new-springboot-3.jpg)
 
 配置maven settings.xml：
 
@@ -173,9 +173,9 @@ https://spring.io/projects
 </settings>
 ```
 
-![img](9Spring Cloud微服务项目交付.assets/new-springboot-4.png)
+![img](9SpringCloud微服务项目交付.assets/new-springboot-4.png)
 
-![img](9Spring Cloud微服务项目交付.assets/new-springboot-5.jpg)
+![img](9SpringCloud微服务项目交付.assets/new-springboot-5.jpg)
 
 > springboot版本为2.3.6.RELEASE
 
@@ -342,7 +342,7 @@ public class HelloController {
 
 当我们执行 Maven 构建命令时，Maven 开始按照以下顺序查找依赖的库：
 
-![img](9Spring Cloud微服务项目交付.assets/maven-repo.png)
+![img](9SpringCloud微服务项目交付.assets/maven-repo.png)
 
 本地仓库：
 
@@ -809,7 +809,7 @@ data:
 
 由于镜像中maven的目录是`/opt/maven-repo`，而slave-pod是执行完任务后会销毁，因此需要将maven的数据目录挂载出来，不然每次构建都会重新拉取所有依赖的jar包：
 
-![img](9Spring Cloud微服务项目交付.assets/maven-repo-vols.jpg)
+![img](9SpringCloud微服务项目交付.assets/maven-repo-vols.jpg)
 
 配置Jenkins流水线：
 
@@ -937,7 +937,7 @@ public class HelloControllerTests {
 
 提交最新代码，查看`sonarqube`的分析结果。
 
-![img](9Spring Cloud微服务项目交付.assets/sonar-coverage.jpg)
+![img](9SpringCloud微服务项目交付.assets/sonar-coverage.jpg)
 
 
 
@@ -970,9 +970,9 @@ https://spring.io/projects/spring-cloud#overview
 - 注册、登录、账单查询
 - 用户服务，账单管理服务
 
-![img](9Spring Cloud微服务项目交付.assets/demo-project.png)
+![img](9SpringCloud微服务项目交付.assets/demo-project.png)
 
-![img](9Spring Cloud微服务项目交付.assets/arch.png)
+![img](9SpringCloud微服务项目交付.assets/arch.png)
 
 #### [Eureka服务注册中心](http://49.7.203.222:2023/#/spring-cloud/register-center?id=eureka服务注册中心)
 
@@ -982,7 +982,7 @@ https://docs.spring.io/spring-cloud-netflix/docs/3.0.3/reference/html/
 
 ##### [新建项目](http://49.7.203.222:2023/#/spring-cloud/register-center?id=新建项目)
 
-![img](9Spring Cloud微服务项目交付.assets/new-eureka.jpg)
+![img](9SpringCloud微服务项目交付.assets/new-eureka.jpg)
 
 pom中引入spring-cloud的依赖：
 
@@ -1176,7 +1176,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 再次启动发现可以注册，但是地址是
 
-![image-20200915211607173](9Spring Cloud微服务项目交付.assets/image-20200915211607173.png)
+![image-20200915211607173](9SpringCloud微服务项目交付.assets/image-20200915211607173.png)
 
 application.yaml
 
@@ -1224,7 +1224,7 @@ Eurake有一个配置参数eureka.server.renewalPercentThreshold，定义了rene
 - eureka.instance.hostname要与defaultZone里的地址保持一致
 - 各个eureka的spring.application.name相同
 
-![img](9Spring Cloud微服务项目交付.assets/eureka-cluster.jpg)
+![img](9SpringCloud微服务项目交付.assets/eureka-cluster.jpg)
 
 拷贝`eureka`服务，分别命名`eureka-ha-peer1`和`eureka-ha-peer2`
 
@@ -1276,11 +1276,11 @@ spring:
 
 - 方案一：创建三个Deployment+三个Service
 
-  ![img](9Spring Cloud微服务项目交付.assets/eureka-ha-deploy.jpg)
+  ![img](9SpringCloud微服务项目交付.assets/eureka-ha-deploy.jpg)
 
 - 方案二：使用statefulset管理
 
-  ![img](9Spring Cloud微服务项目交付.assets/eureka-sts.jpg)
+  ![img](9SpringCloud微服务项目交付.assets/eureka-sts.jpg)
 
 ```
 eureka-statefulset.yaml
@@ -2256,11 +2256,11 @@ public class UserController {
 
 > eureka-client中包含了ribbon的包，所以不需要单独引入
 
-![img](9Spring Cloud微服务项目交付.assets/ribbon-lb.jpg)
+![img](9SpringCloud微服务项目交付.assets/ribbon-lb.jpg)
 
-![img](9Spring Cloud微服务项目交付.assets/lb-cli.jpg)
+![img](9SpringCloud微服务项目交付.assets/lb-cli.jpg)
 
-![img](9Spring Cloud微服务项目交付.assets/lb-server.jpg)
+![img](9SpringCloud微服务项目交付.assets/lb-server.jpg)
 
 如何修改调用策略？
 
@@ -2307,7 +2307,7 @@ public class BillServiceApplication {
 }
 ```
 
-![img](9Spring Cloud微服务项目交付.assets/ribbon-rules.jpg)
+![img](9SpringCloud微服务项目交付.assets/ribbon-rules.jpg)
 
 配置文件方式： https://docs.spring.io/spring-cloud-netflix/docs/2.2.5.RELEASE/reference/html/#customizing-the-ribbon-client-by-setting-properties
 
@@ -2525,7 +2525,7 @@ data:
 
 为什么需要断路器？
 
-![img](9Spring Cloud微服务项目交付.assets/hystrix.jpg)
+![img](9SpringCloud微服务项目交付.assets/hystrix.jpg)
 
 A作为服务提供者，B为A的服务消费者，C和D是B的服务消费者。A不可用引起了B的不可用，并将不可用像滚雪球一样放大到C和D时，雪崩效应就形成了。
 
@@ -2535,7 +2535,7 @@ A作为服务提供者，B为A的服务消费者，C和D是B的服务消费者�
 - 维护断路器的打开、关闭、半开三种状态
 - 提供fallback机制
 
-![img](9Spring Cloud微服务项目交付.assets/netflix-hystrix.jpg)
+![img](9SpringCloud微服务项目交付.assets/netflix-hystrix.jpg)
 
 修改bill-service项目：
 
@@ -2866,7 +2866,7 @@ hystrix:
 
 - 其他一些数量指标如下图所示
 
-  ![img](9Spring Cloud微服务项目交付.assets/hystric-dashboard.jpg)
+  ![img](9SpringCloud微服务项目交付.assets/hystric-dashboard.jpg)
 
 
 
@@ -2878,7 +2878,7 @@ hystrix:
 
 在微服务框架中，每个对外服务都是独立部署的，对外的api或者服务地址都不是不尽相同的。对于内部而言，很简单，通过注册中心自动感知即可。但我们大部分情况下，服务都是提供给外部系统进行调用的，不可能同享一个注册中心。同时一般上内部的微服务都是在内网的，和外界是不连通的。而且，就算我们每个微服务对外开放，对于调用者而言，调用不同的服务的地址或者参数也是不尽相同的，这样就会造成消费者客户端的复杂性，同时想想，可能微服务可能是不同的技术栈实现的，有的是`http`、`rpc`或者`websocket`等等，也会进一步加大客户端的调用难度。所以，**一般上都有会有个api网关，根据请求的url不同，路由到不同的服务上去，同时入口统一了，还能进行统一的身份鉴权、日志记录、分流等操作**。
 
-![img](9Spring Cloud微服务项目交付.assets/before-gateway.png)
+![img](9SpringCloud微服务项目交付.assets/before-gateway.png)
 
 ###### [网关的功能](http://49.7.203.222:2023/#/spring-cloud/gateway?id=网关的功能)
 
@@ -2890,7 +2890,7 @@ hystrix:
 - 支持混合通信协议(前端只和api通信，其他的由网关调用)
 - ...
 
-![img](9Spring Cloud微服务项目交付.assets/gateway-zuul.png)
+![img](9SpringCloud微服务项目交付.assets/gateway-zuul.png)
 
 ###### [Zuul实践](http://49.7.203.222:2023/#/spring-cloud/gateway?id=zuul实践)
 
@@ -3086,7 +3086,7 @@ management:
 
 服务追踪的追踪单元是从客户发起请求（request）抵达被追踪系统的边界开始，到被追踪系统向客户返回响应（response）为止的过程，称为一个 trace。每个 trace 中会调用若干个服务，为了记录调用了哪些服务，以及每次调用的消耗时间等信息，在每次调用服务时，埋入一个调用记录，称为一个 span。这样，若干个有序的 span 就组成了一个 trace。在系统向外界提供服务的过程中，会不断地有请求和响应发生，也就会不断生成 trace，把这些带有 span 的 trace 记录下来，就可以描绘出一幅系统的服务拓扑图。附带上 span 中的响应时间，以及请求成功与否等信息，就可以在发生问题的时候，找到异常的服务；根据历史数据，还可以从系统整体层面分析出哪里性能差，定位性能优化的目标。
 
-![img](9Spring Cloud微服务项目交付.assets/640.jpg)
+![img](9SpringCloud微服务项目交付.assets/640.jpg)
 
 Spring Cloud Sleuth 为服务之间调用提供链路追踪。通过 Sleuth 可以很清楚的了解到一个服务请求经过了哪些服务，每个服务处理花费了多长。从而让我们可以很方便的理清各微服务间的调用关系。此外 Sleuth 可以帮助我们：
 
@@ -3335,7 +3335,7 @@ public class SpringbootAdminApplication {
 4. Spring Cloud Netflix 体系下提供了eureka、ribbon、feign、hystrix、zuul等工具结合spring cloud sleuth合zipkin实现服务跟踪
 5. SpringBoot是微服务的开发框架，通过maven与Spring Cloud生态中的组件集成，极大方便了java应用程序的交付
 
-![img](9Spring Cloud微服务项目交付.assets/arch-1669083777635340.png)
+![img](9SpringCloud微服务项目交付.assets/arch-1669083777635340.png)
 
 问题：
 
