@@ -471,7 +471,8 @@ git clone https://github.com/yuyicai/update-kube-cert.git
 cd update-kube-cert/ 
 bash update-kubeadm-cert.sh all
 
-#若无法clone项目，可以手动在浏览器中打开后，复制update-kubeadm-
+#若无法clone项目，可以手动在浏览器中打开后，复制update-kubeadm-cert.sh 脚本内容到机器中执行
+
 ```
 
 ## 验证集群
@@ -1413,7 +1414,8 @@ git clone https://github.com/yuyicai/update-kube-cert.git
 cd update-kube-cert/ 
 bash update-kubeadm-cert.sh all
 
-#若无法clone项目，可以手动在浏览器中打开后，复制update-kubeadm-cert.sh 
+#若无法clone项目，可以手动在浏览器中打开后，复制update-kubeadm-cert.sh 脚本内容到机器中执行
+
 ```
 
 

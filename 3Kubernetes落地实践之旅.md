@@ -1909,7 +1909,7 @@ kube-dns   ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP   51d
 service_name.namespace
 $ kubectl get svc
 NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   26h
 ```
 
 
