@@ -445,7 +445,87 @@ spec:
   type: ClusterIP
 ```
 
+
+
+操作记录
+
+```bash
+业务app —–>访问 cluster-ip:6379 —->redis-service —–> Redis-Pod
+这里不用关心pod的ip地址是否变更， servie会自动找到标签 app=redis的pod
+[root@k8s-master ~]# kubectl create -f redis.yaml
+[root@k8s-master ~]# kubectl create -f service-redis.yaml
+[root@k8s-master ~]# kubectl -n luffy get svc
+NAME    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+redis   ClusterIP   10.107.91.29   <none>        6379/TCP   46m
+root@k8s-master ~]# kubectl -n luffy get pod -owide --show-labels
+NAME  READY  STATUS  RESTARTS   AGE     IP         NODE         LABELS
+redis 1/1    Running 0       2m15s   10.244.2.4   k8s-slave2    app=redis
+
+# describe 显示资源的详细信息
+[root@k8s-master ~]# kubectl -n luffy describe service redis
+Name:              redis
+Namespace:         luffy
+Labels:            <none>
+Annotations:       <none>
+Selector:          app=redis
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.107.91.29  #vip  虚拟ip
+IPs:               10.107.91.29
+Port:              <unset>  6379/TCP
+TargetPort:        6379/TCP
+Endpoints:         10.244.2.4:6379 #真实容器ip端口
+Session Affinity:  None
+Events:            <none>
+
+#删除redis pod重新创建  service依然会endpoints到新的redis上 
+#谁作的；controller-manager--->endpoint-controller会给service的endpoints更新
+[root@k8s-master ~]# kubectl -n luffy delete pod redis
+[root@k8s-master ~]# kubectl create -f redis.yaml
+[root@k8s-master ~]# kubectl -n luffy get pod -owide
+NAME    READY   STATUS    RESTARTS   AGE   IP           NODE         NOMINATED NODE   READINESS GATES
+redis   1/1     Running   0          18s   10.244.2.5   k8s-slave2   <none>           <none>
+[root@k8s-master ~]# kubectl -n luffy describe service redis
+Name:              redis
+Namespace:         luffy
+Labels:            <none>
+Annotations:       <none>
+Selector:          app=redis
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.107.91.29
+IPs:               10.107.91.29
+Port:              <unset>  6379/TCP
+TargetPort:        6379/TCP
+Endpoints:         10.244.2.5:6379
+Session Affinity:  None
+Events:            <none>
+```
+
+
+
+
+
+
+
+
+
 ###### [Mysql容器改造Pod](http://49.7.203.222:2023/#/kubernetes-base/pod-base-middleware?id=mysql容器改造pod)
+
+```bash
+docker run -d -p 3306:3306 --name mysql  -v /opt/mysql:/var/lib/mysql -e MYSQL_DATABASE=myblog -e MYSQL_ROOT_PASSWORD=123456 mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+-p 端口映射
+-v 宿主机目录/容器目录   #目录挂载
+-e 添加环境变量
+-- 命令； 镜像有entrpont ，cmd就作为参数传入， 容器启动的命令cmd
+
+
+```
+
+
 
 *mysql.yaml*
 
@@ -472,12 +552,12 @@ spec:
     - --character-set-server=utf8mb4
     - --collation-server=utf8mb4_unicode_ci
     volumeMounts:
-    - name: mysql-data
+    - name: mysql-data  #挂载的volumes名是mysql-data 和下面的对应好。
       mountPath: /var/lib/mysql
   volumes: 
   - name: mysql-data
     hostPath: 
-      path: /opt/mysql/data
+      path: /opt/mysql
 ```
 
 *思考：服务部署节点不固定，如何保障数据持久化*
@@ -495,6 +575,37 @@ spec:
   # 停掉之前的mysql容器，用Pod部署
   docker stop mysql
   kubectl create -f mysql.yaml
+  cat mysql.yaml
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: mysql
+    namespace: luffy
+    labels:
+      app: mysql  #这个标签 servie根据这个标签找对应的pod
+  spec:
+    nodeSelector:
+      mysql: "true"
+    containers:
+    - name: mysql
+      image: mysql:5.7
+      env:
+      - name: MYSQL_DATABASE   #  指定数据库地址
+        value: "eladmin"
+      - name: MYSQL_ROOT_PASSWORD
+        value: "luffyAdmin!"
+      ports:
+      - containerPort: 3306
+      args: #重写容器启动的cmd 
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      volumeMounts:
+      - name: mysql-data  #挂载的volumes名是mysql-data 和下面的对应好。
+        mountPath: /var/lib/mysql
+    volumes: 
+    - name: mysql-data
+      hostPath: 
+        path: /opt/mysql
   
   cat mysql.service.yaml
   apiVersion: v1
@@ -514,6 +625,16 @@ spec:
   
   # 创建mysql的service
   kubectl create -f mysql.service.yaml
+  
+  # 部署完一直等待，查看pod的详细信息
+  kubectl -n luffy describe po mysql
+  # 查看service 详细信息
+  kubectl -n luffy describe svc mysql
+  #查看pod日志
+  kubectl -n luffy logs -f --tail=200 mysql
+  
+  
+  kubectl -n luffy  |get|logs|exec|describe |   pod
   
   # 修改eladmin-api的环境变量，重建eladmin-api服务
   ```
@@ -549,13 +670,13 @@ spec:
         tcpSocket:
           port: 8000
         initialDelaySeconds: 20  # 容器启动后第一次执行探测是需要等待多少秒
-        periodSeconds: 15     # 执行探测的频率
+        periodSeconds: 15        # 执行探测的频率
         timeoutSeconds: 3        # 探测超时时间
   ...
   
   # 可配置的参数如下：
   initialDelaySeconds：容器启动后第一次执行探测是需要等待多少秒。
-  periodSeconds：执行探测的频率。默认是10秒，最小1秒。
+  periodSeconds： 执行探测的频率。默认是10秒，最小1秒。
   timeoutSeconds：探测超时时间。默认1秒，最小1秒。
   successThreshold：探测失败后，最少连续探测成功多少次才被认定为成功。默认是1。
   failureThreshold：探测成功后，最少连续探测失败多少次
@@ -614,7 +735,7 @@ spec:
           port: 8000
           scheme: HTTP
         initialDelaySeconds: 20  # 容器启动后第一次执行探测是需要等待多少秒
-        periodSeconds: 15     # 执行探测的频率
+        periodSeconds: 15        # 执行探测的频率
         timeoutSeconds: 3        # 探测超时时间
   ```
 
@@ -626,7 +747,7 @@ spec:
           tcpSocket:
             port: 8000
           initialDelaySeconds: 10  # 容器启动后第一次执行探测是需要等待多少秒
-          periodSeconds: 10     # 执行探测的频率
+          periodSeconds: 10        # 执行探测的频率
           timeoutSeconds: 2        # 探测超时时间
     ...
   ```
@@ -680,13 +801,7 @@ Pod的重启策略（`RestartPolicy`）应用于Pod内的所有容器，并且�
 
 1. 使用默认的重启策略，即 `restartPolicy: Always` ，无论容器是否是正常退出，都会自动重启容器
 
-2. 使用
-
-   ```
-   OnFailure
-   ```
-
-   的策略时
+2. 使用 ` OnFailure` 的策略时
 
    - 如果Pod的1号进程是正常退出，则不会重启
    - 只有非正常退出状态才会重启
@@ -749,7 +864,7 @@ spec:
     resources:
       requests:
         memory: 300Mi
-        cpu: 50m
+        cpu: 50m        #cpu 1000m表示1个核心接写数字2 表示2c 两个核心
       limits:
         memory: 1Gi
         cpu: 200m
@@ -999,13 +1114,16 @@ k8s提供两类资源，`configMap`和`Secret`，可以用来实现业务配置�
   cat env-secret.txt
   DB_PWD=luffyAdmin!
   DB_USER=root
-  
+  #创建 generic 类型secret
   kubectl -n luffy create secret generic eladmin-secret --from-env-file=env-secret.txt 
   kubectl -n luffy get secret
+  
+  #命令行创建 docker-registry secret
+  kubectl -n luffy create secret docker-registry registry-10-211-55-43 --docker-username=admin --docker-password=admin --docker-email=chengkanghua@foxmail.com --docker-server=10.211.55.43:5000
   ```
-
+  
   也可以通过如下方式：
-
+  
   ```yaml
   apiVersion: v1
   kind: Secret
@@ -1016,6 +1134,10 @@ k8s提供两类资源，`configMap`和`Secret`，可以用来实现业务配置�
   data:
     DB_USER: cm9vdA==        #注意加-n参数， echo -n root|base64
     DB_PWD: bHVmZnlBZG1pbiE=
+  
+  ----------------------------------------------
+  kubectl -n luffy create -f secret.yaml
+  kubectl -n luffy get secret
   ```
 
 ###### [从配置中引用环境变量](http://49.7.203.222:2023/#/kubernetes-base/config-optimization?id=从配置中引用环境变量)
@@ -1630,6 +1752,13 @@ deployment.apps/eladmin-api rolled back
 # 访问应用测试
 ```
 
+小笔记
+
+```
+deployment,image ==> config,configmap,secret
+#这里回滚是 deployment到image，  config和cofnigmap，secret都不管
+```
+
 
 
 # Service基础
@@ -1730,11 +1859,23 @@ $ curl 10.99.182.32:8000/auth/code
 
 *思考：为何访问cluster-ip可以成功访问到pod的服务*
 
+ ```
+ kube-proxy --> dnat-->snat
+ 
+ #kube-proxy组件是安装在kube-system命名空间下
+ #是一个进程 
+ kubectl -n kube-system get pod -owdie
+ kubectl -n kube-system logs -f kube-proxy-gmmlv #改成当前主机的kube-proxy 容器名
+ #日志里显示是 using iptables proxier
+ ```
+
 
 
 # [kube-proxy](http://49.7.203.222:2023/#/kubernetes-base/kube-proxy?id=kube-proxy)
 
-运行在每个节点上，监听 API Server 中服务对象的变化，再通过创建流量路由规则来实现网络的转发。[参照](https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies)
+运行在每个节点上，监听 API Server 中服务对象的变化，再通过创建流量路由规则来实现网络的转发。
+
+[参照](https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies)
 
 有三种模式：
 
@@ -1760,9 +1901,14 @@ $ iptables-save |grep 10.99.182.32
 -A KUBE-SERVICES -d 10.99.182.32/32 -p tcp -m comment --comment "luffy/eladmin-api cluster IP" -m tcp --dport 8000 -j KUBE-SVC-DTK5GE7MKO2S7DFZ
 -A KUBE-SVC-DTK5GE7MKO2S7DFZ ! -s 10.244.0.0/16 -d 10.99.182.32/32 -p tcp -m comment --comment "luffy/eladmin-api cluster IP" -m tcp --dport 8000 -j KUBE-MARK-MASQ
 
-$ iptables-save |grep KUBE-SVC-DTK5GE7MKO2S7DFZ
+$ iptables-save |grep -v MASQ |grep KUBE-SVC-DTK5GE7MKO2S7DFZ
+-A KUBE-SVC-DTK5GE7MKO2S7DFZ -m comment --comment "luffy/eladmin-api -> 10.244.0.15:8000" -m statistic --mode random --probability 0.33333333349 -j KUBE-SEP-FYSS62BM2LFBPSMX
+# --probability 0.33333333349  表示负载均衡分配概率30%
 -A KUBE-SVC-DTK5GE7MKO2S7DFZ -m comment --comment "luffy/eladmin-api -> 10.244.0.15:8000" -m statistic --mode random --probability 0.50000000000 -j KUBE-SEP-FYSS62BM2LFBPNZO
 -A KUBE-SVC-DTK5GE7MKO2S7DFZ -m comment --comment "luffy/eladmin-api -> 10.244.2.38:8000" -j KUBE-SEP-MYTXET6SGXYSFLWJ
+
+# 随机分配模式3个pod 概率：30%--》50%--》100%
+# 随机分配模式4个pod 概率：25%--》33%--》50%--》100%
 
 $  iptables-save |grep KUBE-SEP-GB5GNOM5CZH7ICXZ
 -A KUBE-SEP-GB5GNOM5CZH7ICXZ -p tcp -m tcp -j DNAT --to-destination 10.244.1.158:8002
@@ -1772,6 +1918,21 @@ $ iptables-save |grep KUBE-SEP-7GWC3FN2JI5KLE47
 ```
 
 > 面试题： k8s的Service Cluster-IP能不能ping通
+
+```bash
+
+默认iptables模式，规则里只有tcp 协议 可以curl访问业务， ping是icmp协议 也没有虚拟网卡，所以ping不通
+
+ipvs模式 可以ping通
+通过 ip a s kube-ipvs0 #是可以查看到虚拟网卡 并且有ip地址
+
+
+变型题： k8s的service 能不能ping 通？
+
+
+```
+
+
 
 **iptables转换ipvs模式**
 
@@ -1818,6 +1979,7 @@ $ iptables -F
 
 # 查看规则生效
 $ ipvsadm -ln
+
 ```
 
 
@@ -1842,17 +2004,16 @@ redis         ClusterIP   10.105.226.34   <none>        6379/TCP   2d1h
 $ kubectl -n luffy exec -ti eladmin-web-7b9d5994fd-lhznk -- sh
 # curl eladmin-api:8000
 # nslookup eladmin-api
+
+#为什么能ping 通 service name ；
+# k8s 中coredns组件作的解析
 ```
 
 虽然podip和clusterip都不固定，但是service name是固定的，而且具有完全的跨集群可移植性，因此组件之间调用的同时，完全可以通过service name去通信，这样避免了大量的ip维护成本，使得服务的yaml模板更加简单。因此可以对`mysql`和`eladmin-api`的部署进行优化改造：
 
 1. configMap中数据库地址可以换成Service名称，这样跨环境的时候，配置内容基本上可以保持不用变化
 
-修改deploy-mysql.yaml
-
-```yaml
-
-```
+修改deploy-mysql.yaml #不用修改
 
 修改configmap.yaml
 
@@ -1900,6 +2061,10 @@ search luffy.svc.cluster.local svc.cluster.local cluster.local in.ctcdn.cn ss.in
 nameserver 10.96.0.10
 options ndots:5
 
+/opt/eladmin# curl eladmin-api:8000
+/opt/eladmin# curl eladmin-api.luffy.svc.cluster.local:8000 #解析成
+
+
 ## 10.96.0.10 从哪来
 $ kubectl -n kube-system get svc
 NAME       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE
@@ -1910,6 +2075,12 @@ service_name.namespace
 $ kubectl get svc
 NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   26h
+
+# kubectl -n kube-system get service kube-dns -owide
+# kubectl -n kube-system describe service kube-dns
+# kubectl -n kube-system get pod -l k8s-app=kube-dns -owide #根据标签找到对应的pod
+
+# kubectl -n kube-system get deployment
 ```
 
 
@@ -1930,6 +2101,7 @@ metadata:
 spec:
   ports:
   - port: 8000
+    #nodePort：32222 #指定端口
     protocol: TCP
     targetPort: 8000
   selector:
@@ -1949,6 +2121,9 @@ eladmin-api-nodeport   NodePort    10.103.117.186   <none>        8000:30207/TCP
 
 # curl 172.21.65.226:30207/auth/code
 #集群内每个节点的NodePort端口都会进行监听
+#noteport也会创建一个cluster-ip
+
+# nodeprot 和clusterip 都是 kube-proxy组件实现的转发
 ```
 
 *思考：推荐的集群外访问服务的方式是什么*
