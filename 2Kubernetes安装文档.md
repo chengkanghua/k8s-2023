@@ -13,11 +13,11 @@
 
 **本例为了演示slave节点的添加，会部署一台master+2台slave**，节点规划如下：
 
-| 主机名     | 节点ip        | 角色   | 部署组件                                                     |
-| ---------- | ------------- | ------ | ------------------------------------------------------------ |
-| k8s-master | 172.21.65.226 | master | etcd, kube-apiserver, kube-controller-manager, kubectl, kubeadm, kubelet, kube-proxy, flannel |
-| k8s-slave1 | 172.21.65.227 | slave  | kubectl, kubelet, kube-proxy, flannel                        |
-| k8s-slave2 | 172.21.65.228 | slave  | kubectl, kubelet, kube-proxy, flannel                        |
+| 主机名     | 节点ip       | 角色   | 部署组件                                                     |
+| ---------- | ------------ | ------ | ------------------------------------------------------------ |
+| k8s-master | 172.16.1.226 | master | etcd, kube-apiserver, kube-controller-manager, kubectl, kubeadm, kubelet, kube-proxy, flannel |
+| k8s-slave1 | 172.16.1.227 | slave  | kubectl, kubelet, kube-proxy, flannel                        |
+| k8s-slave2 | 172.16.1.228 | slave  | kubectl, kubelet, kube-proxy, flannel                        |
 
 ### [组件版本](http://49.7.203.222:2023/#/install/single-master/cluster-info?id=组件版本)
 
@@ -57,10 +57,10 @@ $ hostnamectl set-hostname k8s-slave2 #设置slave2节点的hostname
 - **添加hosts解析**
 
 ```python
-$ cat >>/etc/hosts<<EOF
-10.211.55.36 k8s-master
-10.211.55.37 k8s-slave1
-10.211.55.39 k8s-slave2
+cat >>/etc/hosts<<EOF
+172.16.1.226 k8s-master
+172.16.1.227 k8s-slave1
+172.16.1.228 k8s-slave2
 EOF
 ```
 
@@ -148,7 +148,7 @@ $ mkdir -p /etc/docker
 vi /etc/docker/daemon.json
 {
   "insecure-registries": [    
-    "172.21.65.226:5000" 
+    "172.16.1.226:5000" 
   ],                          
   "registry-mirrors" : [
     "https://8xpk5wnt.mirror.aliyuncs.com"
@@ -238,10 +238,10 @@ $ systemctl enable kubelet
 
   ```bash
   # 此处目录必须和个人环境中实际的仓库地址保持一致
-  mkdir -p /etc/containerd/certs.d/172.21.65.226:5000
-  cat >/etc/containerd/certs.d/172.21.65.226:5000/hosts.toml <<EOF
-  server = "http://172.21.65.226:5000"
-  [host."http://172.21.65.226:5000"]
+  mkdir -p /etc/containerd/certs.d/172.16.1.226:5000
+  cat >/etc/containerd/certs.d/172.16.1.226:5000/hosts.toml <<EOF
+  server = "http://172.16.1.226:5000"
+  [host."http://172.16.1.226:5000"]
     capabilities = ["pull", "resolve", "push"]
     skip_verify = true
   EOF
@@ -271,7 +271,7 @@ bootstrapTokens:
   - authentication
 kind: InitConfiguration
 localAPIEndpoint:
-  advertiseAddress: 172.21.65.226   # 此处替换为k8s-master的ip地址
+  advertiseAddress: 172.16.1.226   # 此处替换为k8s-master的ip地址
   bindPort: 6443
 nodeRegistration:
   criSocket: unix:///var/run/containerd/containerd.sock
@@ -306,7 +306,7 @@ sed -ri 's#(kubernetesVersion: ).*#\11.24.4#' kubeadm.yaml
 #sed -i '34a\ \ podSubnet: 10.244.0.0/16' kubeadm.yaml  #指定34行挤下一行添加
 sed -i '/dnsDomain:/a\ \ podSubnet: 10.244.0.0/16' kubeadm.yaml
 
--------------------------------- 这个操作不做，下面的# 提前下载镜像到本地 会报错 
+-------------------------------- 提前下载镜像到本地 配置 
 # 参考：https://blog.csdn.net/shanxuanang/article/details/124613577
 vi /etc/containerd/config.toml 
 [plugins."io.containerd.grpc.v1.cri"]
@@ -314,7 +314,7 @@ vi /etc/containerd/config.toml
 
 systemctl restart containerd
 
-# sed -i 's/systemd_cgroup = false/systemd_cgroup = true/g'
+# sed -i 's/systemd_cgroup = false/systemd_cgroup = true/g' /etc/containerd/config.toml 
 ```
 
 > 对于上面的资源清单的文档比较杂，要想完整了解上面的资源对象对应的属性，可以查看对应的 godoc 文档，地址: https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta3。
@@ -349,7 +349,7 @@ $ kubeadm config images pull --config kubeadm.yaml
 操作节点：只在master节点（`k8s-master`）执行，注意只在master节点执行！
 
 ```python
-$ kubeadm init --config kubeadm.yaml
+kubeadm init --config kubeadm.yaml
 ```
 
 若初始化成功后，最后会提示如下信息：
@@ -370,7 +370,7 @@ Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
 
 Then you can join any number of worker nodes by running the following on each as root:
 
-kubeadm join 172.21.65.226:6443 --token abcdef.0123456789abcdef \
+kubeadm join 172.16.1.226:6443 --token abcdef.0123456789abcdef \
     --discovery-token-ca-cert-hash sha256:1c4305f032f4bf534f628c32f5039084f4b103c922ff71b12a5f0f98d1ca9a4f
 ```
 
@@ -391,7 +391,7 @@ kubeadm join 172.21.65.226:6443 --token abcdef.0123456789abcdef \
 操作节点：所有的slave节点（`k8s-slave`）需要执行 在每台slave节点，执行如下命令，该命令是在kubeadm init成功后提示信息中打印出来的，需要替换成实际init后打印出的命令。
 
 ```python
-kubeadm join 172.21.65.226:6443 --token abcdef.0123456789abcdef \
+kubeadm join 172.16.1.226:6443 --token abcdef.0123456789abcdef \
     --discovery-token-ca-cert-hash sha256:1c4305f032f4bf534f628c32f5039084f4b103c922ff71b12a5f0f98d1ca9a4f
 ```
 
@@ -434,6 +434,8 @@ $ kubeadm token create --print-join-command
   162             cpu: "100m"
   163             memory: "50Mi"
   ...
+  # YAML 对缩进要求严格，只能使用空格进行缩进. 上面编辑的网卡记得用空格缩进
+  
   
   #命令修改
   sed -i '/kube-subnet-mgr/a\ \ \ \ \ \ \ \ - --iface=eth0' kube-flannel.yml
@@ -502,7 +504,7 @@ cd /etc/kubernetes/pki
 # 查看当前证书有效期
 for i in $(ls *.crt); do echo "===== $i ====="; openssl x509 -in $i -text -noout | grep -A 3 'Validity' ; done
 
-# mkdir backup_key; cp -rp ./* backup_key/
+mkdir backup_key; cp -rp ./* backup_key/
 #git clone https://github.com/yuyicai/update-kube-cert.git
 #cd update-kube-cert/ 
 wget https://gitee.com/chengkanghua/script/raw/master/k8s/update-kubeadm-cert.sh
@@ -584,7 +586,7 @@ ctr -n k8s.io image ls
 ctr -n=k8s.io image import dashboard.tar
 
 # 从私有仓库拉取镜像，前提是/etc/containerd/certs.d下已经配置过该私有仓库的非安全认证
-ctr images pull --user admin:admin  --hosts-dir "/etc/containerd/certs.d"  172.21.65.226:5000/eladmin/eladmin-api:v1-rc1
+ctr images pull --user admin:admin  --hosts-dir "/etc/containerd/certs.d"  172.16.1.226:5000/eladmin/eladmin-api:v1-rc1
 
 # ctr命令无法查看容器的日志，也无法执行exec等操作
 ```
@@ -598,11 +600,12 @@ ctr images pull --user admin:admin  --hosts-dir "/etc/containerd/certs.d"  172.2
 `crictl` 命令默认使用`k8s.io` 这个名称空间，因此无需单独指定，使用前，需要先加一下配置文件：
 
 ```bash
-cat /etc/crictl.yaml
+cat > /etc/crictl.yaml <<EOF
 runtime-endpoint: unix:///run/containerd/containerd.sock
 image-endpoint: unix:///run/containerd/containerd.sock
 timeout: 10
 debug: false
+EOF
 ```
 
 ```bash
@@ -635,7 +638,7 @@ crictl ps
 crictl images 
 
 # 删除镜像
-crictl rmi 172.21.65.226:5000/eladmin/eladmin-api:v1-rc1
+crictl rmi 172.16.1.226:5000/eladmin/eladmin-api:v1-rc1
 
 # 拉取镜像， 若拉取私有镜像，需要修改containerd配置添加认证信息，比较麻烦且不安全
 crictl pull nginx:alpine
@@ -687,10 +690,10 @@ nerdctl -n k8s.io ps -a
 nerdctl -n k8s.io exec -ti e2cd02190005 sh
 
 # 登录镜像仓库
-nerdctl login 172.21.65.226:5000
+nerdctl login 172.16.1.226:5000
 
 # 拉取镜像,如果是想拉取了让k8s使用，一定加上-n k8s.io,否则会拉取到default空间中， k8s默认只使用k8s.io
-nerdctl -n k8s.io pull 172.21.65.226:5000/eladmin/eladmin-api:v1-rc1
+nerdctl -n k8s.io pull 172.16.1.226:5000/eladmin/eladmin-api:v1-rc1
 
 
 # 启动容器
@@ -1085,8 +1088,8 @@ $ systemctl enable kubelet
 
   ```bash
   # 此处目录必须和个人环境中实际的仓库地址保持一致
-  mkdir -p /etc/containerd/certs.d/172.21.65.226:5000
-  cat >/etc/containerd/certs.d/172.21.65.226:5000/hosts.toml <<EOF
+  mkdir -p /etc/containerd/certs.d/172.16.1.226:5000
+  cat >/etc/containerd/certs.d/172.16.1.226:5000/hosts.toml <<EOF
   server = "http://172.21.51.67:5000"
   [host."http://172.21.51.67:5000"]
     capabilities = ["pull", "resolve", "push"]
@@ -1562,7 +1565,7 @@ ctrl -n k8s.io image ls
 ctr -n=k8s.io image import dashboard.tar
 
 # 从私有仓库拉取镜像，前提是/etc/containerd/certs.d下已经配置过该私有仓库的非安全认证
-ctr images pull --user admin:admin  --hosts-dir "/etc/containerd/certs.d"  172.21.65.226:5000/eladmin/eladmin-api:v1-rc1
+ctr images pull --user admin:admin  --hosts-dir "/etc/containerd/certs.d"  172.16.1.226:5000/eladmin/eladmin-api:v1-rc1
 
 # ctr命令无法查看容器的日志，也无法执行exec等操作
 ```

@@ -6,7 +6,9 @@
 
 需要一种轻量、高效的虚拟化能力
 
-![img](1走进Docker的世界.assets/1666340642482.jpg)
+<img src="1走进Docker的世界.assets/1666340642482.jpg" alt="img" style="zoom: 50%;" />
+
+
 
 ![image-20221122115845209](1走进Docker的世界.assets/image-20221122115845209.png)
 
@@ -88,25 +90,26 @@ Docker也做了架构调整。将容器运行时相关的程序从docker daemon�
 
 ```bash
 ## 若未配置，需要执行如下
-$ cat <<EOF >  /etc/sysctl.d/docker.conf
+cat <<EOF >  /etc/sysctl.d/docker.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward=1
 EOF
-$ sysctl -p /etc/sysctl.d/docker.conf
+modprobe  br_netfilter
+sysctl -p /etc/sysctl.d/docker.conf
 ```
 
 ###### [Yum安装配置docker](http://49.7.203.222:2023/#/docker/install?id=yum安装配置docker)
 
 ```bash
 ## 下载阿里源repo文件
-$ curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
-$ curl -o /etc/yum.repos.d/Centos-7.repo http://mirrors.aliyun.com/repo/Centos-7.repo
-$ curl -o /etc/yum.repos.d/docker-ce.repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
+curl -o /etc/yum.repos.d/Centos-7.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+curl -o /etc/yum.repos.d/docker-ce.repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 
-$ yum clean all && yum makecache
+yum clean all && yum makecache
 ## yum安装
-$ yum install docker-ce-20.10.18 -y
+yum install docker-ce-20.10.18 -y
 ## 查看源中可用版本
 $ yum list docker-ce --showduplicates | sort -r
 ## 安装旧版本
@@ -115,12 +118,13 @@ $ yum list docker-ce --showduplicates | sort -r
 ## 配置源加速
 ## https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 mkdir -p /etc/docker
-vi /etc/docker/daemon.json
+cat > /etc/docker/daemon.json <<EOF
 {
   "registry-mirrors" : [
     "https://8xpk5wnt.mirror.aliyuncs.com"
   ]
 }
+EOF
 
 ## 设置开机自启
 systemctl enable docker  
@@ -397,8 +401,8 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
 
    ```bash
    ## 镜像仓库给外部访问，不能通过localhost，尝试使用内网地址172.21.51.143:5000/nginx:alpine
-   docker tag nginx:alpine 172.21.51.143:5000/nginx:alpine
-   docker push 172.21.51.143:5000/nginx:alpine
+   docker tag nginx:alpine 172.16.1.226:5000/nginx:alpine
+   docker push 172.16.1.226:5000/nginx:alpine
    The push refers to repository [172.21.51.143:5000/nginx]
    Get https://172.21.51.143:5000/v2/: http: server gave HTTP response to HTTPS client
    ## docker默认不允许向http的仓库地址推送，如何做成https的，参考：https://docs.docker.com/registry/deploying/#run-an-externally-accessible-registry
@@ -409,18 +413,18 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
        "https://8xpk5wnt.mirror.aliyuncs.com"
      ],
      "insecure-registries": [
-        "172.21.51.143:5000"
+        "172.16.1.226:5000"
      ]
    }
    systemctl restart docker
-   docker push 172.21.51.143:5000/nginx:alpine
+   docker push 172.16.1.226:5000/nginx:alpine
    
    # 会提示认证失败 ，no basic auth credentials,需要登录
-   docker login 172.21.51.143:5000
+   docker login 172.16.1.226:5000
    
    ## 查看仓库内元数据
-   curl -u admin:admin -X GET http://172.21.51.143:5000/v2/_catalog
-   curl -u admin:admin  -X GET http://172.21.51.143:5000/v2/nginx/tags/list
+   curl -u admin:admin -X GET http://172.16.1.226:5000/v2/_catalog
+   curl -u admin:admin  -X GET http://172.16.1.226:5000/v2/nginx/tags/list
    ```
 
 5. 删除镜像
@@ -871,10 +875,14 @@ $ docker build . -t href-counter:v2 -f Dockerfile.multi
   / # apk add git
   / # git clone --depth=1 https://gitee.com/agagin/eladmin-web.git
   / # cd eladmin-web/
-  npm config set sass_binary_site https://npm.taobao.org/mirrors/node-sass/
-  npm config set registry https://registry.npm.taobao.org
+  npm config set sass_binary_site https://npmmirror.com/mirror/sass
+  npm config set registry https://registry.npmmirror.com
   npm install
   npm run build:prod
+  
+  
+  ------------------------阿里最新npm地址
+  https://developer.aliyun.com/mirror/NPM
   ```
 
 - 运行环境采用`nginx:alpine`作为基础镜像，启动容器熟悉镜像的启动目录等信息
@@ -884,37 +892,48 @@ $ docker build . -t href-counter:v2 -f Dockerfile.multi
 因此，综合得到多阶构建的`Dockerfile`
 
 ```dockerfile
+cat > Dockerfile.multi<<EOF
 FROM codemantn/vue-node AS builder
-
 LABEL maintainer="inspur_lyx@hotmail.com"
-
 # config npm
-RUN npm config set sass_binary_site https://npm.taobao.org/mirrors/node-sass/ && \
-    npm config set registry https://registry.npm.taobao.org
-
+RUN npm config set sass_binary_site https://npmmirror.com/mirror/sass && \
+    npm config set registry https://registry.npmmirror.com
 WORKDIR /opt/eladmin-web
 COPY  . .
-
 # build
-RUN ls -l && npm install && npm run build:prod
-
+RUN ls -l && npm cache clean --force && npm install && npm run build:prod
 
 FROM nginx:alpine
-
 WORKDIR /usr/share/nginx/html
-
 COPY --from=builder /opt/eladmin-web/dist /usr/share/nginx/html/
-
 EXPOSE 80
+EOF
 ```
 
 构建：
 
 ```bash
 git clone --depth=1 https://gitee.com/agagin/eladmin-web.git
+# git clone --depth=1 https://gitee.com/chengkanghua/eladmin-web.git  #备用地址
 cd eladmin-web
-vim Dockerfile.multi #复制上面的dockerfile
-docker build . -t eladmin-web:v1 -f Dockerfile.multi
+# vim Dockerfile.multi #复制上面的dockerfile
+
+docker build --no-cache . -t eladmin-web:v1 -f Dockerfile.multi
+
+
+# docker login 172.16.1.226:5000
+docker tag eladmin-web:v1 172.16.1.226:5000/eladmin/eladmin-web:v1
+docker push 172.16.1.226:5000/eladmin/eladmin-web:v1
+
+------------------------报错
+ERROR: failed to solve: failed to compute cache key: failed to calculate checksum of ref a7f8f56c-ba92-40d7-9815-a706dbdfb3df::4uvrf4aud6rylp87qzti4cgt9: "/
+原因分析：
+问题可能出在 COPY --from=builder /opt/eladmin-web/dist /usr/share/nginx/html/ 这一步。如果 builder 阶段的相关内容发生了变化，例如构建目录结构、文件内容等，可能会导致无法正确计算缓存键和校验和。
+这可能是因为在开发过程中对源文件进行了修改，或者构建环境不稳定导致的。
+解决方法：
+尝试清理之前的构建缓存。可以使用 docker build --no-cache 命令重新构建镜像，这样可以强制 Docker 重新计算所有层的缓存键和校验和，避免因缓存问题导致的错误。
+
+
 ```
 
 ###### [后端容器化](http://49.7.203.222:2023/#/docker/containerization?id=后端容器化)
@@ -937,8 +956,8 @@ docker build . -t eladmin-web:v1 -f Dockerfile.multi
 得到的`Dockerfile`:
 
 ```dockerfile
+cat > Dockerfile.multi <<EOF
 FROM aerialist7/maven-git as builder
-
 WORKDIR /opt/eladmin
 COPY  . .
 RUN mvn clean package
@@ -947,15 +966,21 @@ FROM java:8u111
 WORKDIR /opt/eladmin
 COPY --from=builder /opt/eladmin/eladmin-system/target/eladmin-system-2.6.jar .
 CMD [ "sh", "-c", "java -Dspring.profiles.active=prod -jar eladmin-system-2.6.jar" ]
+EOF
 ```
 
 构建：
 
 ```bash
 git clone --depth=1 https://gitee.com/agagin/eladmin.git
+# git clone https://gitee.com/chengkanghua/eladmin.git  #备用地址
 cd eladmin
-vim Dockerfile.multi #复制上面的dockerfile
+# vim Dockerfile.multi #复制上面的dockerfile
 docker build . -t eladmin:v1 -f Dockerfile.multi
+
+docker tag eladmin:v1 172.16.1.226:5000/eladmin/eladmin-api:v1
+docker push 172.16.1.226:5000/eladmin/eladmin-api:v1
+
 ```
 
 ###### [准备mysql环境](http://49.7.203.222:2023/#/docker/containerization?id=准备mysql环境)
@@ -964,10 +989,12 @@ docker build . -t eladmin:v1 -f Dockerfile.multi
 docker run -d --restart=always -p 3306:3306 --name mysql  -v /opt/mysql:/var/lib/mysql -e MYSQL_DATABASE=eladmin -e MYSQL_ROOT_PASSWORD=luffyAdmin! mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 ## 初始化sql
+docker cp eladmin.sql  mysql:/
 [root@CentOS-2 sql]# docker exec -it ebced213f73f /bin/bash
-root@ebced213f73f:/# mysql -uroot -p
+root@ebced213f73f:/# mysql -uroot -pluffyAdmin!
 mysql> use eladmin
 mysql> source /eladmin.sql
+mysql> quit
 
 #外部连接数据库测试
 kanghuadeMacBook-Pro:~ kanghua$ mysql -uroot -p -h10.211.55.37
@@ -987,14 +1014,15 @@ docker run -p 6379:6379 -d --restart=always redis:3.2 redis-server
 
 ```bash
 # 后端
-docker run --name eladmin-api -d -p 8000:8000 -e DB_HOST=10.211.55.37 -e DB_USER=root -e DB_PWD=luffyAdmin! -e REDIS_HOST=10.211.55.37 eladmin:v1
+docker run --name eladmin-api -d -p 8000:8000 -e DB_HOST=10.0.0.2 -e DB_USER=root -e DB_PWD=luffyAdmin! -e REDIS_HOST=10.0.0.2 eladmin:v1
 
 # 前端
 docker run --name eladmin-web -d -p 8080:80  eladmin-web:v1
 
 #访问后端hosts配置 前端代码cat eladmin-web/.env.production
-bash-3.2# echo '10.211.55.37 eladmin.luffy.com' >>/etc/hosts
+bash-3.2# echo '10.0.0.2 eladmin.luffy.com' >>/etc/hosts
 # 浏览器访问 http://eladmin.luffy.com:8080/    admin 123456
+
 ```
 
 #### [Django应用容器化实践](http://49.7.203.222:2023/#/docker/containerization?id=django应用容器化实践)
