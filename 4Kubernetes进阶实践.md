@@ -519,6 +519,7 @@ Pod -> Pod的标签
 - 可以允许同一个node节点中调度两个`eladmin-web`的副本，前提是尽量把pod分散部署在集群中
 
 ```yaml
+# 如果某个节点中，存在了app=eladmin-web的label的pod，那么 调度器一定不要给我调度过去
 ...
     spec:
       affinity:
@@ -533,8 +534,9 @@ Pod -> Pod的标签
             topologyKey: kubernetes.io/hostname
       containers:
 ...
-# 如果某个节点中，存在了app=eladmin-web的label的pod，那么 调度器一定不要给我调度过去
 
+
+# 如果某个节点中，存在了app=eladmin-web的label的pod，那么调度器尽量不要调度过去
 ...
     spec:
       affinity:
@@ -551,7 +553,7 @@ Pod -> Pod的标签
               topologyKey: kubernetes.io/hostname
       containers:
 ...
-# 如果某个节点中，存在了app=eladmin-web的label的pod，那么调度器尽量不要调度过去
+
 ```
 
 > https://kubernetes.io/zh/docs/concepts/scheduling-eviction/assign-pod-node/
@@ -587,9 +589,9 @@ $ kubectl taint node [node_name] key=value:[effect]
      kubectl taint nodes node_name key-
  
  示例：
-     kubectl taint node k8s-master smoke=true:NoSchedule
-     kubectl taint node k8s-master smoke:NoExecute-
-     kubectl taint node k8s-master smoke-
+     kubectl taint node k8s-master smoke=true:NoSchedule  #设置污点
+     kubectl taint node k8s-master smoke:NoExecute-       #去除污点
+     kubectl taint node k8s-master smoke-                 #去除污点
 ```
 
 污点演示：
@@ -604,7 +606,8 @@ $ kubectl taint node k8s-slave2 smoke=true:NoSchedule
 
 ## 扩容eladmin-web的Pod，观察新Pod的调度情况
 $ kuebctl -n luffy scale deploy eladmin-web --replicas=3
-$ kubectl -n luffy get po -w    ## pending
+$ kubectl -n luffy get po -w    ## pending  三个节点都有污点无法调度
+  kubectl -n luffy describe pod pending的pod的name  #查看对应warning的信息,
 ```
 
 Pod容忍污点示例：
@@ -624,21 +627,56 @@ spec:
         operator: "Exists"  #如果操作符为Exists，那么value属性可省略,不指定operator，默认为Equal
       #意思是这个Pod要容忍的有污点的Node的key是smoke Equal true,效果是NoSchedule，
       #tolerations属性下各值必须使用引号，容忍的值都是设置Node的taints时给的值。
+
+# 效果: k8s-slave1和k8s-slave2都可能会被调度过去,他们两个node的污点是 drunk smoke, 不会调度到k8s-master
+```
+
+```bash
 spec:
       containers:
       - name: eladmin-web
         image: 172.16.1.226:5000/eladmin/eladmin-web:v2
       tolerations:
         - operator: "Exists"
+        
+#效果: 所有污点都可以容忍,所有node都可能会调度过去
 ```
+
+
 
 > NoExecute
 
 ###### [Cordon](http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=cordon)
 
 ```bash
-$ kubectl cordon k8s-slave2
-$ kubectl drain k8s-slave2
+
+# 停止调度  # 单词cordon 警戒线 ;旧有的pod不会受到影响，仍正常对外提供服务
+# 影响最小，只会将node调为SchedulingDisabled
+# 之后再发创建pod，不会被调度到该节点
+$ kubectl cordon k8s-slave2 
+# kubectl describe node k8s-slave2|grep -i taint #可以查看到添加了一个不可调度的污点
+# 恢复调度
+$ kubectl uncordon k8s-node2 
+
+
+# drain 驱逐节点
+# 首先，驱逐node上的pod，其他节点重新创建
+# 接着，将节点调为** SchedulingDisabled**
+$ kubectl drain k8s-slave2   
+
+drain的参数
+--force
+当一些pod不是经 ReplicationController, ReplicaSet, Job, DaemonSet 或者 StatefulSet 管理的时候,就需要用--force来强制执行 (例如:kube-proxy)
+ 
+ 
+--ignore-daemonsets
+忽略DaemonSet管理下的Pod
+# 若node节点上存在daemonsets控制器创建的pod,则需要使用--ignore-daemonsets忽略错误错误警告
+# kubectl drain k8s-slave2 --ignore-daemonsets
+
+--delete-local-data
+如果有mount local volumn的pod，会强制杀掉该pod并把料清除掉
+另外如果跟本身的配置讯息有冲突时，drain就不会执行
 ```
 
 ###### [Pod驱逐策略](http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=pod驱逐策略)
@@ -664,6 +702,8 @@ K8S 有个特色功能叫 pod eviction，它在某些场景下如节点 NotReady
      ```
 
      即各pod可以独立设置驱逐容忍时间。
+     
+     ![image-20241020132548617](./4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241020132548617.png)
 
 2. Kubelet: 周期性检查本节点资源，当资源不足时，按照优先级驱逐部分 pod
 
@@ -797,6 +837,13 @@ To start using your cluster, you need to run the following as a regular user:
 
 ```bash
 $ echo xxxxxxxxxxxxxx |base64 -d > kubectl.crt
+
+# 解码证书
+grep client-certificate-data ~/.kube/config |awk -F' ' '{print $2}' |base64 -d > kubectl.crt
+grep client-key-data ~/.kube/config |awk -F' ' '{print $2}' |base64 -d > kubectl.key
+
+ll /etc/kubernetes/pki/ca.crt  #这个根证书
+grep certificate-authority-data  ~/.kube/config |awk -F' ' '{print $2}' |base64 -d #根证书一样
 ```
 
 说明在认证阶段，`apiserver`会首先使用`--client-ca-file`配置的CA证书去验证kubectl提供的证书的有效性,基本的方式 ：
@@ -941,6 +988,7 @@ RBAC模式引入了4个资源类型：
     kind: Role #这里可以是Role或者ClusterRole,若是ClusterRole，则权限也仅限于rolebinding的内部
     name: pod-reader # match the name of the Role or ClusterRole you wish to bind to
     apiGroup: rbac.authorization.k8s.io
+    
   ```
 
 *注意：rolebinding既可以绑定role，也可以绑定clusterrole，当绑定clusterrole的时候，subject的权限也会被限定于rolebinding定义的namespace内部，若想跨namespace，需要使用clusterrolebinding*
@@ -986,7 +1034,25 @@ RBAC模式引入了4个资源类型：
     apiGroup: rbac.authorization.k8s.io
   ```
 
-![img](4Kubernetes进阶实践.assets/rbac-2.jpg)
+![image-20241020165305022](./4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241020165305022.png)
+
+
+
+<img src="4Kubernetes进阶实践.assets/rbac-2.jpg" alt="img" style="zoom: 67%;" />
+
+
+
+![image-20241020165439548](./4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241020165439548.png)
+
+
+
+![image-20241020230020796](./4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241020230020796.png)
+
+
+
+
+
+
 
 ###### [kubelet的认证授权](http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=kubelet的认证授权)
 
@@ -1005,12 +1071,25 @@ $ systemctl status kubelet
    Memory: 60.5M
    CGroup: /system.slice/kubelet.service
            └─851 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf
+           
+           
+systemctl status kubelet -l 
+[root@k8s-master ~]# grep  client /etc/kubernetes/kubelet.conf
+    client-certificate: /var/lib/kubelet/pki/kubelet-client-current.pem
+    client-key: /var/lib/kubelet/pki/kubelet-client-current.pem
+    
+openssl x509 -in /var/lib/kubelet/pki/kubelet-client-current.pem -text
+[root@k8s-master ~]# openssl x509 -in /var/lib/kubelet/pki/kubelet-client-current.pem -text |grep  Subject:
+        Subject: O=system:nodes, CN=system:node:k8s-master
+
 ```
 
 查看`/etc/kubernetes/kubelet.conf`，解析证书：
 
 ```bash
-$ echo xxxxx |base64 -d >kubelet.crt
+
+grep certificate-authority-data /etc/kubernetes/kubelet.conf |awk -F' ' '{print $2}' |base64 -d  >kubelet.crt 
+
 $ openssl x509 -in kubelet.crt -text
 Certificate:
     Data:
@@ -1028,6 +1107,9 @@ Certificate:
 
 ```bash
 Subject: O=system:nodes, CN=system:node:k8s-master
+
+O 当成 Group:system:nodes
+CN 当成用户 
 ```
 
 我们知道，k8s会把O作为Group来进行请求，因此如果有权限绑定给这个组，肯定在clusterrolebinding的定义中可以找得到。因此尝试去找一下绑定了system:nodes组的clusterrolebinding
@@ -1105,47 +1187,55 @@ $ openssl genrsa -out luffy.key 2048
 $ openssl req -new -key luffy.key -out luffy.csr -subj "/O=admin:luffy/CN=luffy-admin"
 
 # 证书拓展属性
-$ cat extfile.conf
+cat <<EOF > extfile.conf
 [ v3_ca ]
 keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = clientAuth
+EOF
 
 # 生成luffy.crt证书
 $ openssl x509 -req -in luffy.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -sha256 -out luffy.crt -extensions v3_ca -extfile extfile.conf -days 3650
+
 ```
 
 配置kubeconfig文件：
 
 ```bash
 # 创建kubeconfig文件，指定集群名称和地址
-$ kubectl config set-cluster luffy-cluster --certificate-authority=/etc/kubernetes/pki/ca.crt --embed-certs=true --server=https://172.16.1.226:6443 --kubeconfig=luffy.kubeconfig
+kubectl config set-cluster luffy-cluster --certificate-authority=/etc/kubernetes/pki/ca.crt --embed-certs=true --server=https://172.16.1.226:6443 --kubeconfig=luffy.kubeconfig
 
 # 为kubeconfig文件添加认证信息
-$ kubectl config set-credentials luffy-admin --client-certificate=luffy.crt --client-key=luffy.key --embed-certs=true --kubeconfig=luffy.kubeconfig
+kubectl config set-credentials luffy-admin --client-certificate=luffy.crt --client-key=luffy.key --embed-certs=true --kubeconfig=luffy.kubeconfig
 
 # 为kubeconfig添加上下文配置
-$ kubectl config set-context luffy-context --cluster=luffy-cluster --user=luffy-admin --kubeconfig=luffy.kubeconfig
+kubectl config set-context luffy-context --cluster=luffy-cluster --user=luffy-admin --kubeconfig=luffy.kubeconfig
 
 # 设置默认的上下文
-$ kubectl config use-context luffy-context --kubeconfig=luffy.kubeconfig
+kubectl config use-context luffy-context --kubeconfig=luffy.kubeconfig
+
+
 ```
 
 验证：
 
 ```bash
 # 设置当前kubectl使用的config文件
-$ export KUBECONFIG=luffy.kubeconfig
+export KUBECONFIG=luffy.kubeconfig
 
 # 当前不具有任何权限，因为没有为用户或者组设置RBAC规则
-$ kubectl get po
+# kubectl get po
 Error from server (Forbidden): pods is forbidden: User "luffy-admin" cannot list resource "pods" in API group "" in the namespace "default"
+
+#修改回来
+export KUBECONFIG=~/.kube/config
+kubectl get po
 ```
 
 为luffy-admin用户添加luffy命名空间访问权限：
 
 ```bash
 # 定义role，具有luffy命名空间的所有权限
-$ cat luffy-admin-role.yaml
+cat <<EOF  > luffy-admin-role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -1155,9 +1245,10 @@ rules:
 - apiGroups: ["*"] # "" 指定核心 API 组
   resources: ["*"]
   verbs: ["*"]
-  
+EOF
+
 #定义rolebinding，为luffy用户绑定luffy-admin这个role，这样luffy用户就有操作luffy命名空间的所有权限
-$ cat luffy-admin-rolebinding.yaml
+cat <<EOF > luffy-admin-rolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -1171,6 +1262,18 @@ roleRef:
   kind: Role #this must be Role or ClusterRole
   name: luffy-admin # 这里的名称必须与你想要绑定的 Role 或 ClusterRole 名称一致
   apiGroup: rbac.authorization.k8s.io
+EOF
+
+# user group不是k8s资源,不需要创建
+export KUBECONFIG=~/.kube/config
+kubectl create -f luffy-admin-role.yaml
+kubectl create -f luffy-admin-rolebinding.yaml
+
+
+export KUBECONFIG=luffy.kubeconfig
+kubectl get pods  #没有权限,
+kubectl -n luffy get pods   #查看luffy 命名空间权限ok
+
 ```
 
 ###### [Service Account及K8S Api调用](http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=service-account及k8s-api调用)
@@ -1191,7 +1294,7 @@ kubectl -n ingress-nginx get deployment ingress-nginx-controller -oyaml
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
-      serviceAccount: ingress-nginx
+      serviceAccount: ingress-nginx     #*******
       serviceAccountName: ingress-nginx
       terminationGracePeriodSeconds: 300
       volumes:
@@ -1239,6 +1342,7 @@ PolicyRule:
 *思考：如何使用ServiceAccount调用k8s的接口？*
 
 ```bash
+kubectl -n ingress-nginx get serviceaccounts
 $ kubectl -n ingress-nginx exec -ti ingress-nginx-controller-555746c4b4-cwwg9 -- bash
 bash-5.1$ df -h
 Filesystem                Size      Used Available Use% Mounted on
@@ -1263,6 +1367,7 @@ tmpfs                     7.8G         0      7.8G   0% /sys/firmware
 
 cat /run/secrets/kubernetes.io/serviceaccount/token
 eyJhbGciOiJSUzI1NiIsImtpZCI6IktJeWtHUFlydXZ2ZncxQVNxUlZyWHhCTkkwb01IbjNKUnFwZ18wUUxkVGcifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNjk5Njk2MjI3LCJpYXQiOjE2NjgxNjAyMjcsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJpbmdyZXNzLW5naW54IiwicG9kIjp7Im5hbWUiOiJpbmdyZXNzLW5naW54LWNvbnRyb2xsZXItNTU1NzQ2YzRiNC1jd3dnOSIsInVpZCI6ImY4NjEzNjI3LWQyNWItNDU5MC05NjNmLTZhNGZhNDBmODJhNyJ9LCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiaW5ncmVzcy1uZ2lueCIsInVpZCI6ImJhMDNjODQyLWM4MDctNDY3My05NzRmLTA2ZWM2ZjA5MTE3YiJ9LCJ3YXJuYWZ0ZXIiOjE2NjgxNjM4MzR9LCJuYmYiOjE2NjgxNjAyMjcsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDppbmdyZXNzLW5naW54OmluZ3Jlc3MtbmdpbngifQ.iCPjYEi_x2WWpAF4X5uEfgxG0eGeQ5hoVPTR8c6xgHkm2SpAuBHk1bf6jQgJO_UJZ5rM-DP2hkK2wETNtXnWi3k5bt5HrXcIIZrGwh9UC8D1mMGJbQ0oUkmLr9wvvwtj153AzBtkS7KFn5j0PWx987HcCyRmEtr06QSnLH7-1Y29n9AYYOlNHTUpUDyN8v-zLDA_Oua6qQPf8oHgpTSd7M-LQXAumFUNCi50l9FI2RdPsQG8ko0vKAAqESf9pML_qbMQpwOjYlCfB0quDb6WAbvtvsj1IKwlF7dlymzUJKCqiF8ZVq5VNuQS8FhlVt1G5B1N9M7luPcGTCzQq6wmFQ
+
 ```
 
 Pod中若指定了`serviceAccount`，则k8s自动为Pod挂载`/run/secrets/kubernetes.io/serviceaccount/token`这个文件，文件内容为token信息，业务程序可以使用该token进行k8s api的调用，同时，该token的访问权限与对应的`serviceAccount`的权限一致。
@@ -1276,7 +1381,7 @@ curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IktJeWtHUFlydXZ2Z
 只允许访问luffy命名空间的pod资源：
 
 ```bash
-$ cat luffy-admin-rbac.yaml
+cat <<EOF > luffy-admin-rbac.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -1307,6 +1412,9 @@ roleRef:
   kind: Role #这里可以是Role或者ClusterRole,若是ClusterRole，则权限也仅限于rolebinding的内部
   name: pods-reader-writer
   apiGroup: rbac.authorization.k8s.io
+EOF
+
+  
 ```
 
 演示权限：
@@ -1314,9 +1422,18 @@ roleRef:
 ```bash
 $ kubectl -n luffy create token luffy-pods-admin
 eyJhbGciOiJSUzI1NiIsImtpZCI6IktJeWtHUFlydXZ2ZncxQVNxUlZyWHhCTkkwb01IbjNKUnFwZ18wUUxkVGcifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNjY4MTY2MDYxLCJpYXQiOjE2NjgxNjI0NjEsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJsdWZmeSIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJsdWZmeS1wb2RzLWFkbWluIiwidWlkIjoiZGY3ZjRiZTAtMTI2Yy00ZTExLWJlNWYtZWZhYjk4NGY2OWZkIn19LCJuYmYiOjE2NjgxNjI0NjEsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpsdWZmeTpsdWZmeS1wb2RzLWFkbWluIn0.ZVO9smO5milPXJWkA9YLeSNMTBTNbqHFyO2YJipQ0BGAlTRkprsfnnS6Xod-1nP2bQmb1xdDiLhi2lhqoAGiornfV573eggbuYdB-xgqnD9cFP-PZzzUJ3G5Up-CUtkjO6kY1ljUa5s8TuTfqIpkbniaKUPciZSgLy4ozRbjOotrnZqpw6dKIuDRBFl26CvztNf3LvxinbeWeJv1dRPHzi90qKEopx2HR3PHBrcs7NuHk5c0He7Bjs1RsVvL1uOVYLXLIYgcnIZra1W8uMcff4-klinEYFo_g_CszTYx-MGLPcSLaHMcNw_qmXsVeq92JA-EooSDzF8XRQqZyLAe2g
+
 $ curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IktJeWtHUFlydXZ2ZncxQVNxUlZyWHhCTkkwb01IbjNKUnFwZ18wUUxkVGcifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNjY4MTY2MDYxLCJpYXQiOjE2NjgxNjI0NjEsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJsdWZmeSIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJsdWZmeS1wb2RzLWFkbWluIiwidWlkIjoiZGY3ZjRiZTAtMTI2Yy00ZTExLWJlNWYtZWZhYjk4NGY2OWZkIn19LCJuYmYiOjE2NjgxNjI0NjEsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpsdWZmeTpsdWZmeS1wb2RzLWFkbWluIn0.ZVO9smO5milPXJWkA9YLeSNMTBTNbqHFyO2YJipQ0BGAlTRkprsfnnS6Xod-1nP2bQmb1xdDiLhi2lhqoAGiornfV573eggbuYdB-xgqnD9cFP-PZzzUJ3G5Up-CUtkjO6kY1ljUa5s8TuTfqIpkbniaKUPciZSgLy4ozRbjOotrnZqpw6dKIuDRBFl26CvztNf3LvxinbeWeJv1dRPHzi90qKEopx2HR3PHBrcs7NuHk5c0He7Bjs1RsVvL1uOVYLXLIYgcnIZra1W8uMcff4-klinEYFo_g_CszTYx-MGLPcSLaHMcNw_qmXsVeq92JA-EooSDzF8XRQqZyLAe2g" https://172.16.1.226:6443/api/v1/namespaces/luffy/pods?limit=500
 
 # https://172.16.1.226:6443/api/v1/nodes
+
+
+# 根据用户名反查权限有啥
+kubectl get clusterolebindings.rbac.authorization.k8s.io -oyaml|grep system:masters
+
+kubectl get clusterolebindings.rbac.authorization.k8s.io -oyaml|grep -n15 system:masters
+
+
 ```
 
 ###### [认证、鉴权图鉴](http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=认证、鉴权图鉴)
@@ -1408,7 +1525,7 @@ HPA的实现有两个版本：
 
 ###### [基于CPU和内存的动态伸缩](http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=基于cpu和内存的动态伸缩)
 
-![img](4Kubernetes进阶实践.assets/hpa.png)
+<img src="4Kubernetes进阶实践.assets/hpa.png" alt="img" style="zoom:50%;" />
 
 创建hpa对象：
 
@@ -1651,9 +1768,9 @@ $ curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IktJeWtHUFlydXZ
 
 # 对接外部存储
 
-#### [kubernetes对接分部式存储](http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=kubernetes对接分部式存储)
+#### kubernetes对接分部式存储
 
-##### [PV与PVC快速入门](http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=pv与pvc快速入门)
+##### PV与PVC快速入门
 
 k8s存储的目的就是保证Pod重建后，数据不丢失。简单的数据持久化的下述方式：
 

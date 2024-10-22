@@ -36,7 +36,7 @@ https://kubernetes.io/
 
 分布式系统，两类角色：管理节点和工作节点
 
-<img src="3Kubernetes落地实践之旅.assets/architecture.png" alt="img" style="zoom: 50%;" />
+<img src="3Kubernetes落地实践之旅.assets/architecture.png" alt="img" style="zoom: 33%;" />
 
 #### [核心组件](http://49.7.203.222:2023/#/kubernetes-base/introduction?id=核心组件)
 
@@ -142,7 +142,7 @@ docker调度的是容器，在k8s集群中，最小的调度单元是Pod（豆�
 
 ```yaml
 #准备数据库
- git clone https://gitee.com/chengkanghua/eladmin.git
+git clone https://gitee.com/chengkanghua/eladmin.git
  
  docker run -d --restart=always -p 3306:3306 --name mysql  -v /opt/mysql:/var/lib/mysql -e MYSQL_DATABASE=eladmin -e MYSQL_ROOT_PASSWORD=luffyAdmin! mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
  
@@ -157,6 +157,7 @@ bash-4.2# exit
 
 docker run -p 6379:6379 -d --restart=always redis:3.2 redis-server
 
+#数据库地址修改成实际的情况
 cat >pod-eladmin-api.yaml<<EOF
 apiVersion: v1
 kind: Pod
@@ -187,53 +188,19 @@ spec:
 EOF
 ----------------------------------------------
     
-# http://www.wetools.com/yaml/
-{
-    "apiVersion": "v1",
-    "kind": "Pod",
-    "metadata": {
-        "name": "eladmin-api",
-        "namespace": "luffy",
-        "labels": {
-            "app": "eladmin-api"
-        }
-    },
-    "spec": {
-        "containers": [
-            {
-                "name": "eladmin-api",
-                "image": "172.16.1.226:5000/eladmin/eladmin-api:v1",
-                "env": [
-                    {
-                        "name": "DB_HOST",
-                        "value": "172.16.1.226"
-                    },
-                    {
-                        "name": "DB_USER",
-                        "value": "root"
-                    },
-                    {
-                        "name": "DB_PWD",
-                        "value": "luffyAdmin!"
-                    },
-                    {
-                        "name": "REDIS_HOST",
-                        "value": "172.16.1.226"
-                    },
-                    {
-                        "name": "REDIS_PORT",
-                        "value": "6379"
-                    }
-                ],
-                "ports": [
-                    {
-                        "containerPort": 8000
-                    }
-                ]
-            }
-        ]
-    }
-}
+# http://www.wetools.com/yaml/  #这是一个yam文件转换json格式的网址
+
+
+
+
+kubectl create -f pod-eladmin-api.yaml
+[root@k8s-master ~]# kubectl -n luffy get pod -owide
+NAME                     READY   STATUS    RESTARTS   AGE    IP            NODE         NOMINATED NODE   READINESS GATES
+eladmin-api              1/1     Running   0          34s    10.244.1.31   k8s-slave1   <none>           <none>
+mysql-858f99d446-4svrv   1/1     Running   0          81m    10.244.0.11   k8s-master   <none>           <none>
+redis-7957d49f44-qp66c   1/1     Running   0          113m   10.244.2.28   k8s-slave2   <none>           <none>
+[root@k8s-master ~]# curl http://10.244.1.31:8000/auth/code  # 正常返回信息
+
 ```
 
 | apiVersion | 含义                                                         |
@@ -408,7 +375,7 @@ EOF
 
 # [工作流程](http://49.7.203.222:2023/#/kubernetes-base/workflow?id=工作流程)
 
-![img](3Kubernetes落地实践之旅.assets/process.png)
+<img src="3Kubernetes落地实践之旅.assets/process.png" alt="img" style="zoom: 67%;" />
 
 1. 用户准备一个资源文件（记录了业务应用的名称、镜像地址等信息），通过调用APIServer执行创建Pod
 2. APIServer收到用户的Pod创建请求，将Pod信息写入到etcd中
@@ -457,10 +424,10 @@ EOF
 
 使用Service类型资源实现负载：
 
-*service-redis.yaml* 
+*redis.service.yaml* 
 
 ```yaml
-cat <<EOF > service-redis.yaml
+cat <<EOF > redis.service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -485,7 +452,7 @@ EOF
 业务app —–>访问 cluster-ip:6379 —->redis-service —–> Redis-Pod
 这里不用关心pod的ip地址是否变更， servie会自动找到标签 app=redis的pod
 # kubectl create -f redis.yaml
-# kubectl create -f service-redis.yaml
+# kubectl create -f redis.service.yaml
 [root@k8s-master ~]# kubectl -n luffy get svc
 NAME    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
 redis   ClusterIP   10.107.91.29   <none>        6379/TCP   46m
@@ -1125,11 +1092,14 @@ k8s提供两类资源，`configMap`和`Secret`，可以用来实现业务配置�
     name: eladmin
     namespace: luffy
   data:
-    DB_HOST: "10.99.14.241"
+    DB_HOST: "10.244.0.8"
     DB_USER: "root"
-    REDIS_HOST: "10.105.226.34"
+    REDIS_HOST: "10.244.2.28"
     REDIS_PORT: "6379"
   EOF
+  
+  kubectl create -f configmap.yaml
+  kubectl -n luffy get configmap eladmin -oyaml
   ```
 
   创建并查看`configmap`：
@@ -1143,8 +1113,8 @@ k8s提供两类资源，`configMap`和`Secret`，可以用来实现业务配置�
 
   ```bash
   cat <<EOF > env-configs.txt
-  DB_HOST=10.99.14.241
-  REDIS_HOST=10.105.226.34
+  DB_HOST=10.244.0.8
+  REDIS_HOST=10.244.2.28
   REDIS_PORT=6379
   EOF
   
@@ -1283,7 +1253,7 @@ Pod的状态如下表所示：
 
 启动和关闭示意：
 
-![img](3Kubernetes落地实践之旅.assets/AOQgQj.jpg)
+<img src="3Kubernetes落地实践之旅.assets/AOQgQj.jpg" alt="img" style="zoom: 50%;" />
 
 初始化容器：
 
@@ -1435,6 +1405,7 @@ $ cat /tmp/loap/timing
 *deployment-mysql.yaml*
 
 ```yaml
+cat <<EOF >deployment-mysql.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1493,86 +1464,36 @@ spec:
           path: /opt/mysql/
       nodeSelector:   # 使用节点选择器将Pod调度到指定label的节点
         mysql: "true"
+EOF
+
+#关联的配置 secret
+cat > env-secret.txt <<EOF
+DB_PWD=luffyAdmin!
+DB_USER=root
+EOF
+
+#创建 generic 类型secret
+kubectl -n luffy create secret generic eladmin-secret --from-env-file=env-secret.txt 
+kubectl -n luffy get secret
+
+
+# ---扩展
+kubectl -n luffy get pod -owide  #容器status 报错
+
+kubectl -n luffy  describe pod mysql-858f99d446-sztjs  #查看详细报错
+
+kubectl -n luffy  get pod mysql-858f99d446-sztjs -o yaml #查看 Pod 的详细状态
+
+kubectl -n luffy exec -it mysql-858f99d446-sztjs -- /bin/sh  #进容器里调试
+kubectl -n luffy get events  #查看集群事件
 ```
 
-*deploy-eladmin-api.yaml*
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: eladmin-api
-  namespace: luffy
-spec:
-  replicas: 1    #指定Pod副本数
-  selector:        #指定Pod的选择器
-    matchLabels:
-      app: eladmin-api
-  template:
-    metadata:
-      labels:    #给Pod打label
-        app: eladmin-api
-    spec:
-      imagePullSecrets:
-      - name: registry-172-16-1-226
-      containers:
-      - name: eladmin-api
-        image: 172.16.1.226:5000/eladmin/eladmin-api:v1
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: DB_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: eladmin
-              key: DB_HOST
-        - name: REDIS_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: eladmin
-              key: REDIS_HOST
-        - name: REDIS_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: eladmin
-              key: REDIS_PORT
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: eladmin-secret
-              key: DB_USER
-        - name: DB_PWD
-          valueFrom:
-            secretKeyRef:
-              name: eladmin-secret
-              key: DB_PWD
-        ports:
-        - containerPort: 8000
-        resources:
-          requests:
-            memory: 200Mi
-            cpu: 50m
-          limits:
-            memory: 4Gi
-            cpu: 2
-        livenessProbe:
-          tcpSocket:
-            port: 8000
-          initialDelaySeconds: 20  # 容器启动后第一次执行探测是需要等待多少秒
-          periodSeconds: 15     # 执行探测的频率
-          timeoutSeconds: 3        # 探测超时时间
-        readinessProbe: 
-          httpGet: 
-            path: /auth/code
-            port: 8000
-            scheme: HTTP
-          initialDelaySeconds: 20 
-          timeoutSeconds: 3
-          periodSeconds: 15
-```
 
 *deployment-redis.yaml*
 
 ```yaml
+cat <<EOF > deployment-redis.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1610,12 +1531,135 @@ spec:
             port: 6379
           initialDelaySeconds: 15
           periodSeconds: 20
+EOF
+
 ```
+
+
+
+*deploy-eladmin-api.yaml*
+
+```yaml
+cat <<EOF > deploy-eladmin-api.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eladmin-api
+  namespace: luffy
+spec:
+  replicas: 1    #指定Pod副本数
+  selector:        #指定Pod的选择器
+    matchLabels:
+      app: eladmin-api
+  template:
+    metadata:
+      labels:    #给Pod打label
+        app: eladmin-api
+    spec:
+      imagePullSecrets:
+      - name: registry-172-16-1-226
+      containers:
+      - name: eladmin-api
+        image: 172.16.1.226:5000/eladmin/eladmin-api:v1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: DB_HOST
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: eladmin-secret
+              key: DB_USER
+        - name: DB_PWD
+          valueFrom:
+            secretKeyRef:
+              name: eladmin-secret
+              key: DB_PWD
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: REDIS_PORT
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 50m
+          limits:
+            memory: 1Gi
+            cpu: 2
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 20  # 容器启动后第一次执行探测是需要等待多少秒
+          periodSeconds: 15     # 执行探测的频率
+          timeoutSeconds: 3        # 探测超时时间
+        readinessProbe: 
+          httpGet: 
+            path: /auth/code
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 20 
+          timeoutSeconds: 3
+          periodSeconds: 15
+EOF
+
+
+#关联的配置 secret
+cat > env-secret.txt <<EOF
+DB_PWD=luffyAdmin!
+DB_USER=root
+EOF
+
+#创建 generic 类型secret
+kubectl -n luffy create secret generic eladmin-secret --from-env-file=env-secret.txt 
+kubectl -n luffy get secret
+
+
+# 关联的cofnigmap ;修改对应的ip地址
+cat <<EOF > configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eladmin
+  namespace: luffy
+data:
+  DB_HOST: "10.244.0.11"
+  DB_USER: "root"
+  REDIS_HOST: "10.244.2.28"
+  REDIS_PORT: "6379"
+EOF
+
+kubectl create -f configmap.yaml
+kubectl -n luffy get configmap   #查看configmap
+kubectl -n luffy edit configmap eladmin  #在线修改configmap
+
+kubectl -n luffy get configmap eladmin -oyaml
+
+kubectl -n luffy delete pod eladmin-api-6b54756dd7-hrd9h
+
+
+
+
+```
+
+
 
 ###### [创建Deployment](http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=创建deployment)
 
 ```bash
-$ kubectl create -f deploy-eladmin-api.yaml
+kubectl create -f deployment-redis.yaml
+kubectl create -f deployment-mysql.yaml
+kubectl create -f deploy-eladmin-api.yaml
 ```
 
 ###### [查看Deployment](http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=查看deployment)
@@ -1635,10 +1679,10 @@ redis         1/1     1            1           90s
   * `AGE` 显示应用程序运行的时间量。
 
 # 查看pod
-$ kubectl -n luffy get po -owide
+kubectl -n luffy get po -owide
 
 # 查看replicaSet
-$ kubectl -n luffy get rs
+kubectl -n luffy get rs
 ```
 
 ###### [副本保障机制](http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=副本保障机制)
@@ -1650,14 +1694,15 @@ controller实时检测pod状态，并保障副本数一直处于期望的值。
 $ kubectl -n luffy delete pod eladmin-api-5bff94959d-hxz2r
 
 # 观察pod
-$ kubectl get pods -o wide
+kubectl -n luffy get pod -w
+kubectl -n luffy get pods -o wide
 
 ## 设置两个副本, 或者通过kubectl -n luffy edit deploy eladmin-api的方式，最好通过修改文件，然后apply的方式，这样yaml文件可以保持同步
-$ kubectl -n luffy scale deploy eladmin-api --replicas=2
-deployment.extensions/eladmin-api scaled
+kubectl -n luffy scale deploy eladmin-api --replicas=2
+
 
 # 观察pod
-$ kubectl get pods -o wide
+kubectl -n luffy get pod -w
 ```
 
 ###### [服务更新](http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=服务更新)
@@ -1711,6 +1756,88 @@ spec:
       maxUnavailable: 25%
     type: RollingUpdate        #指定更新方式为滚动更新，默认策略，通过get deploy yaml查看
     ...
+    
+---------------修改后完整版
+cat <<EOF > deploy-eladmin-api.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eladmin-api
+  namespace: luffy
+spec:
+  replicas: 2    #指定Pod副本数
+  selector:        #指定Pod的选择器
+    matchLabels:
+      app: eladmin-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate        #指定更新方式为滚动更新，默认策略，通过get deploy yaml查看
+  template:
+    metadata:
+      labels:    #给Pod打label
+        app: eladmin-api
+    spec:
+      imagePullSecrets:
+      - name: registry-172-16-1-226
+      containers:
+      - name: eladmin-api
+        image: 172.16.1.226:5000/eladmin/eladmin-api:v1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: DB_HOST
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: eladmin-secret
+              key: DB_USER
+        - name: DB_PWD
+          valueFrom:
+            secretKeyRef:
+              name: eladmin-secret
+              key: DB_PWD
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: REDIS_PORT
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 50m
+          limits:
+            memory: 1Gi
+            cpu: 2
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 20  # 容器启动后第一次执行探测是需要等待多少秒
+          periodSeconds: 15     # 执行探测的频率
+          timeoutSeconds: 3        # 探测超时时间
+        readinessProbe:
+          httpGet:
+            path: /auth/code
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 20
+          timeoutSeconds: 3
+          periodSeconds: 15
+EOF
+
+kubectl apply -f deploy-eladmin-api.yaml
+    
 ```
 
 ![img](3Kubernetes落地实践之旅.assets/update.png)
@@ -1731,8 +1858,15 @@ spec:
 ```bash
 #查看滚动更新事件
 $ kubectl -n luffy describe deploy eladmin-api
+Events:
+  Type    Reason             Age                From                   Message
+  ----    ------             ----               ----                   -------
+  Normal  ScalingReplicaSet  25m                deployment-controller  Scaled up replica set eladmin-api-7f7686858f to 1
+  Normal  ScalingReplicaSet  13m                deployment-controller  Scaled down replica set eladmin-api-7f7686858f to 1
+  Normal  ScalingReplicaSet  17s (x2 over 14m)  deployment-controller  Scaled up replica set eladmin-api-7f7686858f to 2
 
-$ kubectl get rs
+# kubectl api-resources #查看所有资源类型
+# kubectl -n luffy get rs
 ```
 
 除了滚动更新以外，还有一种策略是Recreate，直接在当前的pod基础上先删后建：
@@ -1747,7 +1881,7 @@ $ kubectl get rs
 我们课程中的mysql服务应该使用Recreate来管理：
 
 ```bash
-$ kubectl -n luffy edit deploy mysql
+$ kubectl -n luffy edit deploy mysql 
 ...
   selector:
     matchLabels:
@@ -1760,6 +1894,73 @@ $ kubectl -n luffy edit deploy mysql
       labels:
         app: mysql
 ...
+
+------修改后的完整版
+cat <<EOF > deployment-mysql.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: luffy
+spec:
+  replicas: 1    #指定Pod副本数
+  selector:        #指定Pod的选择器
+    matchLabels:
+      app: mysql
+  strategy:
+      type: Recreate
+  template:
+    metadata:
+      labels:    #给Pod打label,必须和上方的matchLabels匹配
+        app: mysql
+        from: luffy
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        args:
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: eladmin-secret
+              key: DB_PWD
+        - name: MYSQL_DATABASE
+          value: "eladmin"
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 50m
+          limits:
+            memory: 1Gi
+            cpu: 500m
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-data
+        hostPath:
+          path: /opt/mysql/
+      nodeSelector:   # 使用节点选择器将Pod调度到指定label的节点
+        mysql: "true"
+EOF
+
+ kubectl apply -f deployment-mysql.yaml
+ 
 ```
 
 ###### [服务回滚](http://49.7.203.222:2023/#/kubernetes-base/rolling-update-rollback?id=服务回滚)
@@ -1772,15 +1973,24 @@ $ kubectl -n luffy edit deploy mysql
 
 ```bash
 $ kubectl -n luffy rollout history deploy eladmin-api ##CHANGE-CAUSE为空
-$ kubectl delete -f deployment-eladmin-api.yaml    ## 方便演示到具体效果，删掉已有deployment
+$ kubectl delete -f deploy-eladmin-api.yaml    ## 方便演示到具体效果，删掉已有deployment
 ```
 
 记录回滚：
 
 ```bash
-$ kubectl apply -f deployment-eladmin-api.yaml --record
+# 修改了配置文件, apply -f 之后也会记录到历史版本中
+$ kubectl apply -f deploy-eladmin-api.yaml --record
 
-$ kubectl -n luffy edit deploy eladmin-api --record=true
+$ kubectl -n luffy edit deploy eladmin-api --record=true  #镜像名v1 修改成v2
+
+#再次查看历史记录
+[root@k8s-master ~]# kubectl -n luffy rollout history deploy eladmin-api
+deployment.apps/eladmin-api
+REVISION  CHANGE-CAUSE
+1         <none>
+2         kubectl edit deploy eladmin-api --namespace=luffy --record=true
+
 ```
 
 查看deployment更新历史：
@@ -1807,6 +2017,7 @@ deployment.apps/eladmin-api rolled back
 ```
 deployment,image ==> config,configmap,secret
 #这里回滚是 deployment到image，  config和cofnigmap，secret都不管
+
 ```
 
 
@@ -1881,10 +2092,12 @@ Events:            <none>
 
 ## 扩容eladmin-api服务
 $ kd scale deploy eladmin-api --replicas=2
-deployment.apps/eladmin-api scaled
 
 ## 再次查看 service后关联的Endpoints
 $ kd describe svc eladmin-api
+# kubectl -n luffy describe service eladmin-api
+
+
 ```
 
 Service与Pod如何关联:
@@ -1892,7 +2105,7 @@ Service与Pod如何关联:
 service对象创建的同时，会创建同名的endpoints对象，若服务设置了readinessProbe, 当readinessProbe检测失败时，endpoints列表中会剔除掉对应的pod_ip，这样流量就不会分发到健康检测失败的Pod中
 
 ```bash
-$ kd get endpoints eladmin-api
+$ kubectl -n luffy get endpoints eladmin-api
 NAME     ENDPOINTS                            AGE
 eladmin-api   10.244.0.68:8002,10.244.1.158:8002   7m
 ```
@@ -1900,7 +2113,7 @@ eladmin-api   10.244.0.68:8002,10.244.1.158:8002   7m
 Service Cluster-IP如何访问:
 
 ```bash
-$ kd get svc eladmin-api
+$ kubectl -n luffy get svc eladmin-api
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
 eladmin-api   ClusterIP   10.99.182.32   <none>        8000/TCP   54m
 $ curl 10.99.182.32:8000/auth/code
@@ -1916,7 +2129,7 @@ $ curl 10.99.182.32:8000/auth/code
  #kube-proxy组件是安装在kube-system命名空间下
  #是一个进程 
  kubectl -n kube-system get pod -o wide
- kubectl -n kube-system logs -f kube-proxy-gmmlv #改成当前主机的kube-proxy 容器名
+ kubectl -n kube-system logs -f kube-proxy-gmmlv  #改成当前主机的kube-proxy 容器名
  #日志里显示是 using iptables proxier
  ```
 
@@ -2048,13 +2261,17 @@ $ ipvsadm -ln
 $ kubectl -n luffy get svc
 NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
 eladmin-api   ClusterIP   10.99.182.32    <none>        8000/TCP   4h50m
+eladmin-web   ClusterIP   10.106.22.247   <none>        80/TCP     9h
 mysql         ClusterIP   10.99.14.241    <none>        3306/TCP   21h
 redis         ClusterIP   10.105.226.34   <none>        6379/TCP   2d1h
 
+# kubectl -n luffy get po -owide
 # 进入eladmin-web容器
 $ kubectl -n luffy exec -ti eladmin-web-7b9d5994fd-lhznk -- sh
 # curl eladmin-api:8000
 # nslookup eladmin-api
+# nslookup mysql
+# nslookup redis
 
 #为什么能ping 通 service name ；
 # k8s 中coredns组件作的解析
@@ -2132,6 +2349,7 @@ kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   26h
 # kubectl -n kube-system get pod -l k8s-app=kube-dns -owide #根据标签找到对应的pod
 
 # kubectl -n kube-system get deployment
+
 ```
 
 
@@ -2164,7 +2382,7 @@ EOF
 查看并访问服务：
 
 ```bash
-$ kubectl  create -f service-eladmin-api-nodeport.yaml
+$  
 service/eladmin-api-nodeport created
 $ kubectl -n luffy get svc
 NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
@@ -2255,8 +2473,8 @@ $ vim deploy.yaml
 507           readOnly: true
 508       dnsPolicy: ClusterFirst
 509       nodeSelector:
-510         ingress: "true"
-511       hostNetwork: true
+510         ingress: "true"    #替换此处，来决定将ingress部署在哪些机器
+511       hostNetwork: true    #添加为host模式
 512       serviceAccountName: ingress-nginx
 513       terminationGracePeriodSeconds: 300
 514       volumes:
@@ -2271,14 +2489,23 @@ sed -i 's#registry.k8s.io/ingress-nginx/controller:v1.4.0@sha256:34ee929b111ffc7
 
 ```bash
 # 为k8s-master节点添加label
-$ kubectl label node k8s-master ingress=true
+kubectl label node k8s-master ingress=true
 
-$ kubectl apply -f deploy.yaml
+kubectl apply -f deploy.yaml
+
+
+# kubectl -n ingress-nginx get pod
+ingress-nginx-controller-9ccddfb4f-m4trc   1/1     Running     0          3m33s
+
+kubectl -n ingress-nginx describe pod ingress-nginx-controller-9ccddfb4f-m4trc
+kubectl get node --show-labels |grep ingress
+kubectl -n ingress-nginx get pod -owide
 ```
 
 ###### [使用示例：](http://49.7.203.222:2023/#/kubernetes-base/ingress?id=使用示例：)
 
 ```yaml
+cat <<EOF > ingress-eladmin-api.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -2297,13 +2524,27 @@ spec:
             name: eladmin-api
             port:
               number: 8000
-              
+EOF
+
+kubectl create -f ingress-eladmin-api.yaml
+
+# kubectl -n luffy get ingress
+NAME          CLASS   HOSTS                   ADDRESS   PORTS   AGE
+eladmin-api   nginx   eladmin-api.luffy.com             80      39s
+
 ```
 
 ingress-nginx动态生成upstream配置：
 
 ```yaml
-$ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
+# kubectl -n ingress-nginx get po
+NAME                                       READY   STATUS      RESTARTS   AGE
+ingress-nginx-admission-create-2dqdt       0/1     Completed   0          9m20s
+ingress-nginx-admission-patch-74hm5        0/1     Completed   0          9m20s
+ingress-nginx-controller-9ccddfb4f-m4trc   1/1     Running     0          9m20s
+# kubectl -n ingress-nginx exec -ti ingress-nginx-controller-9ccddfb4f-m4trc -- bash
+
+$ kubectl -n ingress-nginx exec -ti ingress-nginx-controller-9ccddfb4f-m4trc -- bash
 # ps aux
 # cat /etc/nginx/nginx.conf|grep eladmin-api -A10 -B1
 ...
@@ -2359,6 +2600,10 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
 
 ```json
 172.16.1.226 eladmin-api.luffy.com
+
+echo '172.16.1.226 eladmin-api.luffy.com' >> /etc/hosts
+[root@k8s-master ~]# curl  http://eladmin-api.luffy.com/auth/code  #返回正常code信息
+
 ```
 
 然后，访问 http://eladmin-api.luffy.com/auth/code
@@ -2379,6 +2624,9 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
   *.env.production*
 
   ```c++
+  git clone --depth=1 https://gitee.com/agagin/eladmin-web.git
+  cd eladmin-web/
+  cat <<EOF > .env.production
   ENV = 'production'
   
   # 如果使用 Nginx 代理后端接口，那么此处需要改为 '/'，文件查看 Docker 部署篇，Nginx 配置
@@ -2386,7 +2634,30 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
   VUE_APP_BASE_API  = 'http://eladmin-api.luffy.com'
   # 如果接口是 http 形式， wss 需要改为 ws
   VUE_APP_WS_API = 'ws://eladmin-api.luffy.com'
-      
+  EOF
+  
+  cat > Dockerfile.multi<<EOF
+  FROM codemantn/vue-node AS builder
+  LABEL maintainer="inspur_lyx@hotmail.com"
+  # config npm
+  RUN npm config set sass_binary_site https://npmmirror.com/mirror/sass && \
+      npm config set registry https://registry.npmmirror.com
+  WORKDIR /opt/eladmin-web
+  COPY  . .
+  # build
+  RUN ls -l && npm cache clean --force && npm install && npm run build:prod
+  
+  FROM nginx:alpine
+  WORKDIR /usr/share/nginx/html
+  COPY --from=builder /opt/eladmin-web/dist /usr/share/nginx/html/
+  EXPOSE 80
+  EOF
+  
+  docker build --no-cache . -t 172.16.1.226:5000/eladmin/eladmin-web:v2 -f Dockerfile.multi
+  
+  # docker login 172.16.1.226:5000
+  # docker tag eladmin-web:v2 172.16.1.226:5000/eladmin/eladmin-web:v2
+  docker push 172.16.1.226:5000/eladmin/eladmin-web:v2
   ```
 
   前端代码调整，因此需要重新构建一版前端：
@@ -2430,7 +2701,7 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
               memory: 200Mi
               cpu: 50m
             limits:
-              memory: 2Gi
+              memory: 1Gi
               cpu: 2
           livenessProbe:
             tcpSocket:
@@ -2444,7 +2715,8 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
             initialDelaySeconds: 15
             timeoutSeconds: 3
             periodSeconds: 15
-  EOF      
+  EOF
+  
   cat <<EOF > service-eladmin-web.yaml
   apiVersion: v1
   kind: Service
@@ -2482,12 +2754,69 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
                 number: 80
   EOF
   
+  cat <<EOF > ingress-eladmin-api.yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: eladmin-api
+    namespace: luffy
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: eladmin-api.luffy.com
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service: 
+              name: eladmin-api
+              port:
+                number: 8000
+  EOF
+  kubectl create -f ingress-eladmin-api.yaml
+  
+  
+  kubectl create -f deployment-eladmin-web.yaml
+  kubectl create -f service-eladmin-web.yaml
+  kubectl create -f ingress-eladmin-web.yaml
+  
+  
+  [root@k8s-master ~]# kubectl -n luffy get po
+  NAME                           READY   STATUS    RESTARTS   AGE
+  eladmin-api-7f7686858f-fhzcq   1/1     Running   0          69m
+  eladmin-web-6b579d5fb5-n8zjz   0/1     Running   0          26s
+  mysql-858f99d446-4svrv         1/1     Running   0          6h10m
+  redis-7957d49f44-qp66c         1/1     Running   0          6h42m
+  [root@k8s-master ~]# kubectl -n luffy get svc
+  NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+  eladmin-api   ClusterIP   10.97.88.182    <none>        8000/TCP   5h35m
+  eladmin-web   ClusterIP   10.106.22.247   <none>        80/TCP     41s
+  [root@k8s-master ~]# kubectl -n luffy get ingress
+  NAME          CLASS   HOSTS                   ADDRESS   PORTS   AGE
+  eladmin-api   nginx   eladmin-api.luffy.com             80      26m
+  eladmin-web   nginx   eladmin.luffy.com                 80      55s
+  
+  [root@k8s-master ~]# curl eladmin-api.luffy.com/auth/code
+  [root@k8s-master ~]# curl eladmin.luffy.com
+  
+  kubectl delete -f deployment-eladmin-web.yaml
+  kubectl delete -f service-eladmin-web.yaml
+  kubectl delete -f ingress-eladmin-web.yaml
+  
   ```
 
   本机，添加如下hosts记录来演示效果。
 
   ```json
+  172.16.1.226 eladmin-api.luffy.com
   172.16.1.226 eladmin.luffy.com
+  
+  # windows C:\Windows\System32\drivers\etc
+  10.0.0.226 eladmin-api.luffy.com
+  10.0.0.226 eladmin.luffy.com
+  #浏览器访问 http://eladmin.luffy.com/
+  
   ```
 
   然后，访问 [http://eladmin.luffy.com](http://eladmin.luffy.com/)
@@ -2529,6 +2858,8 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
     448             fieldRef:
     449               fieldPath: metadata.name
     ...
+    
+    kubectl apply -f deploy.yaml
     ```
 
   - 重建服务
@@ -2595,7 +2926,7 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
               memory: 200Mi
               cpu: 50m
             limits:
-              memory: 2Gi
+              memory: 1Gi
               cpu: 2
           livenessProbe:
             tcpSocket:
@@ -2647,6 +2978,11 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
               port:
                 number: 80
   EOF
+  # 多个资源类型写到一个yaml文件中,用 --- 分开
+  
+  kubectl apply -f deployment-eladmin-web.yaml
+  kubectl apply -f service-eladmin-web.yaml
+  kubectl apply -f ingress-eladmin-web.yaml
   
   ```
 
@@ -2654,6 +2990,18 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
 
   ```json
   172.16.1.226 eladmin.luffy.com
+  
+  echo '172.16.1.226 eladmin.luffy.com' >> /etc/hosts
+  curl eladmin.luffy.com
+  
+  # windows C:\Windows\System32\drivers\etc
+  10.0.0.226 eladmin.luffy.com
+  #浏览器访问 http://eladmin.luffy.com/
+  
+  kubectl delete -f deployment-eladmin-web.yaml
+  kubectl delete -f service-eladmin-web.yaml
+  kubectl delete -f ingress-eladmin-web.yaml
+  
   ```
 
   然后，访问 [http://eladmin.luffy.com](http://eladmin.luffy.com/)
@@ -2672,26 +3020,51 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
   *.env.production*
 
   ```c++
+  git clone --depth=1 https://gitee.com/agagin/eladmin-web.git
+  cd eladmin-web/
+  cat <<EOF > .env.production
   ENV = 'production'
-  
   # 如果使用 Nginx 代理后端接口，那么此处需要改为 '/'，文件查看 Docker 部署篇，Nginx 配置
   # 接口地址，注意协议，如果你没有配置 ssl，需要将 https 改为 http
   VUE_APP_BASE_API  = 'http://eladmin.luffy.com/apis'
   # 如果接口是 http 形式， wss 需要改为 ws
   VUE_APP_WS_API = 'ws://eladmin.luffy.com/apis'
+  EOF
+  
+  cat > Dockerfile.multi<<EOF
+  FROM codemantn/vue-node AS builder
+  LABEL maintainer="inspur_lyx@hotmail.com"
+  # config npm
+  RUN npm config set sass_binary_site https://npmmirror.com/mirror/sass && \
+      npm config set registry https://registry.npmmirror.com
+  WORKDIR /opt/eladmin-web
+  COPY  . .
+  # build
+  RUN ls -l && npm cache clean --force && npm install && npm run build:prod
+  
+  FROM nginx:alpine
+  WORKDIR /usr/share/nginx/html
+  COPY --from=builder /opt/eladmin-web/dist /usr/share/nginx/html/
+  EXPOSE 80
+  EOF
+  
+  docker build --no-cache . -t 172.16.1.226:5000/eladmin/eladmin-web:v3 -f Dockerfile.multi
+  
+  # docker login 172.16.1.226:5000
+  docker push 172.16.1.226:5000/eladmin/eladmin-web:v3
   ```
-
+  
   前端代码调整，因此需要重新构建一版前端：
-
+  
   ```bas
   docker build . -t 172.16.1.226:5000/eladmin/eladmin-web:v3
   docker push 172.16.1.226:5000/eladmin/eladmin-web:v3
   ```
-
+  
   然后为`eladmin-web`准备`Deployment`、`Service`、`Ingress` 资源清单：
-
+  
   *eladmin-web-all.yaml*
-
+  
   ```yaml
   cat <<EOF > deployment-eladmin-web.yaml
   apiVersion: apps/v1
@@ -2722,7 +3095,7 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
               memory: 200Mi
               cpu: 50m
             limits:
-              memory: 2Gi
+              memory: 1Gi
               cpu: 2
           livenessProbe:
             tcpSocket:
@@ -2754,7 +3127,7 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
     type: ClusterIP
   EOF
   
-  cat <<\EOF > ingress-eladmin-web.yaml
+  cat <<\EOF > ingress-eladmin-api.yaml
   apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
@@ -2777,12 +3150,66 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
                 number: 8000
   EOF
   
+  cat <<\EOF > ingress-eladmin-web.yaml
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: eladmin-web
+    namespace: luffy
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: eladmin.luffy.com
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service: 
+              name: eladmin-web
+              port:
+                number: 80
+  EOF
+  
+  # 删除之前的部署信息
+  kubectl -n luffy delete deploy eladmin-web
+  kubectl -n luffy delete svc eladmin-web
+  kubectl -n luffy delete ingress eladmin-web
+  kubectl -n luffy delete ingress eladmin-api
+  
+  
+  kubectl create -f deployment-eladmin-web.yaml
+  kubectl create -f service-eladmin-web.yaml
+  kubectl create -f ingress-eladmin-web.yaml
+  kubectl create -f ingress-eladmin-api.yaml
+  
+  [root@k8s-master ~]# kubectl -n luffy get svc
+  NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+  eladmin-api   ClusterIP   10.97.88.182    <none>        8000/TCP   21h
+  eladmin-web   ClusterIP   10.103.92.160   <none>        80/TCP     4m52s
+  mysql         ClusterIP   10.103.6.190    <none>        3306/TCP   6h9m
+  redis         ClusterIP   10.96.152.118   <none>        6379/TCP   6h9m
+  
+  
+  [root@k8s-master ~]# kubectl -n luffy get ingress
+  NAME          CLASS   HOSTS               ADDRESS   PORTS   AGE
+  eladmin-api   nginx   eladmin.luffy.com             80      54s
+  eladmin-web   nginx   eladmin.luffy.com             80      79s
+  
+  kubectl -n luffy get deploy
+  kubectl -n luffy get po -owide
+  
   ```
-
+  
   本机，添加如下hosts记录来演示效果。
   
   ```json
+  
   172.16.1.226 eladmin.luffy.com
+  # windows C:\Windows\System32\drivers\etc
+  10.0.0.226 eladmin.luffy.com
+  #浏览器访问 http://eladmin.luffy.com/
+  
   ```
   
   然后，访问 [http://eladmin.luffy.com](http://eladmin.luffy.com/)
@@ -2791,10 +3218,10 @@ $ kubectl -n ingress-nginx exec -ti nginx-ingress-xxxxxxx bash
 
 ```bash
 #自签名证书
-$ openssl req -x509 -nodes -days 2920 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=*.luffy.com/O=ingress-nginx"
+openssl req -x509 -nodes -days 2920 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=*.luffy.com/O=ingress-nginx"
 
 # 证书信息保存到secret对象中，ingress-nginx会读取secret对象解析出证书加载到nginx配置中
-$ kubectl -n luffy create secret tls tls-eladmin --key tls.key --cert tls.crt
+kubectl -n luffy create secret tls tls-eladmin --key tls.key --cert tls.crt
 ```
 
 修改yaml
@@ -2802,6 +3229,11 @@ $ kubectl -n luffy create secret tls tls-eladmin --key tls.key --cert tls.crt
 *.env.production*
 
 ```c++
+
+    
+git clone --depth=1 https://gitee.com/agagin/eladmin-web.git
+cd eladmin-web/
+cat <<EOF > .env.production
 ENV = 'production'
 
 # 如果使用 Nginx 代理后端接口，那么此处需要改为 '/'，文件查看 Docker 部署篇，Nginx 配置
@@ -2809,6 +3241,29 @@ ENV = 'production'
 VUE_APP_BASE_API  = 'https://eladmin.luffy.com/apis/'
 # 如果接口是 http 形式， wss 需要改为 ws
 VUE_APP_WS_API = 'wss://eladmin.luffy.com/apis/'
+EOF
+
+cat > Dockerfile.multi<<EOF
+FROM codemantn/vue-node AS builder
+LABEL maintainer="inspur_lyx@hotmail.com"
+# config npm
+RUN npm config set sass_binary_site https://npmmirror.com/mirror/sass && \
+    npm config set registry https://registry.npmmirror.com
+WORKDIR /opt/eladmin-web
+COPY  . .
+# build
+RUN ls -l && npm cache clean --force && npm install && npm run build:prod
+
+FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
+COPY --from=builder /opt/eladmin-web/dist /usr/share/nginx/html/
+EXPOSE 80
+EOF
+
+docker build --no-cache . -t 172.16.1.226:5000/eladmin/eladmin-web:v4 -f Dockerfile.multi
+
+# docker login 172.16.1.226:5000
+docker push 172.16.1.226:5000/eladmin/eladmin-web:v4
 ```
 
 前端代码调整，因此需要重新构建一版前端：
@@ -2827,6 +3282,7 @@ kubectl -n luffy edit deployment eladmin-web
 为ingress加载https证书：
 
 ```yaml
+cat <<EOF >ingress-eladmin-web.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -2849,6 +3305,12 @@ spec:
   - hosts:
     - eladmin.luffy.com
     secretName: tls-eladmin
+EOF
+
+kubectl apply -f ingress-eladmin-web.yaml
+
+#浏览器访问 http://eladmin.luffy.com/ 会自动跳转到https
+
 ```
 
 ###### [常用注解说明](http://49.7.203.222:2023/#/kubernetes-base/ingress?id=常用注解说明)
@@ -2856,16 +3318,17 @@ spec:
 nginx端存在很多可配置的参数，通常这些参数在ingress的定义中被放在annotations中实现，如下为常用的一些：
 
 ```yaml
+cat <<EOF >ingress-eladmin-web.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: eladmin-web
   namespace: luffy
   annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/proxy-body-size: 1000m
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.org/client-max-body-size: 1000m
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"  #设置为 "false"，表示不强制进行 SSL 重定向。
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"   #表示不进行 SSL 重定向。
+    nginx.ingress.kubernetes.io/proxy-body-size: 1000m  #设置代理请求体的最大大小为 1000MB。
+    nginx.org/client-max-body-size: 1000m  #设置客户端请求体的最大大小为 1000MB。
 spec:
   ingressClassName: nginx
   rules:
@@ -2883,6 +3346,10 @@ spec:
   - hosts:
     - eladmin.luffy.com
     secretName: tls-eladmin
+EOF
+kubectl apply -f ingress-eladmin-web.yaml
+
+
 ```
 
 # [小结](http://49.7.203.222:2023/#/kubernetes-base/summary?id=小结)

@@ -1016,6 +1016,8 @@ docker run -p 6379:6379 -d --restart=always redis:3.2 redis-server
 # 后端
 docker run --name eladmin-api -d -p 8000:8000 -e DB_HOST=10.0.0.2 -e DB_USER=root -e DB_PWD=luffyAdmin! -e REDIS_HOST=10.0.0.2 eladmin:v1
 
+# curl http://127.0.0.1:8000/auth/code  
+
 # 前端
 docker run --name eladmin-web -d -p 8080:80  eladmin-web:v1
 
@@ -1733,15 +1735,15 @@ $ ip netns exec $PID ip route add default via 172.17.0.1
 
 Kubelet 通过 CRI 和容器运行时进行通信，使得容器运行时能够像插件一样单独运行。可以说每个容器运行时都有自己的优势，这就允许用户更容易选择和替换自己的容器运行时。
 
-![img](1走进Docker的世界.assets/cri-k8s.webp)
+<img src="1走进Docker的世界.assets/cri-k8s.webp" alt="img" style="zoom: 50%;" />
 
-![image-20230211175313330](1走进Docker的世界.assets/image-20230211175313330.png)
+<img src="1走进Docker的世界.assets/image-20230211175313330.png" alt="image-20230211175313330" style="zoom:50%;" />
 
 ##### [CRI & OCI](http://49.7.203.222:2023/#/docker/containerd?id=cri-amp-oci)
 
-![img](1走进Docker的世界.assets/oci+cri.webp)
+<img src="1走进Docker的世界.assets/oci+cri.webp" alt="img" style="zoom:50%;" />
 
-![image-20230211175325544](1走进Docker的世界.assets/image-20230211175325544.png)
+<img src="1走进Docker的世界.assets/image-20230211175325544.png" alt="image-20230211175325544" style="zoom:50%;" />
 
 OCI（OpenContainerInitiative，开放容器计划）定义了创建容器的格式和运行时的开源行业标准，包括镜像规范（ImageSpecification）和运行时规范(RuntimeSpecification)。
 
