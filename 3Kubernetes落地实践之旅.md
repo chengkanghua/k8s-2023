@@ -3347,7 +3347,7 @@ spec:
     - eladmin.luffy.com
     secretName: tls-eladmin
 EOF
-kubectl apply -f ingress-eladmin-web.yaml
+ 
 
 
 ```
