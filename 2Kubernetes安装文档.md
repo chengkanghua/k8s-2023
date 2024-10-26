@@ -723,7 +723,7 @@ nerdctl build . -t xxxx:tag -f Dockerfile
 
 
 
-## [部署dashboard](http://49.7.203.222:2023/#/install/single-master/dashboard?id=部署dashboard)
+## 部署dashboard
 
 - 部署服务
 
@@ -796,6 +796,13 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6Ik1rb2xHWHMwbWFPMjJaRzhleGRqaExnVi1BLVNRc2txaEhETmVp
 ![img](2Kubernetes安装文档.assets/dashboard.png)
 
 ![img](2Kubernetes安装文档.assets/dashboard-content.jpg)
+
+
+
+```bash
+#记得清理
+kubectl delete -f recommended.yaml
+```
 
 
 

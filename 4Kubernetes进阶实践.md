@@ -2423,28 +2423,45 @@ mysql> show tables;
 
 - 前置要求
 
-  要求集群中存在默认的`StorageClass`，上篇中我们把nfs设置为了集群默认的存储类，因此满足要求。
+  - 要求集群中存在默认的`StorageClass`，上篇中我们把nfs设置为了集群默认的存储类，因此满足要求。
+  - 集群安装metrics-server
 
   https://kubesphere.com.cn/docs/v3.3/installing-on-kubernetes/introduction/prerequisites/
 
 - 下载初始化安装文件
 
   ```bash
+  mkdir kubesphere ;cd kubesphere
   wget https://github.com/kubesphere/ks-installer/releases/download/v3.3.1/kubesphere-installer.yaml
   wget https://github.com/kubesphere/ks-installer/releases/download/v3.3.1/cluster-configuration.yaml
+  wget https://raw.githubusercontent.com/kubesphere/notification-manager/master/config/bundle.yaml
+  
+  #备用地址
+  wget https://gitee.com/chengkanghua/script/raw/master/k8s/bundle.yaml
+  wget https://gitee.com/chengkanghua/script/raw/master/k8s/cluster-configuration.yaml
+  wget https://gitee.com/chengkanghua/script/raw/master/k8s/kubesphere-installer.yaml
+  
+  
+  # 修改配置为外部监控,  如果是干净的K8S(没有安装其他的监控,可以不用修改)
+  # vim cluster-configuration.yaml
+  42     monitoring:
+  43       type: external  
+  44       endpoint: http://prometheus.monitor:9090 
+  
   ```
 
 - 安装
 
   ```bash
-  kubectl apply -f kubesphere-installer.yaml
-  kubectl apply -f cluster-configuration.yaml
-  
+  kubectl create -f kubesphere-installer.yaml
+  kubectl create -f cluster-configuration.yaml
+  kubectl create -f bundle.yaml
   # 查看安装器日志
-  kubectl -n kubesphere-system get pod
-  ks-installer-746f68548d-fc5tk   1/1     Running   0          2m4s
+  # kubectl -n kubesphere-system get pod
+  ks-installer-746f68548d-mcgvh   1/1     Running   0          2m4s
+  # 查看日志,显示安装整个过程
+  # kubectl -n  kubesphere-system logs -f ks-installer-746f68548d-mcgvh
   
-  kubectl -n  kubesphere-system logs -f ks-installer-746f68548d-fc5tk
   ```
 
 - 卸载
@@ -2452,6 +2469,15 @@ mysql> show tables;
   ```bash
   # 如果想卸载kubesphere
   https://github.com/kubesphere/ks-installer/blob/release-3.3/scripts/kubesphere-delete.sh
+  wget https://gitee.com/chengkanghua/script/raw/master/k8s/kubesphere-delete.sh
+  
+  kubectl delete -f kubesphere-installer.yaml
+  kubectl delete -f cluster-configuration.yaml
+  kubectl delete -f bundle.yaml
+  
+  
+  # sh kubesphere-delete.sh
+  
   ```
 
 ##### [对接Ceph存储实践](http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=对接ceph存储实践)
