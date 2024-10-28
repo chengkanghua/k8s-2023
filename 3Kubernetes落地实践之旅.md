@@ -3355,3 +3355,323 @@ EOF
 # [小结](http://49.7.203.222:2023/#/kubernetes-base/summary?id=小结)
 
 ![img](3Kubernetes落地实践之旅.assets/summary.jpg)
+
+
+
+后端快速部署记录
+
+```bash
+mkdir ~/eladmin-api;cd ~/eladmin-api
+
+cat <<EOF > deployment-mysql.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: luffy
+spec:
+  replicas: 1    #指定Pod副本数
+  selector:        #指定Pod的选择器
+    matchLabels:
+      app: mysql
+  strategy:
+      type: Recreate
+  template:
+    metadata:
+      labels:    #给Pod打label,必须和上方的matchLabels匹配
+        app: mysql
+        from: luffy
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        args:
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: eladmin-secret
+              key: DB_PWD
+        - name: MYSQL_DATABASE
+          value: "eladmin"
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 50m
+          limits:
+            memory: 1Gi
+            cpu: 500m
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-data
+        hostPath:
+          path: /opt/mysql/
+      nodeSelector:   # 使用节点选择器将Pod调度到指定label的节点
+        mysql: "true"
+EOF
+
+cat <<EOF > deployment-redis.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: luffy
+spec:
+  replicas: 1    #指定Pod副本数
+  selector:        #指定Pod的选择器
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:    #给Pod打label,必须和上方的matchLabels匹配
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:3.2
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            memory: 100Mi
+            cpu: 50m
+          limits:
+            memory: 1Gi
+            cpu: 500m
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 15
+          periodSeconds: 20
+EOF
+
+cat <<EOF > deploy-eladmin-api.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eladmin-api
+  namespace: luffy
+spec:
+  replicas: 1    #指定Pod副本数
+  selector:        #指定Pod的选择器
+    matchLabels:
+      app: eladmin-api
+  template:
+    metadata:
+      labels:    #给Pod打label
+        app: eladmin-api
+    spec:
+      imagePullSecrets:
+      - name: registry-172-16-1-226
+      containers:
+      - name: eladmin-api
+        image: 172.16.1.226:5000/eladmin/eladmin-api:v1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: DB_HOST
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: eladmin-secret
+              key: DB_USER
+        - name: DB_PWD
+          valueFrom:
+            secretKeyRef:
+              name: eladmin-secret
+              key: DB_PWD
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: eladmin
+              key: REDIS_PORT
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 50m
+          limits:
+            memory: 1Gi
+            cpu: 2
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 20   # 容器启动后第一次执行探测是需要等待多少秒
+          periodSeconds: 15         # 执行探测的频率
+          timeoutSeconds: 3         # 探测超时时间
+        readinessProbe:
+          httpGet:
+            path: /auth/code
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 20
+          timeoutSeconds: 3
+          periodSeconds: 15
+EOF
+
+cat <<EOF >service-eladmin-api.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: eladmin-api
+  namespace: luffy
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: eladmin-api
+  type: ClusterIP
+EOF
+
+cat <<\EOF > mysql.service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: luffy
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: mysql
+  type: ClusterIP
+EOF
+
+cat <<\EOF > redis.service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: luffy
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: redis
+  type: ClusterIP
+EOF
+
+
+cat <<EOF > ingress-eladmin-api.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eladmin-api
+  namespace: luffy
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: eladmin-api.luffy.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: eladmin-api
+            port:
+              number: 8000
+EOF
+
+
+
+#关联的配置 secret
+cat > env-secret.txt <<EOF
+DB_PWD=luffyAdmin!
+DB_USER=root
+EOF
+
+
+# 关联的cofnigmap ;修改对应的ip地址; 有service就写service name就可以了
+cat <<EOF > configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eladmin
+  namespace: luffy
+data:
+  DB_HOST: mysql
+  DB_USER: "root"
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+EOF
+
+
+kubectl create ns luffy
+#创建 crictl pull 拉取镜像的认证信息
+kubectl -n luffy create secret docker-registry registry-172-16-1-226 --docker-username=admin --docker-password=admin --docker-email=chengkanghua@foxmail.com --docker-server=172.16.1.226:5000
+
+#创建 generic 类型secret
+kubectl -n luffy create secret generic eladmin-secret --from-env-file=env-secret.txt 
+kubectl -n luffy get secret
+
+kubectl create -f configmap.yaml
+kubectl -n luffy get configmap   #查看configmap
+
+kubectl create -f deployment-mysql.yaml
+
+
+## 初始化sql  # eladmin.sql在源码sql目录里
+kubectl cp eladmin.sql luffy/mysql-858f99d446-24br9:/
+kubectl -n luffy exec -ti mysql-858f99d446-24br9 -- bash
+root@ebced213f73f:/# mysql -uroot -pluffyAdmin!
+mysql> use eladmin
+mysql> source /eladmin.sql
+mysql> quit
+bash-4.2# exit
+
+kubectl create -f deployment-redis.yaml
+kubectl create -f deploy-eladmin-api.yaml
+kubectl create -f service-eladmin-api.yaml
+kubectl create -f ingress-eladmin-api.yaml
+
+
+# vi /etc/hosts  #添加eladmin-api.luffy.com
+172.16.1.226 k8s-master jenkins.luffy.com gitlab.luffy.com eladmin-api.luffy.com
+ 
+# curl eladmin-api.luffy.com/auth/code  #返回数据正常
+
+```
+
+
+
+
+
+
+

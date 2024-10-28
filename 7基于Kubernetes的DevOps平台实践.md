@@ -255,7 +255,7 @@ This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
 
 配置hosts解析，`172.16.1.226 jenkins.luffy.com`，然后使用浏览器域名访问服务。第一次访问需要大概几分钟的初始化时间。
 
-![img](7基于Kubernetes的DevOps平台实践.assets/jenkins_setup.jpg)
+<img src="7基于Kubernetes的DevOps平台实践.assets/jenkins_setup.jpg" alt="img" style="zoom: 50%;" />
 
 使用jenkins启动日志中的密码，或者执行下面的命令获取解锁的管理员密码：
 
@@ -732,7 +732,7 @@ kubectl create -f gitlab.yaml
 $ echo "172.16.1.226 gitlab.luffy.com" >>/etc/hosts
 ```
 
-*myblog项目推送到gitlab*
+* eladmin-api项目推送到gitlab*
 
 ```bash
 ---------------- 把本地代码推送到gitlab
@@ -767,7 +767,7 @@ git push -u origin --all  #根据提示输入账号密码 root  Admin@123.com
 - 试验发送消息
 
   ```bash
-  $ curl 'https://oapi.dingtalk.com/robot/send?access_token=4778abd23dbdbaf66fc6f413e6ab9c0103a039b0054201344a22a5692cdcc54e' \
+  $ curl 'https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562c36e8e30d9d15bc5b9de1712fa7d469744' \
      -H 'Content-Type: application/json' \
      -d '{"msgtype": "text", 
           "text": {
@@ -776,7 +776,7 @@ git push -u origin --all  #根据提示输入账号密码 root  Admin@123.com
         }'
         
   #钉钉群 设置 --》 智能群助手 -》机器人管理---》 自定义
-  https://oapi.dingtalk.com/robot/send?access_token=4778abd23dbdbaf66fc6f413e6ab9c0103a039b0054201344a22a5692cdcc54e
+  https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562c36e8e30d9d15bc5b9de1712fa7d469744
   ```
 
 ###### [演示过程](http://49.7.203.222:2023/#/devops/basic-usage?id=演示过程)
@@ -1281,7 +1281,7 @@ pipeline {
       stage('send-msg') {
          steps {
             sh """
-            curl 'https://oapi.dingtalk.com/robot/send?access_token=4778abd23dbdbaf66fc6f413e6ab9c0103a039b0054201344a22a5692cdcc54e' \
+            curl 'https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562c36e8e30d9d15bc5b9de1712fa7d469744' \
    -H 'Content-Type: application/json' \
    -d '{"msgtype": "text", 
         "text": {
@@ -1418,7 +1418,7 @@ jenkins/pipelines/p2.yaml
 pipeline {
    agent {label '172.16.1.228'}
    environment { 
-      PROJECT = 'myblog'
+      PROJECT = 'eladmin-api'
    }
    stages {
       stage('printenv') {
@@ -1429,29 +1429,31 @@ pipeline {
       }
       stage('check') {
          steps {
-            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'gitlab-user', url: 'http://gitlab.luffy.com/root/myblog.git']]])
+            checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: '543cae0a-2f0c-4b12-bd0c-0ea4b6596726', url: 'http://gitlab.luffy.com/eladmin/eladmin-api.git']])
          }
       }
       stage('build-image') {
          steps {
-            sh 'docker build . -t myblog:latest -f Dockerfile'
+            sh 'docker build . -t 172.16.1.226/eladmin/eladmin-api:latest -f Dockerfile.multi'
          }
       }
-      stage('send-msg') {
-         steps {
-            sh """
-            curl 'https://oapi.dingtalk.com/robot/send?access_token=4778abd23dbdbaf66fc6f413e6ab9c0103a039b0054201344a22a5692cdcc54e' \
-   -H 'Content-Type: application/json' \
-   -d '{"msgtype": "text", 
-        "text": {
-             "content": "我就是我, 是不一样的烟火"
-        }
-      }'
-      """
-         }
-      }
+
    }
+   post {
+        success { 
+            echo 'Congratulations!'
+        }
+        failure { 
+            echo 'Oh no!'
+        }
+        always { 
+            echo 'I will always say Hello again!'
+        }
+    }
+   
 }
+
+
 ```
 
 ###### [演示2：优化及丰富流水线内容](http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示2：优化及丰富流水线内容)
@@ -1462,69 +1464,12 @@ pipeline {
 
 - 构建镜像的tag使用git的commit id
 
-- 增加post阶段的消息通知，丰富通知内容
+- 增加post阶段的消息通知，丰富通知内容,  钉钉工作群设置里-->机器人,-->设置 开启 webhook,  安全设置外网ip地址段;
 
 - 编译和构建拆分不同的stage，增加构建速度
 
 ```
 jenkins/pipelines/p3.yaml
-pipeline {
-    agent { label '172.16.1.228'}
-
-    stages {
-        stage('printenv') {
-            steps {
-            echo 'Hello World'
-            sh 'printenv'
-            }
-        }
-        stage('check') {
-            steps {
-                checkout scm
-            }
-        }
-        stage('mvn package') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-        stage('build-image') {
-            steps {
-                retry(2) { sh 'docker build . -t myblog:${GIT_COMMIT}'}
-            }
-        }
-    }
-    post {
-        success { 
-            echo 'Congratulations!'
-            sh """
-                curl 'https://oapi.dingtalk.com/robot/send?access_token=4778abd23dbdbaf66fc6f413e6ab9c0103a039b0054201344a22a5692cdcc54e' \
-                    -H 'Content-Type: application/json' \
-                    -d '{"msgtype": "text", 
-                            "text": {
-                                "content": "😄👍构建成功👍😄\n 关键字：luffy\n 项目名称: ${JOB_BASE_NAME}\n Commit Id: ${GIT_COMMIT}\n 构建地址：${RUN_DISPLAY_URL}"
-                        }
-                }'
-            """
-        }
-        failure {
-            echo 'Oh no!'
-            sh """
-                curl 'https://oapi.dingtalk.com/robot/send?access_token=4778abd23dbdbaf66fc6f413e6ab9c0103a039b0054201344a22a5692cdcc54e' \
-                    -H 'Content-Type: application/json' \
-                    -d '{"msgtype": "text", 
-                            "text": {
-                                "content": "😖❌构建失败❌😖\n 关键字：luffy\n 项目名称: ${JOB_BASE_NAME}\n Commit Id: ${GIT_COMMIT}\n 构建地址：${RUN_DISPLAY_URL}"
-                        }
-                }'
-            """
-        }
-        always { 
-            echo 'I will always say Hello again!'
-        }
-    }
-}
-
 
 -------实际修改的版本
  pipeline {
@@ -1551,7 +1496,7 @@ pipeline {
         }
       stage('build-image') {
          steps {
-            sh 'docker build . -t 172.16.1.226/eladmin/eladmin-api:${GIT_COMMIT} -f Dockerfile.multi'
+            sh 'docker build . -t 172.16.1.226/eladmin/eladmin-api:${GIT_COMMIT} -f Dockerfile'
          }
       }
 
@@ -1559,9 +1504,27 @@ pipeline {
    post {
         success { 
             echo 'Congratulations!'
+            sh """
+                curl 'https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562c36e8e30d9d15bc5b9de1712fa7d469744' \
+                    -H 'Content-Type: application/json' \
+                    -d '{"msgtype": "text", 
+                            "text": {
+                                "content": "😄👍构建成功👍😄\n 关键字：luffy\n 项目名称: ${JOB_BASE_NAME}\n Commit Id: ${GIT_COMMIT}\n 构建地址：${RUN_DISPLAY_URL}"
+                        }
+                }'
+            """
         }
-        failure { 
+        failure {
             echo 'Oh no!'
+            sh """
+                curl 'https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562c36e8e30d9d15bc5b9de1712fa7d469744' \
+                    -H 'Content-Type: application/json' \
+                    -d '{"msgtype": "text", 
+                            "text": {
+                                "content": "😖❌构建失败❌😖\n 关键字：luffy\n 项目名称: ${JOB_BASE_NAME}\n Commit Id: ${GIT_COMMIT}\n 构建地址：${RUN_DISPLAY_URL}"
+                        }
+                }'
+            """
         }
         always { 
             echo 'I will always say Hello again!'
@@ -1571,8 +1534,7 @@ pipeline {
 }
 
 # 重新修改 vi Jenkinsfile
-git commit -am 'modify Jenkinsfile'
-git push -u origin master 
+
 
 ```
 
@@ -1586,10 +1548,10 @@ git push -u origin master
 
 ```bash
 # 解压
-$ tar zxf apache-maven-3.6.3-bin.tar.gz
+tar zxf apache-maven-3.6.3-bin.tar.gz
 
 # 修改mvn配置，配置maven源和本地仓库路径
-$ vi apache-maven-3.6.3/conf/settings.xml
+cat <<\EOF > apache-maven-3.6.3/conf/settings.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1611,11 +1573,12 @@ $ vi apache-maven-3.6.3/conf/settings.xml
   </mirrors>
 
 </settings>
+EOF
 
 
 # 拷贝目录,并软连接
-$ cp -r apache-maven-3.6.3 /usr/lib/
-$ ln -s /usr/lib/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
+cp -r apache-maven-3.6.3 /usr/lib/
+ln -s /usr/lib/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
 
 
 # 验证
@@ -1630,34 +1593,126 @@ OS name: "linux", version: "3.10.0-1160.36.2.el7.x86_64", arch: "amd64", family:
  修改Dockerfile.multi 为Dockerfile
 
 ```dockerfile
+mv Dockerfile.multi Dockerfile
+cat <<\EOF > Dockerfile
 FROM java:8u111
 WORKDIR /opt/eladmin
 COPY eladmin-system/target/ .
 CMD [ "sh", "-c", "java -Dspring.profiles.active=prod -jar eladmin-system-2.6.jar" ]
+EOF
 
+git add .
+git commit -am 'modify Jenkinsfile and Dockerfile'
+git push -u origin master 
 ```
 
 
 
 ###### [演示3：使用k8s部署服务](http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示3：使用k8s部署服务)
 
-- 新建mainfests目录，将k8s所需的文件放到mainfests目录中
+- 在源代码新建mainfests目录，将k8s所需的文件放到mainfests目录中
 
 - 将镜像地址改成模板，在pipeline中使用新构建的镜像进行替换
 
 - 执行kubectl apply -f mainfests应用更改，需要配置kubectl认证
 
   ```bash
-  $ scp -r k8s-master:/root/.kube /root
+  /eladmin-api (master) $ mkdir mainifests;cd mainifests
+  /eladmin-api (master)$ vim  eladmin-api.dpl.yaml
+  cat <<\EOF >eladmin-api.dpl.yaml
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: eladmin-api
+    namespace: luffy
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: eladmin-api
+    template:
+      metadata:
+        labels:
+          app: eladmin-api
+      spec:
+        imagePullSecrets:
+        - name: registry-172-16-1-226
+        containers:
+        - name: eladmin-api
+          image: {{IMAGE_URL}} #这里改成模板
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: eladmin
+                key: DB_HOST
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: eladmin-secret
+                key: DB_USER
+          - name: DB_PWD
+            valueFrom:
+              secretKeyRef:
+                name: eladmin-secret
+                key: DB_PWD
+          - name: REDIS_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: eladmin
+                key: REDIS_HOST
+          - name: REDIS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: eladmin
+                key: REDIS_PORT
+          ports:
+          - containerPort: 8000
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 50m
+            limits:
+              memory: 1Gi
+              cpu: 2
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /auth/code
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 3
+            periodSeconds: 15
+  EOF
+  # 有之前部署的yaml 文件就可以用之前的部署的yaml文件
+  # kubectl -n luffy get deployments.apps eladmin-api -oyaml>eladmin-api.dpl.yaml
+  # vi eladmin-api.dpl.yaml #删除不需要的信息.
+  
+  
+  #将master上认证文件复制到jenkins-agent机器上
+  scp -r k8s-master:/root/.kube /root
+  
+  
   ```
 
-```
-jenkins/pipelines/p4.yaml
+
+
+调整Jenkinsfile  # jenkins/pipelines/p4.yaml
+
+```bash
+
 pipeline {
     agent { label '172.16.1.228'}
 
     environment {
-        IMAGE_REPO = "172.16.1.226:5000/myblog"
+        IMAGE_REPO = "172.16.1.226:5000/eladmin"
     }
 
     stages {
@@ -1684,9 +1739,9 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' manifests/*"
+                sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                 timeout(time: 1, unit: 'MINUTES') {
-                    sh "kubectl apply -f manifests/"
+                    sh "kubectl apply -f mainifests/"
                 }
             }
         }
@@ -1695,7 +1750,7 @@ pipeline {
         success { 
             echo 'Congratulations!'
             sh """
-                curl 'https://oapi.dingtalk.com/robot/send?access_token=4778abd23dbdbaf66fc6f413e6ab9c0103a039b0054201344a22a5692cdcc54e' \
+                curl 'https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562c36e8e30d9d15bc5b9de1712fa7d469744' \
                     -H 'Content-Type: application/json' \
                     -d '{"msgtype": "text", 
                             "text": {
@@ -1707,7 +1762,7 @@ pipeline {
         failure {
             echo 'Oh no!'
             sh """
-                curl 'https://oapi.dingtalk.com/robot/send?access_token=4778abd23dbdbaf66fc6f413e6ab9c0103a039b0054201344a22a5692cdcc54e' \
+                curl 'https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562c36e8e30d9d15bc5b9de1712fa7d469744' \
                     -H 'Content-Type: application/json' \
                     -d '{"msgtype": "text", 
                             "text": {
@@ -1721,11 +1776,29 @@ pipeline {
         }
     }
 }
+
+
+
 ```
 
 ###### [演示4：使用凭据管理敏感信息](http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示4：使用凭据管理敏感信息)
 
-上述Jenkinsfile中存在的问题是敏感信息使用明文，暴漏在代码中，如何管理流水线中的敏感信息（包含账号密码），之前我们在对接gitlab的时候，需要账号密码，已经使用过凭据来管理这类敏感信息，同样的，我们可以使用凭据来存储钉钉的token信息，那么，创建好凭据后，如何在Jenkinsfile中获取已有凭据的内容？
+上述Jenkinsfile中存在的问题是敏感信息使用明文，暴漏在代码中，如何管理流水线中的敏感信息（包含账号密码），之前我们在对接gitlab的时候，需要账号密码，已经使用过凭据来管理这类敏感信息，同样的，我们可以使用凭据来存储钉钉的token信息，创建凭据:
+
+[Dashboard] ==> [系统管理]==>[凭据]==> [系统] =>  [全局凭据 (unrestricted)](http://jenkins.luffy.com/manage/credentials/store/system/domain/_/)
+
+new credentials :
+
+-  类型: username with password 
+- 用户名: dingTalk  #这里可以自定义
+- 密码:  粘贴 钉钉的token
+
+	- ID: dingTalk   #唯一标识
+	- 描述: dingTalk robot access token
+
+
+
+如何在Jenkinsfile中获取已有凭据的内容？
 
 Jenkins 的声明式流水线语法有一个 `credentials()` 辅助方法（在[`environment`](https://jenkins.io/zh/doc/book/pipeline/jenkinsfile/#../syntax#environment) 指令中使用），它支持 [secret 文本](https://jenkins.io/zh/doc/book/pipeline/jenkinsfile/##secret-text)，[带密码的用户名](https://jenkins.io/zh/doc/book/pipeline/jenkinsfile/##usernames-and-passwords)，以及 [secret 文件](https://jenkins.io/zh/doc/book/pipeline/jenkinsfile/##secret-files)凭据。
 
@@ -1775,15 +1848,15 @@ pipeline {
 }
 ```
 
-因此对Jenkinsfile做改造：
+因此对Jenkinsfile做改造：jenkins/pipelines/p5.yaml
 
-```
-jenkins/pipelines/p5.yaml
+```bash
+
 pipeline {
     agent { label '172.16.1.228'}
 
     environment {
-        IMAGE_REPO = "172.16.1.226:5000/myblog"
+        IMAGE_REPO = "172.16.1.226:5000/eladmin"
         DINGTALK_CREDS = credentials('dingTalk')
     }
 
@@ -1799,6 +1872,11 @@ pipeline {
                 checkout scm
             }
         }
+        stage('mvn clean package') {
+        	steps {
+        		sh 'mvn clean package'
+        	}
+        }
         stage('build-image') {
             steps {
                 retry(2) { sh 'docker build . -t ${IMAGE_REPO}:${GIT_COMMIT}'}
@@ -1811,9 +1889,9 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' manifests/*"
+                sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                 timeout(time: 1, unit: 'MINUTES') {
-                    sh "kubectl apply -f manifests/"
+                    sh "kubectl apply -f mainifests/"
                 }
             }
         }
@@ -1848,6 +1926,13 @@ pipeline {
         }
     }
 }
+
+# ------操作, 查看jeknins构建过程
+vi Jenkinsfile  
+
+git commit -am "modify Jenkinsfile"
+
+git push -u origin master
 ```
 
 ###### [本章小结](http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=本章小结)
@@ -1867,36 +1952,52 @@ pipeline {
 
 我们简化一下流程，假如使用develop分支作为开发分支，master分支作为集成测试分支，看一下如何使用多分支流水线来管理。
 
-###### [演示1：多分支流水线的使用](http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=演示1：多分支流水线的使用)
+###### [演示1：多分支流水线的使用]
 
 1. 提交develop分支：
 
 ```bash
-$ git checkout -b develop
-$ git push --set-upstream origin develop
+git checkout -b develop        #基于本地分支创建新分支develop
+git push --set-upstream origin develop  #推送新分支到远程仓库时, --set-upstream 简写 -u
+
 ```
 
-1. 禁用pipeline项目
-2. Jenkins端创建多分支流水线项目
-   - 增加git分支源
-   - 发现标签
-   - 根据名称过滤，develop|master|v.*
-   - 高级克隆，设置浅克隆
+1. 禁用pipeline项目 (项目配置-->右上角 禁用)
+
+2. Jenkins端创建多分支流水线项目  #名称: eladmin-api-muitl-pipeline
+   - 增加git分支源   
+   
+     - 项目仓库 http://gitlab.luffy.com/eladmin/eladmin-api.git
+   
+     - 凭据  选择 root/****
+   
+     - add --> 发现标签
+   
+     - add--> 根据名称过滤(支持正则表达式): develop|master|.*
+   
+     - add-->高级克隆，add--> 设置浅克隆  1
+   
+     - 扫描 多分支流水线 触发器
+   
+       Periodically if not otherwise run  选择 1 minute
 
 保存后，会自动检索项目中所有存在Jenkinsfile文件的分支和标签，若匹配我们设置的过滤正则表达式，则会添加到多分支的构建视图中。所有添加到视图中的分支和标签，会默认执行一次构建任务。
 
-###### [演示2：美化消息通知内容](http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=演示2：美化消息通知内容)
+###### [演示2：美化消息通知内容]
 
 - 添加构建阶段记录
 - 使用markdown格式，添加构建分支消息
 
-```
 jenkins/pipelines/p6.yaml
+
+```bash
+# develop 分支
+cat <<\EOF > Jenkinsfile
 pipeline {
     agent { label '172.16.1.228'}
 
     environment {
-        IMAGE_REPO = "172.16.1.226:5000/myblog"
+        IMAGE_REPO = "172.16.1.226:5000/eladmin"
         DINGTALK_CREDS = credentials('dingTalk')
         TAB_STR = "\n                    \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
     }
@@ -1919,6 +2020,11 @@ pipeline {
                 }
             }
         }
+        stage('mvn clean package') {
+        	steps {
+        		sh 'mvn clean package'
+        	}
+        }
         stage('build-image') {
             steps {
                 retry(2) { sh 'docker build . -t ${IMAGE_REPO}:${GIT_COMMIT}'}
@@ -1937,9 +2043,9 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' manifests/*"
+                sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                 timeout(time: 1, unit: 'MINUTES') {
-                    sh "kubectl apply -f manifests/"
+                    sh "kubectl apply -f mainifests/"
                 }
                 script{
                     env.BUILD_TASKS += env.STAGE_NAME + "√..." + env.TAB_STR
@@ -1981,16 +2087,41 @@ pipeline {
         }
     }
 }
+EOF
+
+git commit -am "muilt pipeline jenkinsfile"
+git push -u origin develop
 ```
 
 ###### [演示3：通知gitlab构建状态](http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=演示3：通知gitlab构建状态)
 
 Jenkins端做了构建，可以通过gitlab通过的api将构建状态通知过去，作为开发人员发起Merge Request或者合并Merge Request的依据之一。
 
-*注意一定要指定gitLabConnection('gitlab')，不然没法认证到Gitlab端*
+*注意一定要指定gitLabConnection('gitlab')，不然没法认证到Gitlab端* 
 
+#这里gitlab就是最开始在jeknis 系统设置里配置的 gitlab connections -->Connection name
+
+```bash
+   #配置说明 
+   options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))  # 保留构建记录个数
+        disableConcurrentBuilds()                 # 禁止并行构建
+        timeout(time: 20, unit: 'MINUTES')      # Pipeline 的超时时间为 20 分钟,超过时间就失败 
+        gitLabConnection('gitlab')             # 配置指定了与 GitLab 的连接
+    }
+    
+    
+ updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success') #将构建状态信息发给gitlab
 ```
+
+
+
+
+
 jenkins/pipelines/p7.yaml
+
+```bash
+cat <<\EOF > Jenkinsfile
 pipeline {
     agent { label '172.16.1.228'}
     
@@ -2002,7 +2133,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_REPO = "172.16.1.226:5000/demo/myblog"
+        IMAGE_REPO = "172.16.1.226:5000/eladmin"
         DINGTALK_CREDS = credentials('dingTalk')
         TAB_STR = "\n                    \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
     }
@@ -2026,6 +2157,15 @@ pipeline {
                 }
             }
         }
+        stage('mvn clean package') {
+        	steps {
+        		sh 'mvn clean package'
+                updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
+                script{
+                    env.BUILD_TASKS += env.STAGE_NAME + "√..." + env.TAB_STR
+                }
+        	}
+        }
         stage('build-image') {
             steps {
                 retry(2) { sh 'docker build . -t ${IMAGE_REPO}:${GIT_COMMIT}'}
@@ -2046,9 +2186,9 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' manifests/*"
+                sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                 timeout(time: 1, unit: 'MINUTES') {
-                    sh "kubectl apply -f manifests/"
+                    sh "kubectl apply -f mainifests/"
                 }
                 updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
                 script{
@@ -2091,9 +2231,15 @@ pipeline {
         }
     }
 }
+EOF
+
+git commit -am "update to gitlab for Jenkinsfile"
+git push  #在develop 分支
 ```
 
 我们可以访问gitlab，然后找到commit记录，查看同步状态
+
+http://gitlab.luffy.com/eladmin/eladmin-api/-/pipelines/
 
 ![img](7基于Kubernetes的DevOps平台实践.assets/gitlab-cicd.jpg)
 
@@ -2124,9 +2270,9 @@ pipeline {
 3. 如何制作agent容器实现不同类型的业务的集成
 4. 集成代码扫描、docker镜像自动构建、k8s服务部署、自动化测试
 
-##### [集成Kubernetes](http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=集成kubernetes)
+##### [集成Kubernetes]
 
-###### [插件安装及配置](http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=插件安装及配置)
+###### [插件安装及配置]
 
 [插件官方文档](https://plugins.jenkins.io/kubernetes/)
 
@@ -2134,7 +2280,7 @@ pipeline {
 
    若安装失败，请先更新[ bouncycastle API Plugin](https://plugins.jenkins.io/bouncycastle-api)并重新启动Jenkins
 
-2. [系统管理] -> [系统配置] -> [Add a new cloud]
+2. [系统管理] -> [节点管理] ->clouds -->  [Add a new cloud]
 
 3. 配置地址信息
 
@@ -2142,45 +2288,53 @@ pipeline {
    - Kubernetes 命名空间：jenkins
    - 服务证书不用写（我们在安装Jenkins的时候已经指定过serviceAccount），均使用默认
    - 连接测试，成功会提示：Connection test successful
+   - Kubernetes 命名空间: jenkins
    - Jenkins地址：[http://jenkins:8080](http://jenkins:8080/)
    - Jenkins 通道 ：jenkins:50000
 
-4. 配置Pod Template
+4. 配置Pod Template  #新版是在左边列表专门有一个pod templates 点[Add a pod template]
 
-   - 名称：jnlp-slave
+   - 名称: jnlp-slave
 
    - 命名空间：jenkins
 
-   - 标签列表：jnlp-slave，作为agent的label选择用
+   - 标签列表：jnlp-slave，作为agent的label选择用    
 
    - 连接 Jenkins 的超时时间（秒） ：300，设置连接jenkins超时时间
 
    - 工作空间卷：选择hostpath，设置/opt/jenkins,注意需要设置目录权限，否则Pod没有权限 ![img](7基于Kubernetes的DevOps平台实践.assets/workspace-volume.png)
 
      ```bash
-     $ chown -R 1000:1000 /opt/jenkins
-     $ chmod 777 /opt/jenkins
+     # 打了标签的节点上操作
+     chown -R 1000:1000 /opt/jenkins
+     chmod 777 /opt/jenkins
      ```
+   
+    节点选择器: jnlp-slave
+   
+   工作空间卷:  host path workspace volume --> 主机路径:  /opt/jenkins
 
 ###### [演示动态slave pod](http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=演示动态slave-pod)
 
 ```bash
 # 为准备运行jnlp-slave-agent的pod的节点打上label
-$ kubectl label node k8s-slave1 agent=true
+kubectl label node k8s-slave1 jnlp-slave=true
+# kubectl label node k8s-slave2 jnlp-slave=true
 
-### 回放一次多分支流水线develop分支
+### 回放一次多分支流水线develop分支 # 修改label
+# 或者修改代码中的Jenkinsfile 提交代码
 agent { label 'jnlp-slave'}
 ```
 
-执行任务，会下载默认的jnlp-slave镜像，地址为jenkins/inbound-agent:4.11-1-jdk11，我们可以先在k8s-master节点拉取下来该镜像：
+执行任务，会下载默认的jnlp-slave镜像，地址为jenkins/inbound-agent:4.11-1-jdk11，我们可以先在k8s-master节点拉取下来该镜像： #这里镜像版本要和jenkins的版本保持一致, 这里都是使用最新版
 
 ```bash
-$ docker pull jenkins/inbound-agent:4.11-1-jdk11
+$ docker pull jenkins/inbound-agent:latest-jdk17
 ```
 
 保存jenkinsfile提交后，会出现报错，因为我们的agent已经不再是宿主机，而是Pod中的容器内，报错如下：
 
-![img](7基于Kubernetes的DevOps平台实践.assets/gitlab-no-docker-err.png)
+![image-20241028082420049](./7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241028082420049.png)
 
 因此我们需要将用到的命令行工具集成到Pod的容器内，但是思考如下问题：
 
@@ -2202,16 +2356,18 @@ $ docker pull jenkins/inbound-agent:4.11-1-jdk11
 - 为了认证kubectl，需要在容器内部生成.kube目录及config文件
 
 ```bash
-$ mkdir tools;
-$ cd tools;
-$ cp `which kubectl` .
-$ cp ~/.kube/config .
+# slave1 机器操作 
+mkdir tools;
+# 拷贝maven
+cp -r apache-maven-3.6.3 tools
+cp `which kubectl` tools
+cd tools
 ```
 
 *Dockerfile*
 
-```
-jenkins/custom-images/tools/Dockerfile
+```bash
+cat <<\EOF >Dockerfile
 FROM alpine:3.13.4
 LABEL maintainer="inspur_lyx@hotmail.com"
 USER root
@@ -2219,25 +2375,31 @@ USER root
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories && \
     apk update && \
     apk add  --no-cache openrc docker git curl tar gcc g++ make \
-    bash shadow openjdk8 python2 python2-dev py-pip python3-dev openssl-dev libffi-dev \
+    bash shadow openjdk8 py-pip python3-dev  openssl-dev libffi-dev \
     libstdc++ harfbuzz nss freetype ttf-freefont && \
     mkdir -p /root/.kube && \
     usermod -a -G docker root
-
-COPY config /root/.kube/
 
 RUN rm -rf /var/cache/apk/* 
 #-----------------安装 kubectl--------------------#
 COPY kubectl /usr/local/bin/
 RUN chmod +x /usr/local/bin/kubectl
 # ------------------------------------------------#
+
+#-----------------安装 maven--------------------#
+COPY apache-maven-3.6.3 /usr/lib/apache-maven-3.6.3
+RUN ln -s /usr/lib/apache-maven-3.6.3/bin/mvn /usr/local/bin/mvn && chmod +x /usr/local/bin/mvn
+ENV MAVEN_HOME=/usr/lib/apache-maven-3.6.3
+#------------------------------------------------#
+EOF
+
 ```
 
 执行镜像构建并推送到仓库中：
 
 ```bash
-$ docker build . -t 172.16.1.226:5000/devops/tools:v1
-$ docker push 172.16.1.226:5000/devops/tools:v1
+docker build . -t 172.16.1.226:5000/devops/tools:v1
+docker push 172.16.1.226:5000/devops/tools:v1
 ```
 
 我们可以直接使用该镜像做测试：
@@ -2258,16 +2420,80 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -ti 172.16.1.226:50
 
 更新Jenkins中的PodTemplate，添加tools镜像，注意同时要先添加名为jnlp的container，因为我们是使用自定义的PodTemplate覆盖掉默认的模板：
 
+名称: jnlp
+
+docker镜像: jenkins/inbound-agent:latest-jdk17
+
+运行的命令:  空
+
+命令的参数: 空
+
 ![img](7基于Kubernetes的DevOps平台实践.assets/pod-template-jnlp.png)
 
-在卷栏目，添加卷，Host Path Volume，不然在容器中使用docker会提示docker服务未启动
+**再添加第二个container Template**
 
-![img](7基于Kubernetes的DevOps平台实践.assets/jenkins-docker-sock.png)
+名称: tools
+
+Docker 镜像:  172.16.1.226:5000/devops/tools:v1
+
+其他参数默认就可以
+
+
+
+**添加拉取镜像的认证信息**
+
+```bash
+# kubectl -n luffy get secrets registry-172-16-1-226 -oyaml > registry-172-16-1-226.yaml
+# vi registry-172-16-1-226.yaml #去掉不用的信息, namespace修改成jenkins
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyIxNzIuMTYuMS4yMjY6NTAwMCI6eyJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiJhZG1pbiIsImVtYWlsIjoiY2hlbmdrYW5naHVhQGZveG1haWwuY29tIiwiYXV0aCI6IllXUnRhVzQ2WVdSdGFXND0ifX19
+kind: Secret
+metadata:
+  creationTimestamp: "2024-10-27T08:21:21Z"
+  name: registry-172-16-1-226
+  namespace: jenkins
+type: kubernetes.io/dockerconfigjson
+# kubectl create -f registry-172-16-1-226.yaml
+[root@k8s-master jenkins]# kubectl -n jenkins get secrets
+NAME                    TYPE                             DATA   AGE
+gitlab-secret           Opaque                           2      2d2h
+registry-172-16-1-226   kubernetes.io/dockerconfigjson   1      13s
+
+```
+
+拉取进项的Secret:  image Pull secret : 填写registry-172-16-1-226
+
+
+
+在卷栏目，添加三个卷，
+
+- Host Path Volume: `/var/run/docker.sock`，不然在容器中使用docker会提示docker服务未启动
+
+- Host Path Volume:  `/opt/maven-repo`，本地maven仓库
+
+- kubeconfig文件，用来认证kubectl，通过secret的方式进行挂载
+
+  ```bash
+  kubectl -n jenkins create secret generic kubeconfig --from-file=/root/.kube/config
+  ```
+
+​	Secret Volume: kubeconfig
+
+​	挂载路径: /root/.kube/
+
+<img src="./7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241028090608549.png" alt="image-20241028090608549" style="zoom:50%;" />
 
 tools容器做好后，我们需要对Jenkinsfile做如下调整：
 
-```
+> 在jenkins添加一个全局凭证 用于 容器仓库登录 push
+>
+> 类型 username with password  用户名:admin  密码 admin   ID: registry
+
 jenkins/pipelines/p8.yaml
+
+```bash
+cat <<\EOF > Jenkinsfile
 pipeline {
     agent { label 'jnlp-slave'}
     
@@ -2279,8 +2505,10 @@ pipeline {
     }
 
     environment {
-        IMAGE_REPO = "172.16.1.226:5000/myblog"
+    	REGISTRY = "172.16.1.226:5000"
+        IMAGE_REPO = "172.16.1.226:5000/eladmin"
         DINGTALK_CREDS = credentials('dingTalk')
+        REGISTRY_CREDS = credentials('registry')
         TAB_STR = "\n                    \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
     }
 
@@ -2305,6 +2533,17 @@ pipeline {
                 }
             }
         }
+        stage('mvn clean package') {
+        	steps {
+        		container('tools') {
+        			sh 'mvn clean package'
+        		}
+                updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
+                script{
+                    env.BUILD_TASKS += env.STAGE_NAME + "√..." + env.TAB_STR
+                }
+        	}
+        }
         stage('build-image') {
             steps {
                 container('tools') {
@@ -2319,7 +2558,13 @@ pipeline {
         stage('push-image') {
             steps {
                 container('tools') {
-                    retry(2) { sh 'docker push ${IMAGE_REPO}:${GIT_COMMIT}'}
+                    retry(2) { 
+                    	sh """
+                    	docker logout ${REGISTRY};
+                        docker login ${REGISTRY} -u ${REGISTRY_CREDS_USR} -p ${REGISTRY_CREDS_PSW}
+                    	docker push ${IMAGE_REPO}:${GIT_COMMIT}
+                    	"""
+                    }
                 }
                 updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
                 script{
@@ -2330,9 +2575,9 @@ pipeline {
         stage('deploy') {
             steps {
                 container('tools') {
-                    sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' manifests/*"
+                    sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                     timeout(time: 1, unit: 'MINUTES') {
-                        sh "kubectl apply -f manifests/"
+                        sh "kubectl apply -f mainifests/"
                     }
                 }
                 updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
@@ -2380,13 +2625,17 @@ pipeline {
         }
     }
 }
+EOF
+
+git commit -am "add tools container time"
+git push 
 ```
 
-
+![image-20241028105341608](./7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241028105341608.png)
 
 # jenkins集成Sonarqube
 
-##### [集成sonarQube实现代码扫描](http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=集成sonarqube实现代码扫描)
+##### [集成sonarQube实现代码扫描]
 
 Sonar可以从以下七个维度检测代码质量，而作为开发人员至少需要处理前5种代码质量问题。
 
@@ -2413,15 +2662,13 @@ Sonar可以从以下七个维度检测代码质量，而作为开发人员至少
 
 1. 资源文件准备
 
-```
-sonar/sonar.yaml
-```
-
 - 和gitlab共享postgres数据库
 - 使用ingress地址 `sonar.luffy.com` 进行访问
 - 使用initContainers进行系统参数调整
+- sonar/sonar.yaml
 
 ```yaml
+cat <<\EOF >sonar.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -2511,6 +2758,7 @@ metadata:
   name: sonarqube
   namespace: jenkins
 spec:
+  ingressClassName: nginx
   rules:
   - host: sonar.luffy.com
     http:
@@ -2522,29 +2770,50 @@ spec:
             name: sonarqube
             port:
               number: 9000
+              
+EOF
+
+
+
+
 ```
 
 1. sonarqube服务端安装
 
    ```bash
    # 创建sonar数据库
-   $ kubectl -n jenkins exec -ti postgres-5859dc6f58-mgqz9 bash
+    kubectl -n jenkins exec -ti postgres-5d96874894-5p8q4 -- bash
    #/ psql 
    # create database sonar;
    
    ## 创建sonarqube服务器
-   $ kubectl create -f sonar.yaml
+   kubectl create -f sonar.yaml
    
-   ## 配置本地hosts解析
+   ## 配置本地hosts解析   
    172.16.1.226 sonar.luffy.com
+   # kubectl -n kube-system edit cm coredns 
    
    ## 访问sonarqube，初始用户名密码为 admin/admin
-   $ curl http://sonar.luffy.com
+   http://sonar.luffy.com
    ```
 
 2. sonar-scanner的安装
 
-   下载地址： https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873-linux.zip。该地址比较慢，可以在网盘下载（https://pan.baidu.com/s/1SiEhWyHikTiKl5lEMX1tJg 提取码: tqb9）。
+   ```bash
+   下载地址： https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873-linux.zip。
+   
+   该地址比较慢，可以在网盘下载（https://pan.baidu.com/s/1SiEhWyHikTiKl5lEMX1tJg?pwd=tqb9 提取码: tqb9）。
+   
+   #github 下载
+   https://github.com/SonarSource/sonar-scanner-cli/tags
+   wget https://codeload.github.com/SonarSource/sonar-scanner-cli/zip/refs/tags/4.2.0.1873
+   ```
+
+   
+
+   
+
+   
 
 3. 演示sonar代码扫描功能
 
@@ -2719,7 +2988,7 @@ sonar.java.binaries=target/classes
 
 ###### [Jenkinsfile集成sonarqube演示](http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=jenkinsfile集成sonarqube演示)
 
-```
+```bash
 jenkins/pipelines/p9.yaml
 pipeline {
     agent { label 'jnlp-slave'}
@@ -2755,6 +3024,17 @@ pipeline {
                 updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
                 script{
                     env.BUILD_TASKS = env.STAGE_NAME + "√..." + env.TAB_STR
+                }
+            }
+        }
+        stage('mvn package') {
+            steps {
+                container('tools') {
+                    sh 'mvn clean package'
+                }               
+                updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
+                script{
+                    env.BUILD_TASKS += env.STAGE_NAME + "√..." + env.TAB_STR
                 }
             }
         }
@@ -2811,9 +3091,9 @@ pipeline {
         stage('deploy') {
             steps {
                 container('tools') {
-                    sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' manifests/*"
+                    sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                     timeout(time: 1, unit: 'MINUTES') {
-                        sh "kubectl apply -f manifests/"
+                        sh "kubectl apply -f mainifests/"
                     }
                 }
                 updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
@@ -3039,6 +3319,17 @@ pipeline {
                 }
             }
         }
+        stage('mvn package') {
+            steps {
+                container('tools') {
+                    sh 'mvn clean package'
+                }               
+                updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
+                script{
+                    env.BUILD_TASKS += env.STAGE_NAME + "√..." + env.TAB_STR
+                }
+            }
+        }
         stage('CI'){
             failFast true
             parallel {
@@ -3092,9 +3383,9 @@ pipeline {
         stage('deploy') {
             steps {
                 container('tools') {
-                    sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' manifests/*"
+                    sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                     timeout(time: 1, unit: 'MINUTES') {
-                        sh "kubectl apply -f manifests/;sleep 20;"
+                        sh "kubectl apply -f mainifests/;sleep 20;"
                     }
                 }
                 updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
