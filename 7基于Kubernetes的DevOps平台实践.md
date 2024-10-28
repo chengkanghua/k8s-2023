@@ -269,8 +269,8 @@ $ kubectl -n jenkins exec  -ti jenkins-master-57fc5c84c7-ftd68 -- bash
 
 ```bash
 $ cd /var/jenkins_home/updates
-$ sed -i 's/http:\/\/updates.jenkins-ci.org\/download/https:\/\/mirrors.tuna.tsinghua.edu.cn\/jenkins/g' default.json 
-$ sed -i 's/http:\/\/www.google.com/https:\/\/www.baidu.com/g' default.json
+sed -i 's/http:\/\/updates.jenkins-ci.org\/download/https:\/\/mirrors.tuna.tsinghua.edu.cn\/jenkins/g' default.json 
+sed -i 's/http:\/\/www.google.com/https:\/\/www.baidu.com/g' default.json
 ```
 
 配置升级站点的URL:
@@ -2116,8 +2116,6 @@ Jenkins端做了构建，可以通过gitlab通过的api将构建状态通知过�
 
 
 
-
-
 jenkins/pipelines/p7.yaml
 
 ```bash
@@ -2284,12 +2282,12 @@ http://gitlab.luffy.com/eladmin/eladmin-api/-/pipelines/
 
 3. 配置地址信息
 
-   - Kubernetes 地址: [https://kubernetes.default](https://kubernetes.default/)
+   - Kubernetes 地址: https://kubernetes.default
    - Kubernetes 命名空间：jenkins
    - 服务证书不用写（我们在安装Jenkins的时候已经指定过serviceAccount），均使用默认
    - 连接测试，成功会提示：Connection test successful
    - Kubernetes 命名空间: jenkins
-   - Jenkins地址：[http://jenkins:8080](http://jenkins:8080/)
+   - Jenkins地址：http://jenkins:8080
    - Jenkins 通道 ：jenkins:50000
 
 4. 配置Pod Template  #新版是在左边列表专门有一个pod templates 点[Add a pod template]
@@ -2422,7 +2420,7 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -ti 172.16.1.226:50
 
 名称: jnlp
 
-docker镜像: jenkins/inbound-agent:latest-jdk17
+docker镜像: jenkins/inbound-agent:latest-jdk17  #版本和jenkins的jdk一致
 
 运行的命令:  空
 
@@ -2749,8 +2747,8 @@ spec:
             cpu: 2000m
             memory: 4096Mi
           requests:
-            cpu: 300m
-            memory: 512Mi
+            cpu: 1000m
+            memory: 1024Mi
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -2800,13 +2798,18 @@ EOF
 2. sonar-scanner的安装
 
    ```bash
-   下载地址： https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873-linux.zip。
+   下载地址： https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873-linux.zip
    
    该地址比较慢，可以在网盘下载（https://pan.baidu.com/s/1SiEhWyHikTiKl5lEMX1tJg?pwd=tqb9 提取码: tqb9）。
    
    #github 下载
    https://github.com/SonarSource/sonar-scanner-cli/tags
-   wget https://codeload.github.com/SonarSource/sonar-scanner-cli/zip/refs/tags/4.2.0.1873
+   wget https://github.com/SonarSource/sonar-scanner-cli/archive/refs/tags/4.2.0.1873.zip
+   
+   
+   [root@k8s-slave1 ~]# unzip sonar-scanner-cli-4.2.0.1873-linux.zip
+   [root@k8s-slave1 ~]# mv sonar-scanner-4.2.0.1873-linux /opt/
+   
    ```
 
    
@@ -2817,15 +2820,30 @@ EOF
 
 3. 演示sonar代码扫描功能
 
+   
+
    - 在项目根目录中准备配置文件 **sonar-project.properties**
 
      ```bash
-     sonar.projectKey=myblog
-     sonar.projectName=myblog
+     
+     [root@k8s-slave1 ~]# git clone -b develop http://gitlab.luffy.com/eladmin/eladmin-api.git
+     # cd eladmin-api
+     # java 语言的扫描写法
+     cat <<\EOF > sonar-project.properties
+     sonar.projectKey=eladmin-api
+     sonar.projectName=eladmin-api
      # if you want disabled the DTD verification for a proxy problem for example, true by default
-     sonar.coverage.dtdVerification=false
      # JUnit like test report, default value is test.xml
-     sonar.sources=blog,myblog
+     sonar.sources=eladmin-common/src/main/java,eladmin-system/src/main/java
+     sonar.language=java
+     sonar.tests=eladmin-common/src/test/java,eladmin-system/src/test/java
+     sonar.java.binaries=eladmin-common/target/classes,eladmin-system/target/classes
+     EOF
+     
+     git add .
+     git commit -m "add sonar-project.properties"
+     git push
+     
      ```
 
    - 配置sonarqube服务器地址
@@ -2835,10 +2853,10 @@ EOF
      在集群宿主机中测试，先配置一下hosts文件，然后配置sonar的地址：
 
      ```bash
-     $ cat /etc/hosts
-     172.16.1.226  sonar.luffy.com
+     # vi /etc/hosts
+     172.16.1.226 k8s-master jenkins.luffy.com gitlab.luffy.com sonar.luffy.com
      
-     $ cat sonar-scanner/conf/sonar-scanner.properties
+     $ cat /root/sonar-scanner-4.2.0.1873-linux/conf/sonar-scanner.properties
      #----- Default SonarQube server
      #sonar.host.url=http://localhost:9000
      sonar.host.url=http://sonar.luffy.com
@@ -2861,6 +2879,24 @@ EOF
      ```bash
      ## 在项目的根目录下执行
      $ /opt/sonar-scanner-4.2.0.1873-linux/bin/sonar-scanner  -X 
+     # 提示  No files nor directories matching 'eladmin-common/target/classes'
+     # 这个文件时需要mvn clean package 之后产生的
+     $ mvn clean package
+     $ /opt/sonar-scanner-4.2.0.1873-linux/bin/sonar-scanner  -X 
+     
+     16:46:24.190 INFO: ANALYSIS SUCCESSFUL, you can browse http://sonar.luffy.com/dashboard?id=eladmin-api
+     16:46:24.190 INFO: Note that you will be able to access the updated dashboard once the server has process
+     16:46:24.190 INFO: More about the report processing at http://sonar.luffy.com/api/ce/task?id=AZLTwwRhX8fS
+     16:46:24.191 DEBUG: Report metadata written to /root/eladmin-api/.scannerwork/report-task.txt
+     16:46:24.193 DEBUG: Post-jobs :
+     16:46:24.194 INFO: Analysis total time: 22.067 s
+     16:46:24.195 INFO: ------------------------------------------------------------------------
+     16:46:24.195 INFO: EXECUTION SUCCESS
+     16:46:24.195 INFO: ------------------------------------------------------------------------
+     16:46:24.195 INFO: Total time: 23.031s
+     16:46:24.231 INFO: Final Memory: 15M/60M
+     16:46:24.231 INFO: ------------------------------------------------------------------------
+     
      ```
 
    - sonarqube界面查看结果
@@ -2897,8 +2933,8 @@ sonar.java.binaries=target/classes
        `use_embedded_jre=false`
 
    ```bash
-   $ cd tools
-   $ cp -r /opt/sonar-scanner-4.2.0.1873-linux/ sonar-scanner
+   cd /root/tools
+   cp -r /opt/sonar-scanner-4.2.0.1873-linux/ sonar-scanner
    ## sonar配置，由于我们是在Pod中使用，也可以直接配置：sonar.host.url=http://sonarqube:9000
    $ cat sonar-scanner/conf/sonar-scanner.properties
    #----- Default SonarQube server
@@ -2907,7 +2943,7 @@ sonar.java.binaries=target/classes
    #----- Default source code encoding
    #sonar.sourceEncoding=UTF-8
    
-   $ rm -rf sonar-scanner/jre
+   rm -rf sonar-scanner/jre
    $ vi sonar-scanner/bin/sonar-scanner
    ...
    use_embedded_jre=false
@@ -2916,9 +2952,10 @@ sonar.java.binaries=target/classes
 
    *Dockerfile*
 
-   `jenkins/custom-images/tools/Dockerfile2`
+   `root/tools/Dockerfile`
 
    ```dockerfile
+   #vim Dockerfile
    FROM alpine:3.13.4
    LABEL maintainer="inspur_lyx@hotmail.com"
    USER root
@@ -2931,7 +2968,7 @@ sonar.java.binaries=target/classes
        mkdir -p /root/.kube && \
        usermod -a -G docker root
    
-   COPY config /root/.kube/
+   # COPY config /root/.kube/
    
    
    RUN rm -rf /var/cache/apk/*
@@ -2940,6 +2977,12 @@ sonar.java.binaries=target/classes
    COPY kubectl /usr/local/bin/
    RUN chmod +x /usr/local/bin/kubectl
    # ------------------------------------------------#
+   
+   #-----------------安装 maven--------------------#
+   COPY apache-maven-3.6.3 /usr/lib/apache-maven-3.6.3
+   RUN ln -s /usr/lib/apache-maven-3.6.3/bin/mvn /usr/local/bin/mvn && chmod +x /usr/local/bin/mvn
+   ENV MAVEN_HOME=/usr/lib/apache-maven-3.6.3
+   #------------------------------------------------#
    
    #---------------安装 sonar-scanner-----------------#
    COPY sonar-scanner /usr/lib/sonar-scanner
@@ -2966,7 +3009,7 @@ sonar.java.binaries=target/classes
 
    - 安装插件
 
-     插件中心搜索sonarqube，直接安装
+     插件中心搜索sonarqube，直接安装  [SonarQube ScannerVersion2.17.2]
 
    - 配置插件
 
@@ -2974,7 +3017,7 @@ sonar.java.binaries=target/classes
 
      - Name：sonarqube
 
-     - Server URL：[http://sonar.luffy.com](http://sonar.luffy.com/)
+     - Server URL：http://sonar.luffy.com
 
      - Server authentication token
 
@@ -2986,13 +3029,15 @@ sonar.java.binaries=target/classes
 
      我们在 https://jenkins.io/doc/pipeline/steps/sonar/ 官方介绍中可以看到：
 
-###### [Jenkinsfile集成sonarqube演示](http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=jenkinsfile集成sonarqube演示)
+###### [Jenkinsfile集成sonarqube演示] 
+
+修改Jenkinsfile
 
 ```bash
-jenkins/pipelines/p9.yaml
+cat <<\EOF>Jenkinsfile
 pipeline {
     agent { label 'jnlp-slave'}
-    
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
         disableConcurrentBuilds()
@@ -3000,14 +3045,17 @@ pipeline {
         gitLabConnection('gitlab')
     }
 
+
     environment {
-        IMAGE_REPO = "172.16.1.226:5000/myblog"
+        REGISTRY = "172.16.1.226:5000"
+        IMAGE_REPO = "172.16.1.226:5000/eladmin"
         DINGTALK_CREDS = credentials('dingTalk')
-        TAB_STR = "\n                    \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+        REGISTRY_CREDS = credentials('registry')
+        TAB_STR = "\n                  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
     }
 
     stages {
-        stage('git-log') {
+        stage('gitlog') {
             steps {
                 script{
                     sh "git log --oneline -n 1 > gitlog.file"
@@ -3015,12 +3063,10 @@ pipeline {
                 }
                 sh 'printenv'
             }
-        }        
+        }
         stage('checkout') {
             steps {
-                container('tools') {
-                    checkout scm
-                }
+                checkout scm
                 updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
                 script{
                     env.BUILD_TASKS = env.STAGE_NAME + "√..." + env.TAB_STR
@@ -3080,7 +3126,13 @@ pipeline {
         stage('push-image') {
             steps {
                 container('tools') {
-                    retry(2) { sh 'docker push ${IMAGE_REPO}:${GIT_COMMIT}'}
+                    retry(2) { 
+                        sh """
+                            docker logout ${REGISTRY};
+                            docker login ${REGISTRY} -u ${REGISTRY_CREDS_USR} -p ${REGISTRY_CREDS_PSW}
+                            docker push ${IMAGE_REPO}:${GIT_COMMIT}
+                            """
+                        }
                 }
                 updateGitlabCommitStatus(name: env.STAGE_NAME, state: 'success')
                 script{
@@ -3091,8 +3143,8 @@ pipeline {
         stage('deploy') {
             steps {
                 container('tools') {
-                    sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                     timeout(time: 1, unit: 'MINUTES') {
+                        sh "sed -i 's#{{IMAGE_URL}}#${IMAGE_REPO}:${GIT_COMMIT}#g' mainifests/*"
                         sh "kubectl apply -f mainifests/"
                     }
                 }
@@ -3103,50 +3155,60 @@ pipeline {
             }
         }
     }
-
     post {
         success { 
-           container('tools') {
-              echo 'Congratulations!'
-              sh """
-                curl 'https://oapi.dingtalk.com/robot/send?access_token=${DINGTALK_CREDS_PSW}' \
-                    -H 'Content-Type: application/json' \
-                    -d '{
-                        "msgtype": "markdown",
-                        "markdown": {
-                            "title":"myblog",
-                            "text": "😄👍 构建成功 👍😄  \n**项目名称**：luffy  \n**Git log**: ${GIT_LOG}   \n**构建分支**: ${BRANCH_NAME}   \n**构建地址**：${RUN_DISPLAY_URL}  \n**构建任务**：${BUILD_TASKS}"
-                        }
-                    }'
-               """ 
-           }
+            container('tools') {
+                echo 'Congratulations!'
+                sh """
+                    curl 'https://oapi.dingtalk.com/robot/send?access_token=${DINGTALK_CREDS_PSW}' \
+                        -H 'Content-Type: application/json' \
+                        -d '{
+                            "msgtype": "markdown",
+                            "markdown": {
+                                "title":"myblog",
+                                "text": "😄👍 构建成功 👍😄  \n**项目名称**: luffy  \n**Git log**: ${GIT_LOG}   \n**构建分支**: ${GIT_BRANCH}   \n**构建地址**: ${RUN_DISPLAY_URL}  \n**构建任务**: ${BUILD_TASKS}"
+                            }
+                        }'
+                """ 
+            }
+
         }
         failure {
-           container('tools') {
-              echo 'Oh no!'
-              sh """
-                curl 'https://oapi.dingtalk.com/robot/send?access_token=${DINGTALK_CREDS_PSW}' \
-                    -H 'Content-Type: application/json' \
-                    -d '{
-                        "msgtype": "markdown",
-                        "markdown": {
-                            "title":"myblog",
-                            "text": "😖❌ 构建失败 ❌😖  \n**项目名称**：luffy  \n**Git log**: ${GIT_LOG}   \n**构建分支**: ${BRANCH_NAME}  \n**构建地址**：${RUN_DISPLAY_URL}  \n**构建任务**：${BUILD_TASKS}"
-                        }
-                    }'
-               """
-           }
+            container('tools') {
+                echo 'Oh no!'
+                sh """
+                    curl 'https://oapi.dingtalk.com/robot/send?access_token=${DINGTALK_CREDS_PSW}' \
+                        -H 'Content-Type: application/json' \
+                        -d '{
+                            "msgtype": "markdown",
+                            "markdown": {
+                                "title":"myblog",
+                                "text": "😖❌ 构建失败 ❌😖  \n**项目名称**: luffy  \n**Git log**: ${GIT_LOG}   \n**构建分支**: ${GIT_BRANCH}  \n**构建地址**: ${RUN_DISPLAY_URL}  \n**构建任务**: ${BUILD_TASKS}"
+                            }
+                        }'
+                """
+            }
+
         }
         always { 
             echo 'I will always say Hello again!'
         }
     }
 }
+EOF
+git commit -am"add ci"
+git push
 ```
 
 若Jenkins执行任务过程中sonarqube端报类似下图的错： ![img](7基于Kubernetes的DevOps平台实践.assets/sonar-scanner-err.png)
 
-则需要在sonarqube服务端进行如下配置，添加一个webhook： ![img](7基于Kubernetes的DevOps平台实践.assets/fix-sonar-scanner-pending-err.png)
+则需要在sonarqube服务端进行如下配置，添加一个webhook： 
+
+Name: jenkins
+
+URL: http://jenkins:8080/sonarqube-webhook/
+
+![img](7基于Kubernetes的DevOps平台实践.assets/fix-sonar-scanner-pending-err.png)
 
 
 
