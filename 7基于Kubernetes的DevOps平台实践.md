@@ -3333,7 +3333,7 @@ docker build . -t 172.16.1.226:5000/devops/tools:v3
 docker push 172.16.1.226:5000/devops/tools:v3
 ```
 
-更新Jenkins中kubernetes中的containers template
+更新Jenkins中kubernetes中的containers pod template
 
 ###### [插件安装及配置](http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=插件安装及配置)
 
@@ -3402,8 +3402,8 @@ EOF
 
 修改Jenkinsfile
 
-```
-jenkins/pipelines/p10.yaml
+```bash
+
 pipeline {
     agent { label 'jnlp-slave'}
     
