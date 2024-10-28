@@ -3581,6 +3581,39 @@ pipeline {
 
 
 
+问题记录：
+
+```bash
+问题：运行多分支流水线项目，提示的 jenkins调用K8s 的jnlp 容器一直提示 is offline ，导致流水线项目没法走下去 一致卡在这个位置
+Still waiting to schedule task 
+‘jnlp-slave-lzts7’ is offline
+排查
+jenkins节点列表上能到这个jnlp容器上线了 log日志提示
+Waiting for agent to connect (330/1000): jnlp-slave-9403h Waiting for agent to connect (360/1000): jnlp-slave-9403h Waiting for agent to connect (390/1000): jnlp-slave-9403h Waiting for agent to connect (420/1000): jnlp-slave-9403h
+kubectl -n jenkins get po -owide 也能看容器运行了》
+查看容器事件 无报错
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  8m26s  default-scheduler  Successfully assigned jenkins/jnlp-slave-9403h to k8s-slave1
+  Normal  Pulled     8m25s  kubelet            Container image "jenkins/inbound-agent:latest-jdk17" already present on machine
+  Normal  Created    8m25s  kubelet            Created container jnlp
+  Normal  Started    8m25s  kubelet            Started container jnlp
+  Normal  Pulled     8m25s  kubelet            Container image "172.16.1.226:5000/devops/tools:v2" already present on machine
+  Normal  Created    8m25s  kubelet            Created container tools
+  Normal  Started    8m25s  kubelet            Started container tools
+  
+INFO: Could not locate server among [http://jenkins:8080/]; waiting 10 seconds before retry
+java.io.IOException: Failed to connect to http://jenkins:8080/tcpSlaveAgentListener/: No route to host
+  
+已解决：    
+重启 kubectl -n kube-system  get po   重启里面的容器(删除容器自己会重启)
+每个节点systemctl restart kubectl
+问题产生原因：  k8s机器卡住，强制重启服务器后。集群内部网络混乱了
+```
+
+
+
 
 
 # 小结
