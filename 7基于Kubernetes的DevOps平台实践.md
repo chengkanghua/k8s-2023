@@ -3214,44 +3214,47 @@ URL: http://jenkins:8080/sonarqube-webhook/
 
 # jenkins集成robotFramework
 
-##### [集成RobotFramework实现验收测试](http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=集成robotframework实现验收测试)
+##### [集成RobotFramework实现验收测试]
 
 一个基于Python语言，用于验收测试和验收测试驱动开发（ATDD）的通用测试自动化框架，提供了一套特定的语法，并且有非常丰富的测试库 。
 
-###### [robot用例简介](http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=robot用例简介)
+###### [robot用例简介]
 
-```
-robot/robot.txt
+```bash
+# cat robot/robot.txt
+cat <<\EOF > robot.txt
 *** Settings ***
 Library           RequestsLibrary
 Library           SeleniumLibrary
 
 *** Variables ***
-${demo_url}       http://myblog.luffy/admin
+${api_url}       http://eladmin-api.luffy:8000/
 
 *** Test Cases ***
-api
+api1
     [Tags]  critical
-    Create Session    api    ${demo_url}
+    Create Session    api    ${api_url}
     ${alarm_system_info}    RequestsLibrary.Get Request    api    /
     log    ${alarm_system_info.status_code}
     log    ${alarm_system_info.content}
     should be true    ${alarm_system_info.status_code} == 200
 
-ui
+api2
     [Tags]  critical
-    ${chrome_options} =     Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
-    Call Method    ${chrome_options}   add_argument    headless
-    Call Method    ${chrome_options}   add_argument    no-sandbox
-    ${options}=     Call Method     ${chrome_options}    to_capabilities
-    Open Browser    ${demo_url}/    browser=chrome       desired_capabilities=${options}
-    sleep    2s
-    Capture Page Screenshot
-    Page Should Contain    Django
-    close browser
+    Create Session    api    ${api_url}
+    ${alarm_system_info}    RequestsLibrary.Get Request    api    /auth/code
+    log    ${alarm_system_info.status_code}
+    log    ${alarm_system_info.content}
+    should be true    ${alarm_system_info.status_code} == 200
+EOF
+    
+```
+
+
+```bash
 # 使用tools镜像启动容器，来验证手动使用robotframework来做验收测试
 $ docker run --rm -ti 172.16.1.226:5000/devops/tools:v2 bash
-bash-5.0# apk add chromium chromium-chromedriver
+bash-5.0# apk add py-pip python3-dev
 $ cat requirements.txt
 robotframework
 robotframework-seleniumlibrary
@@ -3259,8 +3262,15 @@ robotframework-databaselibrary
 robotframework-requests
 
 #pip安装必要的软件包
-$ python3 -m pip install --upgrade pip && pip3 install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com -r requirements.txt 
+$ python3 -m pip install --upgrade pip -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com && pip3 install -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com -r requirements.txt 
 
+$ cat /etc/resolv.conf
+search jenkins.svc.cluster.local svc.cluster.local cluster.local in.ctcdn.cn ss.in.ctcdn.cn
+nameserver 10.96.0.10
+options ndots:5
+
+
+# vi robot.txt #复制上面的代码
 #使用robot命令做测试
 $ robot -d artifacts/ robot.txt
 ```
@@ -3268,6 +3278,15 @@ $ robot -d artifacts/ robot.txt
 ###### [与tools工具镜像集成](http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=与tools工具镜像集成)
 
 ```powershell
+cd tools  #k8s-slave1 
+cat <<\EOF >requirements.txt
+robotframework
+robotframework-seleniumlibrary
+robotframework-databaselibrary
+robotframework-requests
+EOF
+
+cat <<\EOF >Dockerfile
 FROM alpine:3.13.4
 LABEL maintainer="inspur_lyx@hotmail.com"
 USER root
@@ -3281,11 +3300,11 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/re
     usermod -a -G docker root
 
 
-COPY config /root/.kube/
+# COPY config /root/.kube/
 
 COPY requirements.txt /
 
-RUN python3 -m pip install --upgrade pip && pip3 install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com -r requirements.txt 
+RUN python3 -m pip install --upgrade pip -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com && pip3 install -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com -r requirements.txt  
 
 
 RUN rm -rf /var/cache/apk/* && \
@@ -3296,14 +3315,22 @@ COPY kubectl /usr/local/bin/
 RUN chmod +x /usr/local/bin/kubectl
 # ------------------------------------------------#
 
+#-----------------安装 maven--------------------#
+COPY apache-maven-3.6.3 /usr/lib/apache-maven-3.6.3
+RUN ln -s /usr/lib/apache-maven-3.6.3/bin/mvn /usr/local/bin/mvn && chmod +x /usr/local/bin/mvn
+ENV MAVEN_HOME=/usr/lib/apache-maven-3.6.3
+#------------------------------------------------#
+
 #---------------安装 sonar-scanner-----------------#
 COPY sonar-scanner /usr/lib/sonar-scanner
 RUN ln -s /usr/lib/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner && chmod +x /usr/local/bin/sonar-scanner
 ENV SONAR_RUNNER_HOME=/usr/lib/sonar-scanner
 # ------------------------------------------------#
-$ docker build . -t 172.16.1.226:5000/devops/tools:v3
+EOF
 
-$ docker push 172.16.1.226:5000/devops/tools:v3
+docker build . -t 172.16.1.226:5000/devops/tools:v3
+
+docker push 172.16.1.226:5000/devops/tools:v3
 ```
 
 更新Jenkins中kubernetes中的containers template
@@ -3340,7 +3367,40 @@ $ docker push 172.16.1.226:5000/devops/tools:v3
 
 ###### [实践通过Jenkinsfile实现demo项目的验收测试](http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=实践通过jenkinsfile实现demo项目的验收测试)
 
-python-demo项目添加robot.txt文件：
+项目源代码添加robot.txt文件：
+
+```bash
+cat <<\EOF >robot.txt
+*** Settings ***
+Library           RequestsLibrary
+Library           SeleniumLibrary
+
+*** Variables ***
+${api_url}       http://eladmin-api.luffy:8000/
+
+*** Test Cases ***
+api1
+    [Tags]  critical
+    Create Session    api    ${api_url}
+    ${alarm_system_info}    RequestsLibrary.Get Request    api    /
+    log    ${alarm_system_info.status_code}
+    log    ${alarm_system_info.content}
+    should be true    ${alarm_system_info.status_code} == 200
+
+api2
+    [Tags]  critical
+    Create Session    api    ${api_url}
+    ${alarm_system_info}    RequestsLibrary.Get Request    api    /auth/code
+    log    ${alarm_system_info.status_code}
+    log    ${alarm_system_info.content}
+    should be true    ${alarm_system_info.status_code} == 200
+EOF
+
+```
+
+
+
+修改Jenkinsfile
 
 ```
 jenkins/pipelines/p10.yaml
