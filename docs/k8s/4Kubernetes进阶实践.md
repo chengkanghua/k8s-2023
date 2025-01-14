@@ -3359,7 +3359,7 @@ $ helm install debug-nginx ./nginx --dry-run --set replicaCount=2 --debug
 
   - `Values`：从 `values.yaml` 文件和用户提供的 values 文件传递到模板的 Values 值
 
-  - `Chart`：获取 `Chart.yaml` 文件的内容，该文件中的任何数据都可以访问，例如 `{{ .Chart.Name }}-{{ .Chart.Version}}` 可以渲染成 `mychart-0.1.0`
+  - `Chart`：获取 `Chart.yaml` 文件的内容，该文件中的任何数据都可以访问，例如 <span v-pre> {{ .Chart.Name }}-{{ .Chart.Version}} <span> 可以渲染成 `mychart-0.1.0`
 
 - 模板定义
 
@@ -3378,7 +3378,7 @@ $ helm install debug-nginx ./nginx --dry-run --set replicaCount=2 --debug
   {{- end }}
   ```
 
-  - {{- 去掉左边的空格及换行，-}} 去掉右侧的空格及换行
+  - <span v-pre> {{- 去掉左边的空格及换行，-}} <span> 去掉右侧的空格及换行
 
   - 示例
 
