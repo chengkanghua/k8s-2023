@@ -1807,7 +1807,7 @@ sum(increase(node_cpu_seconds_total{}[1m])) by (instance)
 
 除此之外，还会经常看到avg,irate和rate方法的使用：
 
-`irate()` 是基于最后两个数据点计算一个时序指标在一个范围内的每秒递增率 ，举个例子：
+ <span v-pre>`irate()` </span> 是基于最后两个数据点计算一个时序指标在一个范围内的每秒递增率 ，举个例子：
 
 ```bash
 # 1min内，k8s-master节点的idle状态的cpu分配时长增量值
