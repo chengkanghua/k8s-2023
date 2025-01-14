@@ -35,9 +35,9 @@ export default {
     ],
     ["link", { rel: "shortcut icon", href: "/favicon-16x16.png" }],
   ],
-  build: {
-    outDir: 'docs/.vitepress/dist'
-  },
+//   build: {
+//     outDir: 'docs/.vitepress/dist'
+//   },
   outDir: "dist", 
   srcDir: "src", 
 
