@@ -43,9 +43,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '首页', link: '/' },
-      { text: 'linux', link: '/markdown-examples' },
       { text: 'K8S', link: '/k8s/README' },
-      { text: 'Examples', link: '/markdown-examples' }
     ],
     vite: { 
       // https://cn.vitejs.dev/config/shared-options.html#publicdir
@@ -68,18 +66,10 @@ export default defineConfig({
           { text: '问题记录', link: '/k8s/问题记录' },
         ]
       },
-      {
-        text: 'Examples',
-        items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'K8S', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
-        ]
-      }
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/chengkanghua/k8s-2023' }
     ],
 
     footer: {
