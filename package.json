@@ -1,5 +1,26 @@
 {
   "dependencies": {
-    "pnpm": "^9.15.4"
-  }
+    "pnpm": "^9.15.4",
+    "vitepress": "^1.5.0",
+    "vue": "^3.5.13"
+  },
+  "name": "k8s-2023",
+  "version": "1.0.0",
+  "description": "this is k8s",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chengkanghua/k8s-2023.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chengkanghua/k8s-2023/issues"
+  },
+  "homepage": "https://github.com/chengkanghua/k8s-2023#readme"
 }
