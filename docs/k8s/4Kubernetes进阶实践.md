@@ -356,7 +356,7 @@ kubectl -f yaml/  #直接在新的k8s恢复了
 
 Kubernetes Scheduler 的作用是将待调度的 Pod 按照一定的调度算法和策略绑定到集群中一个合适的 Worker Node 上，并将绑定信息写入到 etcd 中，之后目标 Node 中 kubelet 服务通过 API Server 监听到 Scheduler 产生的 Pod 绑定事件获取 Pod 信息，然后下载镜像启动容器。
 
-<img src="4Kubernetes进阶实践.assets/kube-scheduler-1.jpg" alt="img" style="zoom: 67%;" />
+<img src="./4Kubernetes进阶实践.assets/kube-scheduler-1.jpg" alt="img" style="zoom: 67%;" />
 
 ###### [调度的过程](http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=调度的过程)
 
@@ -367,11 +367,11 @@ Scheduler 提供的调度流程分为预选 (Predicates) 和优选 (Priorities) 
 
 经过预选筛选和优选打分之后，K8S选择分数最高的 Node 来运行 Pod，如果最终有多个 Node 的分数最高，那么 Scheduler 将从当中随机选择一个 Node 来运行 Pod。
 
-<img src="4Kubernetes进阶实践.assets/kube-scheduler-process.png" alt="img" style="zoom: 50%;" />
+<img src="./4Kubernetes进阶实践.assets/kube-scheduler-process.png" alt="img" style="zoom: 50%;" />
 
 预选：
 
-<img src="4Kubernetes进阶实践.assets/kube-scheduler-pre.jpg-" alt="img" style="zoom: 67%;" />
+<img src="./4Kubernetes进阶实践.assets/kube-scheduler-pre.jpg-" alt="img" style="zoom: 67%;" />
 
 | 名称                              | 描述                                                         | 默认 |
 | --------------------------------- | ------------------------------------------------------------ | ---- |
@@ -397,7 +397,7 @@ Scheduler 提供的调度流程分为预选 (Predicates) 和优选 (Priorities) 
 
 优选：
 
-<img src="4Kubernetes进阶实践.assets/kube-scheduler-pro.jpg-" alt="img" style="zoom: 25%;" />
+<img src="./4Kubernetes进阶实践.assets/kube-scheduler-pro.jpg-" alt="img" style="zoom: 25%;" />
 
 
 
@@ -717,7 +717,7 @@ K8S 有个特色功能叫 pod eviction，它在某些场景下如节点 NotReady
 
 ###### APIServer安全控制
 
-<img src="4Kubernetes进阶实践.assets/image-20221122085209765.png" alt="image-20221122085209765" style="zoom: 67%;" />
+<img src="./4Kubernetes进阶实践.assets/image-20221122085209765.png" alt="image-20221122085209765" style="zoom: 67%;" />
 
 - Authentication：身份认证
 
@@ -874,7 +874,7 @@ Certificate:
 
 kubeadm在init初始引导集群启动过程中，创建了许多默认的RBAC规则， 在k8s有关RBAC的官方文档中，我们看到下面一些`default clusterrole`列表:
 
-![img](4Kubernetes进阶实践.assets/kubeadm-default-clusterrole-list.png)
+![img](./4Kubernetes进阶实践.assets/kubeadm-default-clusterrole-list.png)
 
 其中第一个cluster-admin这个cluster role binding绑定了system:masters group，这和authentication环节传递过来的身份信息不谋而合。 沿着system:masters group对应的cluster-admin clusterrolebinding“追查”下去，真相就会浮出水面。
 
@@ -912,7 +912,7 @@ PolicyRule:
 
 非资源类，如查看集群健康状态。
 
-![img](4Kubernetes进阶实践.assets/how-kubectl-be-authorized.png)
+![img](./4Kubernetes进阶实践.assets/how-kubectl-be-authorized.png)
 
 ###### [RBAC](http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=rbac)
 
@@ -1038,7 +1038,7 @@ RBAC模式引入了4个资源类型：
 
 
 
-<img src="4Kubernetes进阶实践.assets/rbac-2.jpg" alt="img" style="zoom: 67%;" />
+<img src="./4Kubernetes进阶实践.assets/rbac-2.jpg" alt="img" style="zoom: 67%;" />
 
 
 
@@ -1383,7 +1383,7 @@ Pod中若指定了`serviceAccount`，则k8s自动为Pod挂载`/run/secrets/kuber
 curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InFQRmxuWUd5UU9fTVhnSktxQjhOTUJmanZpX25RSFpoWXNwWl9xdDNRcGsifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNzYxMTMyNDM3LCJpYXQiOjE3Mjk1OTY0MzcsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJpbmdyZXNzLW5naW54IiwicG9kIjp7Im5hbWUiOiJpbmdyZXNzLW5naW54LWNvbnRyb2xsZXItNWNmNWI2ODVjNS1sNXY5NSIsInVpZCI6Ijc0YjQwM2IxLTAzYzAtNGNjNC04YjRlLTE5NWU2OWYzZmNmYSJ9LCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiaW5ncmVzcy1uZ2lueCIsInVpZCI6IjUzM2ZiMWRhLWUxYzYtNGExYy1iNDUwLWU1ZjAwZWM2ZGRjZiJ9LCJ3YXJuYWZ0ZXIiOjE3Mjk2MDAwNDR9LCJuYmYiOjE3Mjk1OTY0MzcsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDppbmdyZXNzLW5naW54OmluZ3Jlc3MtbmdpbngifQ.maHtg5BLj7OrgawRYwS2UPCreFd3i_XhlJ3jJbvmhqvfv6losJHjCwtD4ZUvUUCt6THwyUNKk-pPx_bAjyVR2_WhhcaQjkm2PFtjHb2bqXyKoRwjNms-smn4bsaVfUa_mfQ82mh-FsbZ28SZ023t6CoCGZlkANbJ4ihtYEV8eBXRqOSI_kKsQlXUnqQgbkOxgrAjaV8qtdGvm9P5qay4xXgc-PiT13iK4gxJ0COal6V76I-lBBz343Qumb2ZNM-0H85MGenUkqp2fmErvtXyeuV7Qkop6uhR_SUskx7vEEFHi_BgcgNFvX2wVVwWSEGoDK6YA0mLFCZExBV_VLW1UQ" https://172.16.1.226:6443/api/v1/nodes
 ```
 
-![img](4Kubernetes进阶实践.assets/rbac.jpg)
+![img](./4Kubernetes进阶实践.assets/rbac.jpg)
 
 只允许访问luffy命名空间的pod资源：
 
@@ -1446,7 +1446,7 @@ kubectl get clusterolebindings.rbac.authorization.k8s.io -oyaml|grep -n15 system
 
 ###### [认证、鉴权图鉴](http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=认证、鉴权图鉴)
 
-![img](4Kubernetes进阶实践.assets/AUTH.jpg)
+![img](./4Kubernetes进阶实践.assets/AUTH.jpg)
 
 
 
@@ -1464,7 +1464,7 @@ $ kubectl -n luffy scale deployment eladmin-web --replicas=2
 
 但是这个过程是手动操作的。在实际项目中，我们需要做到是的是一个自动化感知并自动扩容的操作。Kubernetes 也为提供了这样的一个资源对象：Horizontal Pod Autoscaling（Pod 水平自动伸缩），简称[HPA](https://v1-14.docs.kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
 
-<img src="4Kubernetes进阶实践.assets/hpa2.jpg" alt="img" style="zoom:67%;" />
+<img src="./4Kubernetes进阶实践.assets/hpa2.jpg" alt="img" style="zoom:67%;" />
 
 基本原理：HPA 通过监控分析控制器控制的所有 Pod 的负载变化情况来确定是否需要调整 Pod 的副本数量
 
@@ -1539,7 +1539,7 @@ HPA的实现有两个版本：
 
 ###### [基于CPU和内存的动态伸缩](http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=基于cpu和内存的动态伸缩)
 
-<img src="4Kubernetes进阶实践.assets/hpa.png" alt="img" style="zoom:50%;" />
+<img src="./4Kubernetes进阶实践.assets/hpa.png" alt="img" style="zoom:50%;" />
 
 创建hpa对象：
 
@@ -1633,11 +1633,11 @@ The value for this option is a duration that specifies how long the autoscaler h
 
 除了基于 CPU 和内存来进行自动扩缩容之外，我们还可以根据自定义的监控指标来进行。这个我们就需要使用 `Prometheus Adapter`，Prometheus 用于监控应用的负载和集群本身的各种指标，`Prometheus Adapter` 可以帮我们使用 Prometheus 收集的指标并使用它们来制定扩展策略，这些指标都是通过 APIServer 暴露的，而且 HPA 资源对象也可以很轻易的直接使用。
 
-<img src="4Kubernetes进阶实践.assets/custom-hpa.webp" alt="img" style="zoom: 50%;" />
+<img src="./4Kubernetes进阶实践.assets/custom-hpa.webp" alt="img" style="zoom: 50%;" />
 
 架构图：
 
-<img src="4Kubernetes进阶实践.assets/hpa-prometheus-custom.png" alt="img" style="zoom: 67%;" />
+<img src="./4Kubernetes进阶实践.assets/hpa-prometheus-custom.png" alt="img" style="zoom: 67%;" />
 
 ##### [实现原理篇](http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=实现原理篇)
 
@@ -1699,7 +1699,7 @@ $ curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InFQRmxuWUd5UU9
 
 目前的采集流程：
 
-![img](4Kubernetes进阶实践.assets/k8s-hpa-ms.png)
+![img](./4Kubernetes进阶实践.assets/k8s-hpa-ms.png)
 
 ###### [kubelet的指标采集](http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=kubelet的指标采集)
 
@@ -1726,7 +1726,7 @@ cgroup文件中的值是监控数据的最终来源
 
 Metrics数据流：
 
-<img src="4Kubernetes进阶实践.assets/hap-flow.webp" alt="img" style="zoom: 67%;" />
+<img src="./4Kubernetes进阶实践.assets/hap-flow.webp" alt="img" style="zoom: 67%;" />
 
 *思考：Metrics Server是独立的一个服务，只能服务内部实现自己的api，是如何做到通过标准的kubernetes 的API格式暴露出去的*
 
@@ -1736,7 +1736,7 @@ Metrics数据流：
 
 kube-aggregator是对 apiserver 的api的一种拓展机制，它允许开发人员编写一个自己的服务，并把这个服务注册到k8s的api里面，即扩展 API 。
 
-<img src="4Kubernetes进阶实践.assets/kube-aggregation.webp" alt="img" style="zoom: 33%;" />
+<img src="./4Kubernetes进阶实践.assets/kube-aggregation.webp" alt="img" style="zoom: 33%;" />
 
 看下metric-server的实现：
 
@@ -1902,7 +1902,7 @@ spec:
   - ReadOnlyMany（ROX）：只读权限，可以被多个节点挂载
   - ReadWriteMany（RWX）：读写权限，可以被多个节点挂载
 
-![img](4Kubernetes进阶实践.assets/pv-access-mode.webp)
+![img](./4Kubernetes进阶实践.assets/pv-access-mode.webp)
 
 - persistentVolumeReclaimPolicy，pv的回收策略, 目前只有 NFS 和 HostPath 两种类型支持回收策略
   - Retain（保留）- 保留数据，需要管理员手工清理数据
@@ -2111,7 +2111,7 @@ kubectl delete pv nfs-pv
 
 <img src="./4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241023092630377.png" alt="image-20241023092630377" style="zoom:50%;" />
 
-<img src="4Kubernetes进阶实践.assets/storage-class.png" alt="img" style="zoom: 33%;" />
+<img src="./4Kubernetes进阶实践.assets/storage-class.png" alt="img" style="zoom: 33%;" />
 
 部署： https://github.com/kubernetes-retired/external-storage
 
@@ -2597,13 +2597,13 @@ AQCdaG9jP09dJBAAZsl58WHL/xLNvUq7IXh1zQ==
 mount -t ceph 172.16.1.228:6789:/ /mnt/cephfs -o name=admin,secret=AQCdaG9jP09dJBAAZsl58WHL/xLNvUq7IXh1zQ==
 ```
 
-<img src="4Kubernetes进阶实践.assets/ceph-art.png" alt="img" style="zoom:50%;" />
+<img src="./4Kubernetes进阶实践.assets/ceph-art.png" alt="img" style="zoom:50%;" />
 
 ###### [storageClass实现动态挂载](http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=storageclass实现动态挂载-1)
 
 创建pv及pvc过程是手动，且pv与pvc一一对应，手动创建很繁琐。因此，通过storageClass + provisioner的方式来实现通过PVC自动创建并绑定PV
 
-<img src="4Kubernetes进阶实践.assets/storage-class.png" alt="img" style="zoom: 33%;" />
+<img src="./4Kubernetes进阶实践.assets/storage-class.png" alt="img" style="zoom: 33%;" />
 
 NFS，ceph-rbd，cephfs均提供了对应的provisioner
 
@@ -2813,7 +2813,7 @@ k8s的pod的挂载盘通常的格式为：
 
 ##### [容器网络回顾](http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=容器网络回顾)
 
-<img src="4Kubernetes进阶实践.assets/docker-bridge.jpeg" alt="img" style="zoom: 80%;" />
+<img src="./4Kubernetes进阶实践.assets/docker-bridge.jpeg" alt="img" style="zoom: 80%;" />
 
 Docker 创建一个容器的时候，会执行如下操作：
 
@@ -2853,7 +2853,7 @@ CNI的具体实现有很多种：
 
 > k8s本身不提供cni的实现，因此安装完k8s集群后，需要单独安装网络组件
 
-<img src="4Kubernetes进阶实践.assets/kubelet-cni-process.jpg" alt="img" style="zoom: 25%;" />
+<img src="./4Kubernetes进阶实践.assets/kubelet-cni-process.jpg" alt="img" style="zoom: 25%;" />
 
 1. Pod调度到k8s的节点k8s-slave1中
 2. slave1的kubelet调用containerd创建Pod
@@ -2878,7 +2878,7 @@ CNI的具体实现有很多种：
 
 更细致的CNI调用过程：
 
-<img src="4Kubernetes进阶实践.assets/cni-network.webp" alt="img" style="zoom: 45%;" />
+<img src="./4Kubernetes进阶实践.assets/cni-network.webp" alt="img" style="zoom: 45%;" />
 
 - Flannel CNI
 
@@ -2898,7 +2898,7 @@ CNI的具体实现有很多种：
 
 经过Pod网络配置后，本机的Pod应该是这样的：
 
-<img src="4Kubernetes进阶实践.assets/pod-local.png" alt="img" style="zoom: 33%;" />
+<img src="./4Kubernetes进阶实践.assets/pod-local.png" alt="img" style="zoom: 33%;" />
 
 思考：
 
@@ -2943,7 +2943,7 @@ $ kubectl -n kube-flannel get pod kube-flannel-ds-gdvpx -oyaml
 
 跨主机间的通信流程：
 
-<img src="4Kubernetes进阶实践.assets/pods-network.webp" alt="img" style="zoom: 50%;" />
+<img src="./4Kubernetes进阶实践.assets/pods-network.webp" alt="img" style="zoom: 50%;" />
 
 flannel的网络有多种后端实现：
 
@@ -2955,6 +2955,7 @@ flannel的网络有多种后端实现：
 不特殊指定的话，默认会使用vxlan技术作为Backend，可以通过如下查看：
 
 ```bash
+
 $ kubectl -n kube-flannel exec  kube-flannel-ds-amd64-cb7hs cat /etc/kube-flannel/net-conf.json
 {
   "Network": "10.244.0.0/16",
@@ -2962,6 +2963,7 @@ $ kubectl -n kube-flannel exec  kube-flannel-ds-amd64-cb7hs cat /etc/kube-flanne
     "Type": "vxlan"
   }
 }
+
 ```
 
 使用vxlan作为后端实现时，flanneld进程的作用：
@@ -2973,7 +2975,7 @@ $ kubectl -n kube-flannel exec  kube-flannel-ds-amd64-cb7hs cat /etc/kube-flanne
 
 VXLAN 全称是虚拟可扩展的局域网（ Virtual eXtensible Local Area Network），它是一种 overlay 技术，通过三层的网络来搭建虚拟的二层网络。
 
-![img](4Kubernetes进阶实践.assets/vxlan.png)
+![img](./4Kubernetes进阶实践.assets/vxlan.png)
 
 它创建在原来的 IP 网络（三层）上，只要是三层可达（能够通过 IP 互相通信）的网络就能部署 vxlan。在每个端点上都有一个 vtep 负责 vxlan 协议报文的封包和解包，也就是在虚拟报文上封装 vtep 通信的报文头部。物理网络上可以创建多个 vxlan 网络，这些 vxlan 网络可以认为是一个隧道，不同节点的虚拟机能够通过隧道直连。每个 vxlan 网络由唯一的 VNI 标识，不同的 vxlan 可以不相互影响。
 
@@ -2982,7 +2984,7 @@ VXLAN 全称是虚拟可扩展的局域网（ Virtual eXtensible Local Area Netw
 
 演示：在k8s-slave1和k8s-slave2两台机器间，利用vxlan的点对点能力，实现虚拟二层网络的通信
 
-<img src="4Kubernetes进阶实践.assets/vxlan-p2p-1.jpg" alt="img" style="zoom:50%;" />
+<img src="./4Kubernetes进阶实践.assets/vxlan-p2p-1.jpg" alt="img" style="zoom:50%;" />
 
 `172.16.1.227`节点：
 
@@ -3028,7 +3030,7 @@ $ ip route add 10.245.1.0/24 dev vxlan20
 $ ping 10.245.2.5
 ```
 
-<img src="4Kubernetes进阶实践.assets/vxlan-p2p-2.jpg" alt="img" style="zoom: 67%;" />
+<img src="./4Kubernetes进阶实践.assets/vxlan-p2p-2.jpg" alt="img" style="zoom: 67%;" />
 
 隧道是一个逻辑上的概念，在 vxlan 模型中并没有具体的物理实体相对应。隧道可以看做是一种虚拟通道，vxlan 通信双方（图中的虚拟机）认为自己是在直接通信，并不知道底层网络的存在。从整体来说，每个 vxlan 网络像是为通信的虚拟机搭建了一个单独的通信通道，也就是隧道。
 
@@ -3120,7 +3122,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 
 实际的请求图：
 
-<img src="4Kubernetes进阶实践.assets/flannel-actual.png" alt="img" style="zoom: 50%;" />
+<img src="./4Kubernetes进阶实践.assets/flannel-actual.png" alt="img" style="zoom: 50%;" />
 
 ###### [利用host-gw模式提升集群网络性能](http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=利用host-gw模式提升集群网络性能)
 
@@ -3128,7 +3130,7 @@ vxlan模式适用于三层可达的网络环境，对集群的网络要求很宽
 
 网络插件的目的其实就是将本机的cni0网桥的流量送到目的主机的cni0网桥。实际上有很多集群是部署在同一二层网络环境下的，可以直接利用二层的主机当作流量转发的网关。这样的话，可以不用进行封包解包，直接通过路由表去转发流量。
 
-<img src="4Kubernetes进阶实践.assets/flannel-host-gw.png" alt="img" style="zoom:50%;" />
+<img src="./4Kubernetes进阶实践.assets/flannel-host-gw.png" alt="img" style="zoom:50%;" />
 
 为什么三层可达的网络不直接利用网关转发流量？
 
@@ -3560,7 +3562,7 @@ https://helm.sh/docs/topics/charts/
 
 架构 https://github.com/goharbor/harbor/wiki/Architecture-Overview-of-Harbor
 
-<img src="4Kubernetes进阶实践.assets/harbor-architecture.png" alt="img" style="zoom:50%;" />
+<img src="./4Kubernetes进阶实践.assets/harbor-architecture.png" alt="img" style="zoom:50%;" />
 
 - Core，核心组件
   - API Server，接收处理用户请求
@@ -3837,27 +3839,27 @@ $ helm push harbor luffy --ca-file=harbor.ca.crt -u admin -p Harbor12345!
 
 2. 理解k8s调度的过程，预选及优先。影响调度策略的设置
 
-   <img src="4Kubernetes进阶实践.assets/kube-scheduler-process-1669078918768155.png" alt="img" style="zoom:50%;" />
+   <img src="./4Kubernetes进阶实践.assets/kube-scheduler-process-1669078918768155.png" alt="img" style="zoom:50%;" />
 
 3. Flannel网络的原理学习，了解网络的流向，帮助定位问题
 
-   ![img](4Kubernetes进阶实践.assets/pods-network-1669078918768157.webp)
+   ![img](./4Kubernetes进阶实践.assets/pods-network-1669078918768157.webp)
 
 4. 认证与授权，掌握kubectl、kubelet、rbac及二次开发如何调度API
 
-   ![img](4Kubernetes进阶实践.assets/AUTH-1669078918768159.jpg)
+   ![img](./4Kubernetes进阶实践.assets/AUTH-1669078918768159.jpg)
 
 5. 利用HPA进行业务动态扩缩容，通过metrics-server了解整个k8s的监控体系
 
-   ![img](4Kubernetes进阶实践.assets/hpa-prometheus-custom-1669078918768161.png)
+   ![img](./4Kubernetes进阶实践.assets/hpa-prometheus-custom-1669078918768161.png)
 
 6. PV + PVC
 
-   <img src="4Kubernetes进阶实践.assets/storage-class-1669078918768163.png" alt="img" style="zoom:50%;" />
+   <img src="./4Kubernetes进阶实践.assets/storage-class-1669078918768163.png" alt="img" style="zoom:50%;" />
 
 7. Helm
 
-   <img src="4Kubernetes进阶实践.assets/helm3.jpg" alt="img" style="zoom:50%;" />
+   <img src="./4Kubernetes进阶实践.assets/helm3.jpg" alt="img" style="zoom:50%;" />
 
 
 
