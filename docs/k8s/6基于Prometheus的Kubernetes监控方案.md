@@ -1783,6 +1783,7 @@ node_cpu_seconds_total
 因此，我们只需要使用PromQL取出上述过程中的值即可：
 
 ```bash
+
 # 过滤出当前时间点idle的时长
 node_cpu_seconds_total{mode="idle"}
 
@@ -1804,10 +1805,10 @@ sum(increase(node_cpu_seconds_total{}[1m])) by (instance)
 # 最终的语句
 (1- sum(increase(node_cpu_seconds_total{mode="idle"}[1m])) by (instance) / sum(increase(node_cpu_seconds_total{}[1m])) by (instance)) * 100
 ```
-
+<span v-pre>
 除此之外，还会经常看到avg,irate和rate方法的使用：
-
- <span v-pre>`irate()` </span> 是基于最后两个数据点计算一个时序指标在一个范围内的每秒递增率 ，举个例子：
+`irate()`是基于最后两个数据点计算一个时序指标在一个范围内的每秒递增率 ，举个例子： 
+</span> 
 
 ```bash
 # 1min内，k8s-master节点的idle状态的cpu分配时长增量值
