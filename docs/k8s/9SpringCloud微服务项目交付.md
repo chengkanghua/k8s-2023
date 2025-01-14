@@ -3041,6 +3041,8 @@ zuul:
     bill-service:
       path: /bill/**
       service-id: bill-service
+
+<span v-pre>      
 http://localhost:10000/users/user/1
                                                  --->  http://localhost:7000/user/1
 http://localhost:10000/user-service/user/1
@@ -3050,6 +3052,8 @@ http://localhost:10000/user-service/user/1
 http://localhost:10000/bill/service/user/2 
                                                  --->http://localhost:7001/service/user/2
 http://localhost:10000/bill-service/service/user/2
+
+</span> 
 ```
 
 zuul如何指定对外暴漏api的path，如：
