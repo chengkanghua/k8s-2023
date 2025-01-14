@@ -371,7 +371,7 @@ Scheduler 提供的调度流程分为预选 (Predicates) 和优选 (Priorities) 
 
 预选：
 
-<img src="./4Kubernetes进阶实践.assets/kube-scheduler-pre.jpg-" alt="img" style="zoom: 67%;" />
+<img src="./4Kubernetes进阶实践.assets/kube-scheduler-pre.jpg" alt="img" style="zoom: 67%;" />
 
 | 名称                              | 描述                                                         | 默认 |
 | --------------------------------- | ------------------------------------------------------------ | ---- |
