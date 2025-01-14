@@ -103,6 +103,26 @@ export default {
     lightModeSwitchTitle: "切换到浅色模式",
     darkModeSwitchTitle: "切换到深色模式",
 
+  },
 
+  // 解决   Github Pages 阻止了以下划线字符结尾的文件，所以会导致这个文件请求返回404
+  rollupOptions: {
+    output: {
+      manualChunks: {},
+      chunkFileNames: 'assets/[name]-[hash].js',
+      entryFileNames: 'assets/[name]-[hash].js',
+      assetFileNames: 'assets/[name]-[hash].[ext]',
+      // 解决文件名中的非法字符
+      sanitizeFileName: (name) => {
+        const match = DRIVE_LETTER_REGEX.exec(name)
+        const driveLetter = match ? match[0] : ''
+        return (
+          driveLetter + name.slice(driveLetter.length).replace(INVALID_CHAR_REGEX, '')
+        )
+      }
+    }
   }
+
+
+
 }
