@@ -1,8 +1,8 @@
-import { defineConfig } from 'vitepress'
+
 
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default {
   title: "程康华",
   description: "我的博客",
 //   base: 'k8s-2023',
@@ -105,4 +105,4 @@ export default defineConfig({
 
 
   }
-})
+}
