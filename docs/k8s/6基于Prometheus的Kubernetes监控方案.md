@@ -1811,6 +1811,7 @@ sum(increase(node_cpu_seconds_total{}[1m])) by (instance)
 </span> 
 
 ```bash
+<span v-pre>
 # 1min内，k8s-master节点的idle状态的cpu分配时长增量值
 increase(node_cpu_seconds_total{instance="k8s-master",mode="idle"}[1m])
 
@@ -1838,13 +1839,15 @@ rate(node_cpu_seconds_total{instance="k8s-master",mode="idle"}[1m])
 {cpu="1",instance="k8s-master",job="kubernetes-sd-node-exporter",mode="idle"}    0.940
 {cpu="2",instance="k8s-master",job="kubernetes-sd-node-exporter",mode="idle"}    0.935
 {cpu="3",instance="k8s-master",job="kubernetes-sd-node-exporter",mode="idle"}    0.937
+
+</span> 
 ```
 
 因此rate的值，相对来讲更平滑，因为计算的是时间段内的平均，更适合于用作告警。
 
 取CPU平均使用率也可以用如下表达式表示：
 
-```
+```bash
 (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[1m])) by (instance)) * 100
 ```
 
@@ -2157,7 +2160,7 @@ data:
 
 规则配置中，支持模板的方式，其中：
 
-- <span v-pre>  {{$labels}}可以获取当前指标的所有标签，支持{{$labels.instance}}或者{{$labels.job}}这种形式 </span
+- <span v-pre>  {{$labels}}可以获取当前指标的所有标签，支持{{$labels.instance}}或者{{$labels.job}}这种形式 </span>
 - <span v-pre> {{ $value }}可以获取当前计算出的指标值 </span>
 
 更新配置并软重启，并查看Prometheus报警规则。
