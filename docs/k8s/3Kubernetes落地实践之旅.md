@@ -36,7 +36,7 @@ https://kubernetes.io/
 
 分布式系统，两类角色：管理节点和工作节点
 
-<img src="3Kubernetes落地实践之旅.assets/architecture.png" alt="img" style="zoom: 33%;" />
+<img src="./3Kubernetes落地实践之旅.assets/architecture.png" alt="img" style="zoom: 33%;" />
 
 #### [核心组件](http://49.7.203.222:2023/#/kubernetes-base/introduction?id=核心组件)
 
@@ -122,7 +122,7 @@ $ kubectl create namespace -h
 
 docker调度的是容器，在k8s集群中，最小的调度单元是Pod（豆荚）
 
-![img](3Kubernetes落地实践之旅.assets/pod-demo.png)
+![img](./3Kubernetes落地实践之旅.assets/pod-demo.png)
 
 ###### [为什么引入Pod](http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=为什么引入pod)
 
@@ -134,7 +134,7 @@ docker调度的是容器，在k8s集群中，最小的调度单元是Pod（豆�
 
 ###### [Pod在集群中的形态](http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=pod在集群中的形态)
 
-![img](3Kubernetes落地实践之旅.assets/k8s-pods.jpg)
+![img](./3Kubernetes落地实践之旅.assets/k8s-pods.jpg)
 
 ###### [使用yaml格式定义Pod](http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=使用yaml格式定义pod)
 
@@ -375,7 +375,7 @@ EOF
 
 # [工作流程](http://49.7.203.222:2023/#/kubernetes-base/workflow?id=工作流程)
 
-<img src="3Kubernetes落地实践之旅.assets/process.png" alt="img" style="zoom: 67%;" />
+<img src="./3Kubernetes落地实践之旅.assets/process.png" alt="img" style="zoom: 67%;" />
 
 1. 用户准备一个资源文件（记录了业务应用的名称、镜像地址等信息），通过调用APIServer执行创建Pod
 2. APIServer收到用户的Pod创建请求，将Pod信息写入到etcd中
@@ -688,7 +688,7 @@ EOF
   K8S将在Pod开始启动20s(initialDelaySeconds)后探测Pod内的8000端口是否可以建立TCP连接，并且每15秒钟探测一次，如果连续3次探测失败，则kubelet重启该容器
   ```
 
-  <img src="3Kubernetes落地实践之旅.assets/livenessprobe.webp" alt="img" style="zoom:50%;" />
+  <img src="./3Kubernetes落地实践之旅.assets/livenessprobe.webp" alt="img" style="zoom:50%;" />
 
 - ReadinessProbe探针 可用性探测：用于判断容器是否正常提供服务，即容器的Ready是否为True，是否可以接收请求，如果`ReadinessProbe`探测失败，则容器的Ready将为False，`Endpoint Controller`控制器将此Pod的Endpoint从对应的service的Endpoint列表中移除，不再将任何请求调度此Pod上，直到下次探测成功。（剔除此pod不参与接收请求不会将流量转发给此Pod）。
 
@@ -1080,7 +1080,7 @@ EOF
 
 k8s提供两类资源，`configMap`和`Secret`，可以用来实现业务配置的统一管理， 允许将配置文件与镜像文件分离，以使容器化的应用程序具有可移植性 。
 
-![img](3Kubernetes落地实践之旅.assets/configmap.png)
+![img](./3Kubernetes落地实践之旅.assets/configmap.png)
 
 - `configMap`，通常用来管理应用的配置文件或者环境变量
 
@@ -1253,7 +1253,7 @@ Pod的状态如下表所示：
 
 启动和关闭示意：
 
-<img src="3Kubernetes落地实践之旅.assets/AOQgQj.jpg" alt="img" style="zoom: 50%;" />
+<img src="./3Kubernetes落地实践之旅.assets/AOQgQj.jpg" alt="img" style="zoom: 50%;" />
 
 初始化容器：
 
@@ -1389,7 +1389,7 @@ $ cat /tmp/loap/timing
 
 控制器又称工作负载是用于实现管理pod的中间层，确保pod资源符合预期的状态，pod的资源出现故障时，会尝试 进行重启，当根据重启策略无效，则会重新新建pod的资源。
 
-![img](3Kubernetes落地实践之旅.assets/workload.png)
+![img](./3Kubernetes落地实践之旅.assets/workload.png)
 
 - ReplicaSet: 用户创建指定数量的pod副本数量，确保pod副本数量符合预期状态，并且支持滚动式自动扩容和缩容功能
 - Deployment：工作在ReplicaSet之上，用于管理无状态应用，目前来说最好的控制器。支持滚动更新和回滚功能，提供声明式配置
@@ -1735,7 +1735,7 @@ $ docker push 172.16.1.226:5000/eladmin/eladmin-api:v2
 
 # [Deployment工作流程](http://49.7.203.222:2023/#/kubernetes-base/workflow-deployment?id=工作流程)
 
-![img](3Kubernetes落地实践之旅.assets/deployment-workflow.jpg)
+![img](./3Kubernetes落地实践之旅.assets/deployment-workflow.jpg)
 
 
 
@@ -1840,7 +1840,7 @@ kubectl apply -f deploy-eladmin-api.yaml
     
 ```
 
-![img](3Kubernetes落地实践之旅.assets/update.png)
+![img](./3Kubernetes落地实践之旅.assets/update.png)
 
 策略控制：
 
@@ -2151,7 +2151,7 @@ $ curl 10.99.182.32:8000/auth/code
 
   IPtables模式示意图：
 
-  <img src="3Kubernetes落地实践之旅.assets/image-20221121220104089.png" alt="image-20221121220104089" style="zoom:50%;" />
+  <img src="./3Kubernetes落地实践之旅.assets/image-20221121220104089.png" alt="image-20221121220104089" style="zoom:50%;" />
 
 
 
@@ -2446,7 +2446,7 @@ Ingress-nginx是7层的负载均衡器 ，负责统一管理外部对k8s cluster
 
 ###### [示意图：](http://49.7.203.222:2023/#/kubernetes-base/ingress?id=示意图：)
 
-<img src="3Kubernetes落地实践之旅.assets/ingress.webp" alt="img" style="zoom: 33%;" />
+<img src="./3Kubernetes落地实践之旅.assets/ingress.webp" alt="img" style="zoom: 33%;" />
 
 ###### [实现逻辑](http://49.7.203.222:2023/#/kubernetes-base/ingress?id=实现逻辑)
 
@@ -3354,7 +3354,7 @@ EOF
 
 # [小结](http://49.7.203.222:2023/#/kubernetes-base/summary?id=小结)
 
-![img](3Kubernetes落地实践之旅.assets/summary.jpg)
+![img](./3Kubernetes落地实践之旅.assets/summary.jpg)
 
 
 

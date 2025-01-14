@@ -50,7 +50,7 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 ##### [使用节点级日志代理]
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/logging-with-node-agent.png)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/logging-with-node-agent.png)
 
 优势：
 
@@ -67,7 +67,7 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
   思路：在pod中启动一个sidecar容器，把容器内的日志文件吐到标准输出，由宿主机中的日志收集agent进行采集。
 
-  ![img](5基于EFK的Kubernetes日志采集方案.assets/logging-with-streaming-sidecar.png)
+  ![img](./5基于EFK的Kubernetes日志采集方案.assets/logging-with-streaming-sidecar.png)
 
   ```bash
   cat <<\EOF count-pod.yaml
@@ -127,7 +127,7 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 - ###### [方式二：sidecar 容器运行一个日志代理，配置该日志代理以便从应用容器收集日志。](http://49.7.203.222:2023/#/logging/arct?id=方式二：sidecar-容器运行一个日志代理，配置该日志代理以便从应用容器收集日志。)
 
-  ![img](5基于EFK的Kubernetes日志采集方案.assets/logging-with-sidecar-agent.png)
+  ![img](./5基于EFK的Kubernetes日志采集方案.assets/logging-with-sidecar-agent.png)
 
   思路：直接在业务Pod中使用sidecar的方式启动一个日志收集的组件（比如fluentd），这样日志收集可以将容器内的日志当成本地文件来进行收取。
 
@@ -137,7 +137,7 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 ##### [从应用中直接暴露日志目录](http://49.7.203.222:2023/#/logging/arct?id=从应用中直接暴露日志目录)
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/logging-from-application.png)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/logging-from-application.png)
 
 ##### [企业日志方案选型](http://49.7.203.222:2023/#/logging/arct?id=企业日志方案选型)
 
@@ -163,7 +163,7 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 ##### [EFK架构工作流程](http://49.7.203.222:2023/#/logging/fluentd-concept?id=efk架构工作流程)
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/EFK-architecture.png)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/EFK-architecture.png)
 
 - Elasticsearch
 
@@ -181,7 +181,7 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
   一个针对日志的收集、处理、转发系统。通过丰富的插件系统，可以收集来自于各种系统或应用的日志，转化为用户指定的格式后，转发到用户所指定的日志存储系统之中。
 
-  ![img](5基于EFK的Kubernetes日志采集方案.assets/fluentd-architecture.jpg)
+  ![img](./5基于EFK的Kubernetes日志采集方案.assets/fluentd-architecture.jpg)
 
   Fluentd 通过一组给定的数据源抓取日志数据，处理后（转换成结构化的数据格式）将它们转发给其他服务，比如 Elasticsearch、对象存储、kafka等等。Fluentd 支持超过300个日志存储和分析服务，所以在这方面是非常灵活的。主要运行步骤如下
 
@@ -193,7 +193,7 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 ###### [Fluentd架构](http://49.7.203.222:2023/#/logging/fluentd-concept?id=fluentd架构)
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/what-is-fluentd.jpg)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/what-is-fluentd.jpg)
 
 为什么推荐使用fluentd作为k8s体系的日志收集工具？
 
@@ -201,17 +201,17 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 - 将日志文件JSON化
 
-  ![img](5基于EFK的Kubernetes日志采集方案.assets/log-as-json.png)
+  ![img](./5基于EFK的Kubernetes日志采集方案.assets/log-as-json.png)
 
 - 可插拔架构设计
 
-  ![img](5基于EFK的Kubernetes日志采集方案.assets/pluggable.png)
+  ![img](./5基于EFK的Kubernetes日志采集方案.assets/pluggable.png)
 
 - 极小的资源占用
 
   基于C和Ruby语言， 30-40MB，13,000 events/second/core
 
-  ![img](5基于EFK的Kubernetes日志采集方案.assets/c-and-ruby.png)
+  ![img](./5基于EFK的Kubernetes日志采集方案.assets/c-and-ruby.png)
 
 - 极强的可靠性
 
@@ -362,7 +362,7 @@ record：真实的日志内容，json对象
 Input -> filter 1 -> ... -> filter N -> Buffer -> Output
 ```
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/buffer-internal-and-parameters.png)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/buffer-internal-and-parameters.png)
 
 因为每个事件数据量通常很小，考虑数据传输效率、稳定性等方面的原因，所以基本不会每条事件处理完后都会立马写入到output端，因此fluentd建立了缓冲模型，模型中主要有两个概念：
 
@@ -1530,13 +1530,13 @@ kubectl -n logging get po -o wide
 
 logstash-*
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/kibana-op1.png)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/kibana-op1.png)
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/kibana-op2.png)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/kibana-op2.png)
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/kibana-op3.png)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/kibana-op3.png)
 
-![img](5基于EFK的Kubernetes日志采集方案.assets/kibana-op4.png)
+![img](./5基于EFK的Kubernetes日志采集方案.assets/kibana-op4.png)
 
 *思考：日志中出现了很多kubernetes的元数据信息，这些数据从哪采集而来*
 
