@@ -5,7 +5,7 @@
 export default {
   title: "程康华",
   description: "我的博客",
-  base: '/k8s2023/',
+  base: '/k8s-2023/',
   head: [
     [
       "link",
