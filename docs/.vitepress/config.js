@@ -77,7 +77,7 @@ export default {
 
     footer: {
       message: `<a href="https://beian.miit.gov.cn/" target="_blank">京ICP备20016634号-2</a>`,
-      copyright: `版权所有 © 2019-${new Date().getFullYear()} 李少海`,
+      copyright: `版权所有 © 2019-${new Date().getFullYear()} 程康华`,
     },
 
     docFooter: {
