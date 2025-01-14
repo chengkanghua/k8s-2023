@@ -3198,7 +3198,7 @@ logging:
     org.springframework.cloud: debug
 ```
 
-访问zuul网关的接口`http://localhost:10000/apis/bill-service/bill/user/2`
+访问zuul网关的接口 <span v-pre> `http://localhost:10000/apis/bill-service/bill/user/2` </span>
 
 
 
