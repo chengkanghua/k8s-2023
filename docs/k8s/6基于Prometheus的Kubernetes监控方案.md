@@ -2156,8 +2156,8 @@ data:
 
 规则配置中，支持模板的方式，其中：
 
-- {{$labels}}可以获取当前指标的所有标签，支持{{$labels.instance}}或者{{$labels.job}}这种形式
-- {{ $value }}可以获取当前计算出的指标值
+- <span v-pre>  {{$labels}}可以获取当前指标的所有标签，支持{{$labels.instance}}或者{{$labels.job}}这种形式 </span
+- <span v-pre> {{ $value }}可以获取当前计算出的指标值 </span>
 
 更新配置并软重启，并查看Prometheus报警规则。
 
