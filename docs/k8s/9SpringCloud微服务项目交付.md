@@ -3021,9 +3021,12 @@ eureka:
 
 启动后，访问：
 
+<span v-pre>
 http://localhost:10000/bill-service/bill/user/1
 
 http://localhost:10000/user-service/user
+
+</span> 
 
 filter 过滤器
 
@@ -3063,7 +3066,7 @@ management:
         include: "*"
 ```
 
-可以访问到zuul的route列表， http://localhost:10000/actuator/routes/ ，添加details可以访问到详细信息
+可以访问到zuul的route列表，<span v-pre>  http://localhost:10000/actuator/routes/ </span> ，添加details可以访问到详细信息
 
 ```json
 {
