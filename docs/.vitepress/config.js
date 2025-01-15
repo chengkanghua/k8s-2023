@@ -35,8 +35,8 @@ export default {
     ],
     ["link", { rel: "shortcut icon", href: "/favicon-16x16.png" }],
   ],
-  // outDir: "dist", 
-  //   srcDir: "src", 
+  // outDir: "dist",   //默认在 .vitepress/dist 目录下, 不需要修改
+    srcDir: "src",   //修改源目录位置
 
   themeConfig: {
     logo: "/logo.png",
