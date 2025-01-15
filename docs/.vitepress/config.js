@@ -1,10 +1,8 @@
 
-
-
 // https://vitepress.dev/reference/site-config
 export default {
   title: "程康华",
-  description: "我的博客",
+  description: "全栈工程师,linux python go ",
   base: '/k8s-2023/',
   head: [
     [
@@ -34,21 +32,25 @@ export default {
       },
     ],
     ["link", { rel: "shortcut icon", href: "/favicon-16x16.png" }],
+
+
   ],
   // outDir: "dist",   //默认在 .vitepress/dist 目录下, 不需要修改
     srcDir: "src",   //修改源目录位置
 
+
+
   themeConfig: {
     logo: "/logo.png",
+    vite: { 
+      // https://cn.vitejs.dev/config/shared-options.html#publicdir
+      publicDir: "../public", // 指定 public 目录路径
+    },  
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '首页', link: '/' },
       { text: 'K8S', link: '/k8s/README' },
     ],
-    vite: { 
-      // https://cn.vitejs.dev/config/shared-options.html#publicdir
-      publicDir: "../public", // 指定 public 目录路径
-    },  
     sidebar: [
       {
         text: 'K8S',
@@ -69,11 +71,11 @@ export default {
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/chengkanghua/k8s-2023' }
+      { icon: 'github', link: 'https://github.com/chengkanghua/' }
     ],
 
     footer: {
-      message: `<a href="https://beian.miit.gov.cn/" target="_blank">京ICP备20016634号-2</a>`,
+      message: `<a href="https://beian.miit.gov.cn/" target="_blank"> 赣ICP备2022002833号-1</a>`,
       copyright: `版权所有 © 2019-${new Date().getFullYear()} 程康华`,
     },
 
@@ -102,26 +104,18 @@ export default {
     darkModeSwitchLabel: "主题",
     lightModeSwitchTitle: "切换到浅色模式",
     darkModeSwitchTitle: "切换到深色模式",
-
   },
 
-  // 解决   Github Pages 阻止了以下划线字符结尾的文件，所以会导致这个文件请求返回404
-//   rollupOptions: {
-//     output: {
-//       manualChunks: {},
-//       chunkFileNames: 'assets/[name]-[hash].js',
-//       entryFileNames: 'assets/[name]-[hash].js',
-//       assetFileNames: 'assets/[name]-[hash].[ext]',
-//       // 解决文件名中的非法字符
-//       sanitizeFileName: (name) => {
-//         const match = DRIVE_LETTER_REGEX.exec(name)
-//         const driveLetter = match ? match[0] : ''
-//         return (
-//           driveLetter + name.slice(driveLetter.length).replace(INVALID_CHAR_REGEX, '')
-//         )
-//       }
-//     }
-//   }
+
+  // 启用markdown行号显示
+  markdown: {
+    lineNumbers: true,
+    image: {
+      // 默认禁用；设置为 true 可为所有图片启用懒加载。
+      lazyLoading: true
+    },
+
+  },
 
 
 

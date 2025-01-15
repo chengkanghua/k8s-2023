@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/chengkanghua/k8s-2023/issues"
   },
-  "homepage": "https://github.com/chengkanghua/k8s-2023#readme"
+  "homepage": "https://github.com/chengkanghua/k8s-2023#readme",
+  "devDependencies": {
+    "medium-zoom": "^1.1.0"
+  }
 }
