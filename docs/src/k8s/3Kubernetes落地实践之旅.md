@@ -2662,7 +2662,7 @@ echo '172.16.1.226 eladmin-api.luffy.com' >> /etc/hosts
 
   前端代码调整，因此需要重新构建一版前端：
 
-  ```bas
+  ```bash
   docker build . -t 172.16.1.226:5000/eladmin/eladmin-web:v2
   docker push 172.16.1.226:5000/eladmin/eladmin-web:v2
   ```
@@ -3056,7 +3056,7 @@ echo '172.16.1.226 eladmin-api.luffy.com' >> /etc/hosts
   
   前端代码调整，因此需要重新构建一版前端：
   
-  ```bas
+  ```bash
   docker build . -t 172.16.1.226:5000/eladmin/eladmin-web:v3
   docker push 172.16.1.226:5000/eladmin/eladmin-web:v3
   ```
@@ -3268,7 +3268,7 @@ docker push 172.16.1.226:5000/eladmin/eladmin-web:v4
 
 前端代码调整，因此需要重新构建一版前端：
 
-```bas
+```bash
 docker build . -t 172.16.1.226:5000/eladmin/eladmin-web:v4
 docker push 172.16.1.226:5000/eladmin/eladmin-web:v4
 ```
