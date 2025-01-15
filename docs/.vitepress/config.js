@@ -35,8 +35,8 @@ export default {
     ],
     ["link", { rel: "shortcut icon", href: "/favicon-16x16.png" }],
   ],
-  outDir: "dist", 
-//   srcDir: "src", 
+  // outDir: "dist", 
+  //   srcDir: "src", 
 
   themeConfig: {
     logo: "/logo.png",
