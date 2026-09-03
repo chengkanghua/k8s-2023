@@ -1,5 +1,20 @@
 node_modules
 docs/.vitepress/cache/
 
+# --- MkDocs / Python ---
+.venv/
+venv/
+env/
+site/                 # mkdocs 构建输出（默认目录）
+.site_check/          # 临时校验构建目录
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.idea/
+.vscode/
+.DS_Store
+
 
 

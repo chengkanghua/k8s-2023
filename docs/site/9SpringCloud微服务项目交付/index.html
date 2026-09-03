@@ -1,0 +1,2992 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>SpringCloud微服务项目交付 - k8s-2023</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "SpringCloud\u5fae\u670d\u52a1\u9879\u76ee\u4ea4\u4ed8";
+        var mkdocs_page_input_path = "9SpringCloud\u5fae\u670d\u52a1\u9879\u76ee\u4ea4\u4ed8.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> k8s-2023
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../1%E8%B5%B0%E8%BF%9BDocker%E7%9A%84%E4%B8%96%E7%95%8C/">走进Docker的世界</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../2Kubernetes%E5%AE%89%E8%A3%85%E6%96%87%E6%A1%A3/">Kubernetes安装文档</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85/">Kubernetes落地实践之旅</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5/">Kubernetes进阶实践</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../5%E5%9F%BA%E4%BA%8EEFK%E7%9A%84Kubernetes%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E6%96%B9%E6%A1%88/">基于EFK的Kubernetes日志采集方案</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88/">基于Prometheus的Kubernetes监控方案</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5/">基于Kubernetes的DevOps平台实践</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../8%E5%9F%BA%E4%BA%8EsharedLibrary%E8%BF%9B%E8%A1%8CCICD%E6%B5%81%E7%A8%8B%E7%9A%84%E4%BC%98%E5%8C%96/">基于sharedLibrary进行CICD流程的优化</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">SpringCloud微服务项目交付</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_2">单体应用架构</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">微服务应用架构</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_4">微服务架构问题及挑战</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_5">微服务框架</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#spring-cloud">了解Spring Cloud</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#_6">核心项目及组件</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dubbo">与Dubbo对比</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">基于Istio实现微服务治理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">问题记录</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">k8s-2023</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">SpringCloud微服务项目交付</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="_1"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务扫盲篇">微服务扫盲篇</a></h1>
+<p>微服务并没有一个官方的定义，想要直接描述微服务比较困难，我们可以通过对比传统WEB应用，来理解什么是微服务。</p>
+<h6 id="_2"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=单体应用架构">单体应用架构</a></h6>
+<p>如下是传统打车软件架构图：</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/single.jpg" /></p>
+<p>这种单体应用比较适合于小项目，优点是：</p>
+<ul>
+<li>开发简单直接，集中式管理</li>
+<li>基本不会重复开发</li>
+<li>功能都在本地，没有分布式的管理开销和调用开销</li>
+</ul>
+<p>当然它的缺点也十分明显，特别对于互联网公司来说：</p>
+<ul>
+<li>开发效率低：所有的开发在一个项目改代码，递交代码相互等待，代码冲突不断</li>
+<li>代码维护难：代码功能耦合在一起，新人不知道何从下手</li>
+<li>部署不灵活：构建时间长，任何小修改必须重新构建整个项目，这个过程往往很长</li>
+<li>稳定性不高：一个微不足道的小问题，可以导致整个应用挂掉</li>
+<li>扩展性不够：无法满足高并发情况下的业务需求</li>
+</ul>
+<h6 id="_3"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务应用架构">微服务应用架构</a></h6>
+<p>微服务架构的设计思路不是开发一个巨大的单体式应用，而是将应用分解为小的、互相连接的微服务。一个微服务完成某个特定功能，比如乘客管理和下单管理等。每个微服务都有自己的业务逻辑和适配器。一些微服务还会提供API接口给其他微服务和应用客户端使用。</p>
+<p>比如，前面描述的系统可被分解为：</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/micro-svcs.jpg" /></p>
+<p>每个业务逻辑都被分解为一个微服务，微服务之间通过REST API通信。一些微服务也会向终端用户或客户端开发API接口。但通常情况下，这些客户端并不能直接访问后台微服务，而是通过API Gateway来传递请求。API Gateway一般负责服务路由、负载均衡、缓存、访问控制和鉴权等任务。</p>
+<p>微服务架构优点：</p>
+<ul>
+<li>解决了复杂性问题。它将单体应用分解为一组服务。虽然功能总量不变，但应用程序已被分解为可管理的模块或服务</li>
+<li>体系结构使得每个服务都可以由专注于此服务的团队独立开发。只要符合服务API契约，开发人员可以自由选择开发技术。这就意味着开发人员可以采用新技术编写或重构服务，由于服务相对较小，所以这并不会对整体应用造成太大影响</li>
+<li>微服务架构可以使每个微服务独立部署。这些更改可以在测试通过后立即部署。所以微服务架构也使得CI／CD成为可能</li>
+</ul>
+<h6 id="_4"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务架构问题及挑战">微服务架构问题及挑战</a></h6>
+<p>微服务的一个主要缺点是微服务的分布式特点带来的复杂性。开发人员需要基于RPC或者消息实现微服务之间的调用和通信，而这就使得服务之间的发现、服务调用链的跟踪和质量问题变得的相当棘手。</p>
+<ol>
+<li>微服务的一大挑战是跨多个服务的更改</li>
+<li>比如在传统单体应用中，若有A、B、C三个服务需要更改，A依赖B，B依赖C。我们只需更改相应的模块，然后一次性部署即可。</li>
+<li>在微服务架构中，我们需要仔细规划和协调每个服务的变更部署。我们需要先更新C，然后更新B，最后更新A。</li>
+<li>部署基于微服务的应用也要复杂得多</li>
+<li>单体应用可以简单的部署在一组相同的服务器上，然后前端使用负载均衡即可。</li>
+<li>微服务由不同的大量服务构成。每种服务可能拥有自己的配置、应用实例数量以及基础服务地址。这里就需要不同的配置、部署、扩展和监控组件。此外，我们还需要服务发现机制，以便服务可以发现与其通信的其他服务的地址</li>
+</ol>
+<p>以上问题和挑战可大体概括为：</p>
+<ul>
+<li>
+<p>API Gateway</p>
+</li>
+<li>
+<p>服务发现</p>
+</li>
+<li>
+<p>服务容错</p>
+</li>
+<li>
+<p>服务部署</p>
+</li>
+<li>
+<p>数据调用</p>
+</li>
+</ul>
+<p>https://www.kancloud.cn/owenwangwen/open-capacity-platform/1480155，自助餐吃吃喝喝，竟然秒懂微服务</p>
+<h5 id="_5"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务框架">微服务框架</a></h5>
+<p>如何应对上述挑战，出现了如下微服务领域的框架：</p>
+<ul>
+<li>Spring Cloud（各个微服务基于Spring Boot实现）</li>
+<li>Dubbo</li>
+<li>Service Mesh</li>
+<li>Linkerd</li>
+<li>Envoy</li>
+<li>Conduit</li>
+<li>Istio</li>
+</ul>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/81805411.jpg" /></p>
+<h4 id="spring-cloud"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=了解spring-cloud">了解Spring Cloud</a></h4>
+<p><a href="https://spring.io/">https://spring.io</a></p>
+<h5 id="_6"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=核心项目及组件">核心项目及组件</a></h5>
+<p>https://spring.io/projects</p>
+<h5 id="dubbo"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=与dubbo对比">与Dubbo对比</a></h5>
+<p>做一个简单的功能对比：</p>
+<table>
+<thead>
+<tr>
+<th>核心要素</th>
+<th>Dubbo</th>
+<th>Spring Cloud</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务注册中心</td>
+<td>Zookeeper</td>
+<td>Spring Cloud Netflix Eureka</td>
+</tr>
+<tr>
+<td>服务调用方式</td>
+<td>RPC</td>
+<td>REST API</td>
+</tr>
+<tr>
+<td>服务监控</td>
+<td>Dubbo-monitor</td>
+<td>Spring Boot Admin</td>
+</tr>
+<tr>
+<td>断路器</td>
+<td>不完善</td>
+<td>Spring Cloud Netflix Hystrix</td>
+</tr>
+<tr>
+<td>服务网关</td>
+<td>无</td>
+<td>Spring Cloud Netflix Zuul</td>
+</tr>
+<tr>
+<td>分布式配置</td>
+<td>无</td>
+<td>Spring Cloud Config</td>
+</tr>
+<tr>
+<td>服务跟踪</td>
+<td>无</td>
+<td>Spring Cloud Sleuth</td>
+</tr>
+<tr>
+<td>消息总线</td>
+<td>无</td>
+<td>Spring Cloud Bus</td>
+</tr>
+<tr>
+<td>数据流</td>
+<td>无</td>
+<td>Spring Cloud Stream</td>
+</tr>
+<tr>
+<td>批量任务</td>
+<td>无</td>
+<td>Spring Cloud Task</td>
+</tr>
+<tr>
+<td>……</td>
+<td>……</td>
+<td>……</td>
+</tr>
+</tbody>
+</table>
+<p><strong>从上图可以看出其实Dubbo的功能只是Spring Cloud体系的一部分。</strong></p>
+<p>这样对比是不够公平的，首先<code>Dubbo</code>是<code>SOA</code>时代的产物，它的关注点主要在于服务的调用，流量分发、流量监控和熔断。而<code>Spring Cloud</code>诞生于微服务架构时代，考虑的是微服务治理的方方面面，另外由于依托了<code>Spirng</code>、<code>Spirng Boot</code>的优势之上，两个框架在开始目标就不一致，<code>Dubbo</code>定位服务治理、<code>Spirng Cloud</code>是一个生态。</p>
+<h1 id="springboot">SpringBoot交付实战</h1>
+<h2 id="_7">项目演示</h2>
+<h4 id="spring-boot"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=spring-boot交付实践">Spring Boot交付实践</a></h4>
+<h5 id="spring-boot_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=从零开始创建spring-boot项目">从零开始创建Spring Boot项目</a></h5>
+<p>通过File &gt; New &gt; Project，新建工程，选择Spring Initializr</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-1.jpg" /></p>
+<p>配置Project Metadata：</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-2.jpg" /></p>
+<p>配置Dependencies依赖包：</p>
+<p>选择：Web分类中的Spring web和Template Engines中的Thymeleaf</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-3.jpg" /></p>
+<p>配置maven settings.xml：</p>
+<p>默认使用IDE自带的maven，换成自己下载的，下载地址：</p>
+<p>链接: https://pan.baidu.com/s/1z9dRGv_4bS1uxBtk5jsZ2Q 提取码: 3gva</p>
+<p>解压后放到<code>D:\software\apache-maven-3.6.3</code>,修改<code>D:\software\apache-maven-3.6.3\conf\settings.xml</code> 文件：</p>
+<pre class="highlight"><code class="language-bash">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"&gt;
+  &lt;localRepository&gt;D:\opt\maven-repo&lt;/localRepository&gt;
+
+  &lt;pluginGroups&gt;
+  &lt;/pluginGroups&gt;
+
+  &lt;proxies&gt;
+  &lt;/proxies&gt;
+
+  &lt;servers&gt;
+  &lt;/servers&gt;
+
+  &lt;mirrors&gt;
+        &lt;mirror&gt;
+            &lt;id&gt;alimaven&lt;/id&gt;
+            &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;
+            &lt;name&gt;aliyun maven&lt;/name&gt;
+            &lt;url&gt;http://maven.aliyun.com/nexus/content/repositories/central/&lt;/url&gt;
+        &lt;/mirror&gt;
+        &lt;mirror&gt;
+            &lt;id&gt;nexus-aliyun&lt;/id&gt;
+            &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;
+            &lt;name&gt;Nexus aliyun&lt;/name&gt;
+            &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public&lt;/url&gt;
+        &lt;/mirror&gt;
+  &lt;/mirrors&gt;
+
+&lt;/settings&gt;</code></pre>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-4.png" /></p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-5.jpg" /></p>
+<blockquote>
+<p>springboot版本为2.3.6.RELEASE</p>
+</blockquote>
+<p>默认生成的SpringBoot版本为2.5.2，换成2.3.6.RELEASE版本</p>
+<pre class="highlight"><code class="language-xml">...
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.3.6.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+...</code></pre>
+<p>直接启动项目并访问本地服务：<code>localhost:8080</code></p>
+<h5 id="_8"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=编写功能代码">编写功能代码</a></h5>
+<p>创建controller包及<code>HelloController.java</code>文件</p>
+<pre class="highlight"><code class="language-java">package com.luffy.springbootdemo.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    public String hello(String name) {
+        return "Hello, " + name;
+    }
+}</code></pre>
+<p>保存并在浏览器中访问<code>localhost:8080/hello?name=luffy</code></p>
+<p>如果页面复杂，如何实现？</p>
+<p>在<code>resources/templates/</code>目录下新建<code>index.html</code></p>
+<pre class="highlight"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Devops&lt;/title&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="container"&gt;
+    &lt;h3 th:text="${requestname}"&gt;&lt;/h3&gt;
+    &lt;a id="rightaway" href="#" th:href="@{/rightaway}" &gt;立即返回&lt;/a&gt;
+    &lt;a id="sleep" href="#" th:href="@{/sleep}"&gt;延时返回&lt;/a&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>完善<code>HelloController.java</code>的内容：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.springbootdemo.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+@RestController
+public class HelloController {
+
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    public String hello(String name) {
+        return "Hello, " + name;
+    }
+
+    @RequestMapping("/")
+    public ModelAndView index(ModelAndView mv) {
+        mv.setViewName("index");
+        mv.addObject("requestname", "This is index");
+        return mv;
+    }
+
+    @RequestMapping("/rightaway")
+    public ModelAndView returnRightAway(ModelAndView mv) {
+        mv.setViewName("index");
+        mv.addObject("requestname","This request is RightawayApi");
+        return mv;
+    }
+
+    @RequestMapping("/sleep")
+    public ModelAndView returnSleep(ModelAndView mv) throws InterruptedException {
+        Thread.sleep(2*1000);
+        mv.setViewName("index");
+        mv.addObject("requestname","This request is SleepApi"+",it will sleep 2s !");
+        return mv;
+    }
+}</code></pre>
+<h2 id="maven">maven的使用</h2>
+<h5 id="javamaven"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=如何在java项目中使用maven">如何在java项目中使用maven</a></h5>
+<h6 id="maven_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=为什么需要maven">为什么需要maven</a></h6>
+<p>考虑一个常见的场景：以项目A为例，开发过程中，需要依赖B-2.0.jar的包，如果没有maven，那么正常做法是把B-2.0.jar拷贝到项目A中，但是如果B-2.0.jar还依赖C.jar，我们还需要去找到C.jar的包，因此，在开发阶段需要花费在项目依赖方面的精力会很大。</p>
+<p>因此，开发人员需要找到一种方式，可以管理java包的依赖关系，并可以方便的引入到项目中。</p>
+<h6 id="maven_2"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=maven如何工作">maven如何工作</a></h6>
+<p>查看<code>pom.xml</code></p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+        &lt;/dependency&gt;</code></pre>
+<p>可以直接在项目中添加上<code>dependency</code> ，这样来指定项目的依赖包。</p>
+<p>思考：如果<code>spring-boot-starter-thymeleaf</code>包依赖别的包，怎么办？</p>
+<p><code>spring-boot-starter-thymeleaf</code>同时也是一个maven项目，也有自己的pom.xml</p>
+<p>查看一下：</p>
+<pre class="highlight"><code class="language-xml">  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+      &lt;version&gt;2.3.3.RELEASE&lt;/version&gt;
+      &lt;scope&gt;compile&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.thymeleaf&lt;/groupId&gt;
+      &lt;artifactId&gt;thymeleaf-spring5&lt;/artifactId&gt;
+      &lt;version&gt;3.0.11.RELEASE&lt;/version&gt;
+      &lt;scope&gt;compile&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.thymeleaf.extras&lt;/groupId&gt;
+      &lt;artifactId&gt;thymeleaf-extras-java8time&lt;/artifactId&gt;
+      &lt;version&gt;3.0.4.RELEASE&lt;/version&gt;
+      &lt;scope&gt;compile&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;</code></pre>
+<p>这样的话，使用maven的项目，只需要在自己的pom.xml中把所需的最直接的依赖包定义上，而不用关心这些被依赖的jar包自身是否还有别的依赖。剩下的都交给maven去搞定。</p>
+<p>如何搞定？maven可以根据pom.xml中定义的依赖实现包的查找</p>
+<p>去哪查找？maven仓库，存储jar包的地方。</p>
+<p>当我们执行 Maven 构建命令时，Maven 开始按照以下顺序查找依赖的库：</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/maven-repo.png" /></p>
+<p>本地仓库：</p>
+<ul>
+<li>
+<p>Maven 的本地仓库，在安装 Maven 后并不会创建，它是在第一次执行 maven 命令的时候才被创建。</p>
+</li>
+<li>
+<p>运行 Maven 的时候，Maven 所需要的任何包都是直接从本地仓库获取的。如果本地仓库没有，它会首先尝试从远程仓库下载构件至本地仓库，然后再使用本地仓库的包。</p>
+</li>
+<li>
+<p>默认情况下，不管Linux还是 Windows，每个用户在自己的用户目录下都有一个路径名为 .m2/respository/ 的仓库目录。</p>
+</li>
+<li>
+<p>Maven 本地仓库默认被创建在 %USER_HOME% 目录下。要修改默认位置，在 %M2_HOME%\conf 目录中的 Maven 的 settings.xml 文件中定义另一个路径。</p>
+<pre class="highlight"><code class="language-xml">&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"&gt;
+  &lt;localRepository&gt;D:\opt\maven-repo&lt;/localRepository&gt;
+&lt;/settings&gt;</code></pre>
+</li>
+</ul>
+<p>中央仓库：</p>
+<p>Maven 中央仓库是由 Maven 社区提供的仓库，中央仓库包含了绝大多数流行的开源Java构件，以及源码、作者信息、SCM、信息、许可证信息等。一般来说，简单的Java项目依赖的构件都可以在这里下载到。</p>
+<p>中央仓库的关键概念：</p>
+<ul>
+<li>这个仓库由 Maven 社区管理。</li>
+<li>不需要配置，maven中集成了地址 http://repo1.maven.org/maven2</li>
+<li>需要通过网络才能访问。</li>
+</ul>
+<p>私服仓库：</p>
+<p>通常使用 sonatype Nexus来搭建私服仓库。搭建完成后，需要在 setting.xml中进行配置，比如：</p>
+<pre class="highlight"><code class="language-xml">&lt;profile&gt;
+    &lt;id&gt;localRepository&lt;/id&gt;
+    &lt;repositories&gt;
+        &lt;repository&gt;
+            &lt;id&gt;myRepository&lt;/id&gt;
+            &lt;name&gt;myRepository&lt;/name&gt;
+            &lt;url&gt;http://127.0.0.1:8081/nexus/content/repositories/myRepository/&lt;/url&gt;
+            &lt;releases&gt;
+                &lt;enabled&gt;true&lt;/enabled&gt;
+            &lt;/releases&gt;
+            &lt;snapshots&gt;
+                &lt;enabled&gt;true&lt;/enabled&gt;
+            &lt;/snapshots&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
+&lt;/profile&gt;</code></pre>
+<p>方便起见，我们直接使用国内ali提供的仓库，修改 maven 根目录下的 conf 文件夹中的 setting.xml 文件，在 mirrors 节点上，添加内容如下：</p>
+<pre class="highlight"><code class="language-xml">&lt;mirrors&gt;
+    &lt;mirror&gt;
+      &lt;id&gt;alimaven&lt;/id&gt;
+      &lt;name&gt;aliyun maven&lt;/name&gt;
+      &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt;
+      &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;        
+    &lt;/mirror&gt;
+&lt;/mirrors&gt;</code></pre>
+<p>在执行构建的时候，maven会自动将所需的包下载到本地仓库中，所以第一次构建速度通常会慢一些，后面速度则很快。</p>
+<p>那么maven是如何找到对应的jar包的？</p>
+<p>我们可以访问 https://mvnrepository.com/ 查看在仓库中的jar包的样子。</p>
+<pre class="highlight"><code class="language-xml">&lt;!-- https://mvnrepository.com/artifact/commons-collections/commons-collections --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;commons-collections&lt;/groupId&gt;
+    &lt;artifactId&gt;commons-collections&lt;/artifactId&gt;
+    &lt;version&gt;3.2.2&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+<p>刚才看到<code>spring-boot-starter-thymeleaf</code>的依赖同样有上述属性，因此maven就可以根据这三项属性，到对应的仓库中去查找到所需要的依赖包，并下载到本地。</p>
+<p>其中<code>groupId、artifactId、version</code>共同保证了包在仓库中的唯一性，这也就是为什么maven项目的pom.xml中都先配置这几项的原因，因为项目最终发布到远程仓库中，供别人调用。</p>
+<p>思考：我们项目的<code>dependency</code>中为什么没有写<code>version</code> ?</p>
+<p>是因为sprintboot项目的<code>上面有人</code>，来看一下项目<code>parent</code>的写法：</p>
+<pre class="highlight"><code class="language-xml">    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.3.6.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;</code></pre>
+<p>parent模块中定义过的<code>dependencies</code>，在子项目中引用的话，不需要指定版本，这样可以保证所有的子项目都使用相同版本的依赖包。</p>
+<h6 id="mvn"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=生命周期及mvn命令实践">生命周期及mvn命令实践</a></h6>
+<p>Maven有三套相互独立的生命周期，分别是clean、default和site。每个生命周期包含一些阶段（phase），阶段是有顺序的，后面的阶段依赖于前面的阶段。</p>
+<ul>
+<li>clean生命周期，清理项目</li>
+<li>清理：mvn clean　　　 --删除target目录，也就是将class文件等删除</li>
+<li>default生命周期，项目的构建等核心阶段</li>
+<li>编译：mvn compile　　--src/main/java目录java源码编译生成class （target目录下）</li>
+<li>测试：mvn test　　　　--src/test/java 执行目录下的测试用例</li>
+<li>打包：mvn package　　--生成压缩文件：java项目#jar包；web项目#war包，也是放在target目录下</li>
+<li>安装：mvn install　　　--将压缩文件(jar或者war)上传到本地仓库</li>
+<li>部署|发布：mvn deploy　　--将压缩文件上传私服</li>
+<li>site生命周期，建立和发布项目站点</li>
+<li>站点 : mvn site --生成项目站点文档</li>
+</ul>
+<p>各个生命周期相互独立，一个生命周期的阶段前后依赖。 生命周期阶段需要绑定到某个插件的目标才能完成真正的工作，比如test阶段正是与maven-surefire-plugin的test目标相绑定了 。</p>
+<p>举例如下：</p>
+<ul>
+<li>mvn clean</li>
+</ul>
+<p>调用clean生命周期的clean阶段</p>
+<ul>
+<li>mvn test</li>
+</ul>
+<p>调用default生命周期的test阶段，实际执行test以及之前所有阶段</p>
+<ul>
+<li>mvn clean install</li>
+</ul>
+<p>调用clean生命周期的clean阶段和default的install阶段，实际执行clean，install以及之前所有阶段</p>
+<p>在linux环境中演示：</p>
+<p>创建gitlab组，<code>luffy-spring-cloud</code>,在该组下创建项目<code>springboot-demo</code></p>
+<ul>
+<li>
+<p>提交代码到git仓库</p>
+<pre class="highlight"><code class="language-bash">$ git init
+$ git remote add origin http://gitlab.luffy.com/luffy-spring-cloud/springboot-demo.git
+$ git add .
+$ git commit -m "Initial commit"
+$ git push -u origin master</code></pre>
+</li>
+<li>
+<p>使用tools容器来运行</p>
+<pre class="highlight"><code class="language-bash">$ docker run --rm -ti 172.21.51.143:5000/devops/tools:v3 bash
+bash-5.0# mvn -v
+bash: mvn: command not found
+# 由于idea工具自带了maven，所以可以直接在ide中执行mvn命令。在tools容器中，需要安装mvn命令</code></pre>
+<p>为tools镜像集成mvn：</p>
+<p>将本地的<code>apache-maven-3.6.3</code>放到<code>tools</code>项目中，修改<code>settings.xml</code>配置</p>
+<pre class="highlight"><code class="language-xml">...
+&lt;localRepository&gt;/opt/maven-repo&lt;/localRepository&gt;
+...</code></pre>
+<p>修改mirrors：</p>
+<pre class="highlight"><code class="language-bash">&lt;mirrors&gt;
+    &lt;mirror&gt;
+      &lt;id&gt;alimaven&lt;/id&gt;
+      &lt;name&gt;aliyun maven&lt;/name&gt;
+      &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt;
+      &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;        
+    &lt;/mirror&gt;
+&lt;/mirrors&gt;</code></pre>
+<p>然后修改Dockerfile，添加如下部分:</p>
+<pre class="highlight"><code class="language-dockerfile">#-----------------安装 maven--------------------#
+COPY apache-maven-3.6.3 /usr/lib/apache-maven-3.6.3
+RUN ln -s /usr/lib/apache-maven-3.6.3/bin/mvn /usr/local/bin/mvn &amp;&amp; chmod +x /usr/local/bin/mvn
+ENV MAVEN_HOME=/usr/lib/apache-maven-3.6.3
+#------------------------------------------------#</code></pre>
+</li>
+</ul>
+<p>去master节点拉取最新代码，构建最新的tools镜像：</p>
+<pre class="highlight"><code class="language-bash">  # k8s-master节点
+  $ git pull
+  $ docker build . -t 172.21.51.143:5000/devops/tools:v4 -f Dockerfile
+  $ docker push 172.21.51.143:5000/devops/tools:v4</code></pre>
+<p>再次尝试mvn命令：</p>
+<pre class="highlight"><code class="language-bash">$ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -ti 172.21.51.143:5000/devops/tools:v4 bash
+bash-5.0# mvn -v
+bash-5.0# git clone http://gitlab.luffy.com/luffy-spring-cloud/springboot-demo.git
+bash-5.0# cd springboot-demo
+bash-5.0# mvn clean
+# 观察/opt/maven目录
+bash-5.0# mvn package
+# 多阶段组合
+bash-5.0# mvn clean package</code></pre>
+<p>想系统学习maven，可以参考： https://www.runoob.com/maven/maven-pom.html</p>
+<h2 id="springboot-cicd">springboot 项目接入cicd</h2>
+<h5 id="springboot_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=springboot服务镜像制作">Springboot服务镜像制作</a></h5>
+<p>通过<code>mvn package</code>命令拿到服务的jar包后，我们可以使用如下命令启动服务：</p>
+<pre class="highlight"><code class="language-bash">$ java -jar springboot-demo-0.0.1-SNAPSHOT.jar</code></pre>
+<p>因此，需要准备Dockerfile来构建镜像：</p>
+<pre class="highlight"><code class="language-dockerfile">FROM openjdk:8-jdk-alpine
+COPY target/springboot-demo-0.0.1-SNAPSHOT.jar app.jar
+CMD [ "sh", "-c", "java -jar /app.jar" ]</code></pre>
+<p>我们可以为构建出的镜像指定名称：</p>
+<pre class="highlight"><code class="language-xml">    &lt;build&gt;
+        &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;&lt;!--打jar包去掉版本号--&gt;
+    ...</code></pre>
+<p><code>Dockerfile</code>对应修改：</p>
+<pre class="highlight"><code class="language-dockerfile">FROM openjdk:8-jdk-alpine
+COPY target/springboot-demo.jar app.jar
+CMD [ "sh", "-c", "java -jar /app.jar" ]</code></pre>
+<p>执行镜像构建，验证服务启动是否正常：</p>
+<pre class="highlight"><code class="language-bash">$ docker build . -t springboot-demo:v1 -f Dockerfile
+
+$ docker run -d --name springboot-demo -p 8080:8080 springboot-demo:v1
+
+$ curl localhost:8080</code></pre>
+<h5 id="cicd"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=接入cicd流程">接入CICD流程</a></h5>
+<p>之前已经实现了shared-library，并且把python项目接入到了CICD 流程中。因此，可以直接使用已有的流程，把spring boot项目接入进去。</p>
+<ul>
+<li><code>Jenkinsfile</code></li>
+<li><code>sonar-project.properties</code></li>
+<li><code>manifests/deployment.yaml</code></li>
+<li><code>manifests/service.yaml</code></li>
+<li><code>manifests/ingress.yaml</code></li>
+<li><code>configmap/devops-config</code></li>
+</ul>
+<pre class="highlight"><code>Jenkinsfile
+@Library('luffy-devops') _
+
+pipeline {
+    agent { label 'jnlp-slave'}
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+        gitLabConnection('gitlab')
+    }
+    environment {
+        IMAGE_REPO = "172.21.51.143:5000/spring-cloud/springboot-demo"
+        IMAGE_CREDENTIAL = "credential-registry"
+        DINGTALK_CREDS = credentials('dingTalk')
+        PROJECT = "springboot-demo"
+    }
+    stages {
+        stage('checkout') {
+            steps {
+                container('tools') {
+                    checkout scm
+                }
+            }
+        }
+        stage('mvn-package') {
+            steps {
+                container('tools') {
+                    script{
+                        sh 'mvn clean package'
+                    }
+                }
+            }
+        }
+        stage('CI'){
+            failFast true
+            parallel {
+                stage('Unit Test') {
+                    steps {
+                        echo "Unit Test Stage Skip..."
+                    }
+                }
+                stage('Code Scan') {
+                    steps {
+                        container('tools') {
+                            script {
+                               devops.scan().start()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('docker-image') {
+            steps {
+                container('tools') {
+                    script{
+                        devops.docker(
+                            "${IMAGE_REPO}",
+                            "${GIT_COMMIT}",
+                            IMAGE_CREDENTIAL
+                        ).build().push()
+                    }
+                }
+            }
+        }
+        stage('deploy') {
+            steps {
+                container('tools') {
+                    script{
+                        devops.deploy("manifests",true,"manifests/deployment.yaml").start()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script{
+                devops.notificationSuccess(PROJECT,"dingTalk")
+            }
+        }
+        failure {
+            script{
+                devops.notificationFailure(PROJECT,"dingTalk")
+            }
+        }
+    }
+}
+sonar-project.properties
+sonar.projectKey=springboot-demo
+sonar.projectName=springboot-demo
+# if you want disabled the DTD verification for a proxy problem for example, true by default
+# JUnit like test report, default value is test.xml
+sonar.sources=src/main/java
+sonar.language=java
+sonar.tests=src/test/java
+sonar.java.binaries=target/classes
+manifests/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-demo
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-demo
+  template:
+    metadata:
+      labels:
+        app: springboot-demo
+    spec:
+      containers:
+        - name: springboot-demo
+          image: {{IMAGE_URL}}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: 100Mi
+              cpu: 50m
+            limits:
+              memory: 500Mi
+              cpu: 100m
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 15
+manifests/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-demo
+  namespace: {{NAMESPACE}}
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: springboot-demo
+  sessionAffinity: None
+  type: ClusterIP
+manifests/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: springboot-demo
+  namespace: {{NAMESPACE}}
+spec:
+  rules:
+  - host: {{INGRESS_SPRINGBOOTDEMO}}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: springboot-demo
+            port:
+              number: 8080</code></pre>
+<p>维护<code>devops-config</code>的<code>configmap</code>，添加<code>INGRESS_SPRINGBOOTDEMO</code>配置项：</p>
+<pre class="highlight"><code class="language-bash">$ kubectl -n dev edit cm devops-config
+...
+data:
+  INGRESS_MYBLOG: blog-dev.luffy.com
+  INGRESS_SPRINGBOOTDEMO: springboot-dev.luffy.com
+  NAMESPACE: dev
+...</code></pre>
+<p>更新Jenkins中的jnlp-slave-pod模板镜像：</p>
+<pre class="highlight"><code class="language-bash">172.21.51.143:5000/devops/tools:v4</code></pre>
+<p>由于镜像中maven的目录是<code>/opt/maven-repo</code>，而slave-pod是执行完任务后会销毁，因此需要将maven的数据目录挂载出来，不然每次构建都会重新拉取所有依赖的jar包：</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/maven-repo-vols.jpg" /></p>
+<p>配置Jenkins流水线：</p>
+<h5 id="_9"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=添加单元测试覆盖率">添加单元测试覆盖率</a></h5>
+<p>单元测试这块内容一直没有把覆盖率统计到<code>sonarqube</code>端，本节看下怎么样将单元测试的结果及覆盖率展示到Jenkins及<code>sonarqube</code>平台中。</p>
+<p>为了展示效果，我们先添加一个单元测试文件<code>HelloControllerTests</code>：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.springbootdemo;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+@SpringBootTest
+@WebAppConfiguration
+public class HelloControllerTests {
+
+    private static final Logger logger = LoggerFactory.getLogger(HelloControllerTests.class);
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    public void setMockMvc() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
+    @Test
+    public void index(){
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.post("/")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(MockMvcResultMatchers.status().isOk())
+                    .andDo(MockMvcResultHandlers.print());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void rightaway(){
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.post("/rightaway")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(MockMvcResultMatchers.status().isOk())
+                    .andDo(MockMvcResultHandlers.print());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void sleep(){
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.post("/sleep")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(MockMvcResultMatchers.status().isOk())
+                    .andDo(MockMvcResultHandlers.print());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+}</code></pre>
+<p><code>jacoco</code>：监控JVM中的调用，生成监控结果（默认保存在<code>jacoco.exec</code>文件中），然后分析此结果，配合源代码生成覆盖率报告。</p>
+<p>如何引入<code>jacoco</code>测试：</p>
+<pre class="highlight"><code class="language-yaml">            &lt;plugin&gt;
+                &lt;groupId&gt;org.jacoco&lt;/groupId&gt;
+                &lt;artifactId&gt;jacoco-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;0.7.8&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;prepare-agent&lt;/goal&gt;
+                        &lt;/goals&gt;
+                        &lt;configuration&gt;
+                            &lt;destFile&gt;${project.build.directory}/coverage-reports/jacoco.exec&lt;/destFile&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;default-report&lt;/id&gt;
+                        &lt;phase&gt;test&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;report&lt;/goal&gt;
+                        &lt;/goals&gt;
+                        &lt;configuration&gt;
+                            &lt;dataFile&gt;${project.build.directory}/coverage-reports/jacoco.exec&lt;/dataFile&gt;
+                            &lt;outputDirectory&gt;${project.reporting.outputDirectory}/jacoco&lt;/outputDirectory&gt;
+                        &lt;/configuration&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;</code></pre>
+<p>其中：</p>
+<ul>
+<li><code>prepare-agent</code>，会把agent准备好，这样在执行用例的时候，就会使用agent检测到代码执行的过程，通常将结果保存在<code>jacoco.exec</code>中</li>
+<li><code>report</code>，分析保存的<code>jacoco.exec</code>文件，生成报告</li>
+</ul>
+<p>在IDE中添加，观察插件的goal，执行<code>mvn test</code>，观察执行过程。</p>
+<p>有了上述内容后，如何将结果发布到<code>sonarqube</code>中？</p>
+<p>提交最新代码，查看<code>sonarqube</code>的分析结果。</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/sonar-coverage.jpg" /></p>
+<h1 id="_10">服务注册中心</h1>
+<h4 id="spring-cloud_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=spring-cloud开发、交付实践">Spring Cloud开发、交付实践</a></h4>
+<p>https://spring.io/projects/spring-cloud#overview</p>
+<p>1、Netflix是一家做视频的网站，可以这么说该网站上的美剧应该是最火的。</p>
+<p>2、Netflix是一家没有CTO的公司，正是这样的组织架构能使产品与技术无缝的沟通，从而能快速迭代出更优秀的产品。在当时软件敏捷开发中，Netflix的更新速度不亚于当年的微信后台变更，虽然微信比Netflix迟发展，但是当年微信的灰度发布和敏捷开发应该算是业界最猛的。</p>
+<p>3、Netflix由于做视频的原因，访问量非常的大，从而促使其技术快速的发展在背后支撑着，也正是如此，Netflix开始把整体的系统往微服务上迁移。</p>
+<p>4、Netflix的微服务做的不是最早的，但是确是最大规模的在生产级别微服务的尝试。也正是这种大规模的生产级别尝试，在服务器运维上依托AWS云。当然AWS云同样受益于Netflix的大规模业务不断的壮大。</p>
+<p>5、Netflix的微服务大规模的应用，在技术上毫无保留的把一整套微服务架构核心技术栈开源了出来，叫做Netflix OSS，也正是如此，在技术上依靠开源社区的力量不断的壮大。</p>
+<p>6、Spring Cloud是构建微服务的核心，而Spring Cloud是基于Spring Boot来开发的。</p>
+<p>7、Pivotal在Netflix开源的一整套核心技术产品线的同时，做了一系列的封装，就变成了Spring Cloud；虽然Spring Cloud到现在为止不只有Netflix提供的方案可以集成，还有很多方案，但Netflix是最成熟的。</p>
+<blockquote>
+<p>本课程基于SpringBoot 2.3.6.RELEASE 和Spring Cloud Hoxton.SR9 版本</p>
+</blockquote>
+<h4 id="_11"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=微服务场景">微服务场景</a></h4>
+<p>开发APP，提供个人的花呗账单管理。</p>
+<ul>
+<li>注册、登录、账单查询</li>
+<li>用户服务，账单管理服务</li>
+</ul>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/demo-project.png" /></p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/arch.png" /></p>
+<h4 id="eureka"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=eureka服务注册中心">Eureka服务注册中心</a></h4>
+<p>在<code>SpringCloud</code>体系中，我们知道服务之间的调用是通过<code>http</code>协议进行调用的。而注册中心的主要目的就是维护这些服务的服务列表。</p>
+<p>https://docs.spring.io/spring-cloud-netflix/docs/3.0.3/reference/html/</p>
+<h5 id="_12"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=新建项目">新建项目</a></h5>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-eureka.jpg" /></p>
+<p>pom中引入spring-cloud的依赖：</p>
+<p>https://spring.io/projects/spring-cloud#overview</p>
+<pre class="highlight"><code class="language-xml">&lt;properties&gt;
+    &lt;spring.cloud-version&gt;Hoxton.SR9&lt;/spring.cloud-version&gt;
+&lt;/properties&gt;
+&lt;dependencyManagement&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+            &lt;version&gt;${spring.cloud-version}&lt;/version&gt;
+            &lt;type&gt;pom&lt;/type&gt;
+            &lt;scope&gt;import&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/dependencyManagement&gt;</code></pre>
+<p>引入eureka-server的依赖：</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
+        &lt;/dependency&gt;</code></pre>
+<h5 id="eureka_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=启动eureka服务">启动eureka服务</a></h5>
+<p>https://docs.spring.io/spring-cloud-netflix/docs/2.2.5.RELEASE/reference/html/#spring-cloud-eureka-server-standalone-mode</p>
+<p>application.yml</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 8761
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    hostname: localhost</code></pre>
+<p>启动类：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.eureka;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+
+@SpringBootApplication
+@EnableEurekaServer
+public class EurekaServerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(EurekaServerApplication.class, args);
+    }
+}</code></pre>
+<p>启动访问localhost:8761测试</p>
+<p>创建spring cloud项目三部曲：</p>
+<ul>
+<li>引入依赖包</li>
+<li>修改application.yml配置文件</li>
+<li>启动类添加注解</li>
+</ul>
+<h5 id="eureka_2"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=eureka认证">eureka认证</a></h5>
+<p>没有认证，不安全，添加认证：</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+        &lt;/dependency&gt;</code></pre>
+<p>application.yml</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 8761
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}/eureka/
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    hostname: localhost
+spring:
+  security:
+    user:
+      name: ${EUREKA_USER:admin}
+      password: ${EUREKA_PASS:admin}
+  application:
+    name: eureka</code></pre>
+<h5 id="eureka_3"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=注册服务到eureka">注册服务到eureka</a></h5>
+<p>新建项目，user-service（选择Spring Cloud依赖和SpringBoot Web依赖），用来提供用户查询功能。</p>
+<p>三部曲：</p>
+<ul>
+<li>pom.xml，并添加依赖</li>
+<li>创建application.yml配置文件</li>
+<li>创建Springboot启动类，并配置注解</li>
+</ul>
+<p><code>pom.xml</code>添加：</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+application.yml
+server:
+  port: 7000
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_USER:admin}:${EUREKA_PASS:admin}@localhost:8761/eureka/</code></pre>
+<p>启动类：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.user;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
+//注意这里也可使用@EnableEurekaClient
+//但由于springcloud是灵活的，注册中心支持eureka、consul、zookeeper等
+//若写了具体的注册中心注解，则当替换成其他注册中心时，又需要替换成对应的注解了。
+//所以 直接使用@EnableDiscoveryClient 启动发现。
+//这样在替换注册中心时，只需要替换相关依赖即可。
+@EnableDiscoveryClient
+@SpringBootApplication
+public class UserServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(UserServiceApplication.class, args);
+    }
+}</code></pre>
+<p>报错：</p>
+<pre class="highlight"><code class="language-yaml">c.n.d.s.t.d.RetryableEurekaHttpClient    : Request execution failed with message: com.fasterxml.jackson.databind.exc.MismatchedInputException: Root name 'timestamp' does not match expected ('instance') for type [simple type, class com.netflix.appinfo.InstanceInfo]</code></pre>
+<p>新版本的security默认开启csrf了，关掉，在注册中心新建一个类，继承WebSecurityConfigurerAdapter来关闭 ,&gt; 注意，是在eureka server端关闭。</p>
+<pre class="highlight"><code class="language-java">package com.luffy.eureka;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@EnableWebSecurity
+@Configuration
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable(); //关闭csrf
+        http.authorizeRequests().anyRequest().authenticated().and().httpBasic(); //开启认证
+    }
+}</code></pre>
+<p>再次启动发现可以注册，但是地址是</p>
+<p><img alt="image-20200915211607173" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/image-20200915211607173.png" /></p>
+<p>application.yaml</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 7000
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_USER:admin}:${EUREKA_PASS:admin}@localhost:8761/eureka/
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: user-service
+spring:
+  application:
+    name: user-service</code></pre>
+<p>Eurake有一个配置参数eureka.server.renewalPercentThreshold，定义了renews 和renews threshold的比值，默认值为0.85。当server在15分钟内，比值低于percent，即少了15%的微服务心跳，server会进入自我保护状态</p>
+<p>默认情况下，如果<code>Eureka Server</code>在一定时间内没有接收到某个微服务实例的心跳，<code>Eureka Server</code>将会注销该实例（默认90秒）。但是当网络分区故障发生时，微服务与Eureka Server之间无法正常通信，这就可能变得非常危险了，因为微服务本身是健康的，此时本不应该注销这个微服务。</p>
+<p><code>Eureka Server</code>通过“自我保护模式”来解决这个问题，当<code>Eureka Server</code>节点在短时间内丢失过多客户端时（可能发生了网络分区故障），那么这个节点就会进入自我保护模式。一旦进入该模式，<code>Eureka Server</code>就会保护服务注册表中的信息，不再删除服务注册表中的数据（也就是不会注销任何微服务）。当网络故障恢复后，该<code>Eureka Server</code>节点会自动退出自我保护模式。</p>
+<p><strong>自我保护模式是一种对网络异常的安全保护措施。使用自我保护模式，而让Eureka集群更加的健壮、稳定。</strong></p>
+<p>开发阶段可以通过配置：<code>eureka.server.enable-self-preservation=false</code>关闭自我保护模式。</p>
+<p><strong>生产阶段，理应以默认值进行配置。</strong></p>
+<p>至于具体具体的配置参数，可至官网查看：http://cloud.spring.io/spring-cloud-static/Finchley.RELEASE/single/spring-cloud.html#_appendix_compendium_of_configuration_properties</p>
+<h5 id="_13"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=高可用">高可用</a></h5>
+<p>高可用：</p>
+<ul>
+<li>优先保证可用性</li>
+<li>各个节点都是平等的，1个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务</li>
+<li>在向某个Eureka注册时如果发现连接失败，则会自动切换至其它节点，只要有一台Eureka还在，就能保证注册服务可用(保证可用性)</li>
+</ul>
+<p>注意点：</p>
+<ul>
+<li>多实例的话eureka.instance.instance-id需要保持不一样，否则会当成同一个</li>
+<li>eureka.instance.hostname要与defaultZone里的地址保持一致</li>
+<li>各个eureka的spring.application.name相同</li>
+</ul>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/eureka-cluster.jpg" /></p>
+<p>拷贝<code>eureka</code>服务，分别命名<code>eureka-ha-peer1</code>和<code>eureka-ha-peer2</code></p>
+<p>修改模块的<code>pom.xml</code></p>
+<pre class="highlight"><code class="language-xml">&lt;artifactId&gt;eureka-ha-peer1&lt;/artifactId&gt;</code></pre>
+<p>修改配置文件<code>application.yml</code>，注意集群服务，需要各个eureka的spring.application.name相同</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: ${EUREKA_PORT:8762}
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://${spring.security.user.name}:${spring.security.user.password}@peer1:8762/eureka/,http://${spring.security.user.name}:${spring.security.user.password}@peer2:8763/eureka/}
+    fetch-registry: true
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    hostname: peer1
+spring:
+  security:
+    user:
+      name: ${EUREKA_USER:admin}
+      password: ${EUREKA_PASS:admin}
+  application:
+    name: eureka-cluster</code></pre>
+<p>设置hosts文件</p>
+<pre class="highlight"><code class="language-bash">127.0.0.1 peer1 peer2</code></pre>
+<p>服务提供者若想连接高可用的eureka，需要修改：</p>
+<pre class="highlight"><code class="language-bash">      defaultZone: http://${EUREKA_USER:admin}:${EUREKA_PASS:admin}@peer1:8762/eureka/,http://${EUREKA_USER:admin}:${EUREKA_PASS:admin}@peer2:8763/eureka/</code></pre>
+<h5 id="k8s"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=k8s交付">k8s交付</a></h5>
+<p>分析：</p>
+<p>高可用互相注册，但是需要知道对方节点的地址。k8s中pod ip是不固定的，如何将高可用的eureka服务使用k8s交付？</p>
+<ul>
+<li>方案一：创建三个Deployment+三个Service</li>
+</ul>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/eureka-ha-deploy.jpg" /></p>
+<ul>
+<li>方案二：使用statefulset管理</li>
+</ul>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/eureka-sts.jpg" /></p>
+<pre class="highlight"><code>eureka-statefulset.yaml
+# eureka-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eureka-cluster
+  namespace: dev
+spec:
+  serviceName: "eureka"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eureka-cluster
+  template:
+    metadata:
+      labels:
+        app: eureka-cluster
+    spec:
+      containers:
+        - name: eureka
+          image: 172.21.51.143:5000/spring-cloud/eureka-cluster:v1
+          ports:
+            - containerPort: 8761
+          resources:
+            requests:
+              memory: 400Mi
+              cpu: 50m
+            limits:
+              memory: 2Gi
+              cpu: 2000m
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: JAVA_OPTS
+              value: -XX:+UnlockExperimentalVMOptions
+                -XX:+UseCGroupMemoryLimitForHeap
+                -XX:MaxRAMFraction=2
+                -XX:CICompilerCount=8
+                -XX:ActiveProcessorCount=8
+                -XX:+UseG1GC
+                -XX:+AggressiveOpts
+                -XX:+UseFastAccessorMethods
+                -XX:+UseStringDeduplication
+                -XX:+UseCompressedOops
+                -XX:+OptimizeStringConcat
+            - name: EUREKA_SERVER
+              value: "http://admin:admin@eureka-cluster-0.eureka:8761/eureka/,http://admin:admin@eureka-cluster-1.eureka:8761/eureka/,http://admin:admin@eureka-cluster-2.eureka:8761/eureka/"
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: ${MY_POD_NAME}.eureka
+            - name: EUREKA_PORT
+              value: "8761"
+eureka-headless-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka
+  namespace: dev
+  labels:
+    app: eureka
+spec:
+  ports:
+    - port: 8761
+      name: eureka
+  clusterIP: None
+  selector:
+    app: eureka-cluster</code></pre>
+<p>想通过ingress访问eureka，需要使用有头服务</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: eureka-ingress
+  namespace: dev
+  labels:
+    app: eureka-cluster
+spec:
+  ports:
+    - port: 8761
+      name: eureka-cluster
+  selector:
+    app: eureka-cluster</code></pre>
+<p>ingress提供访问入口：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eureka-cluster
+  namespace: dev
+spec:
+  rules:
+  - host: eureka-cluster.luffy.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: eureka-ingress
+            port:
+              number: 8761</code></pre>
+<h5 id="statefulset"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=使用statefulset管理有状态服务">使用StatefulSet管理有状态服务</a></h5>
+<p>使用StatefulSet创建多副本pod的情况：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-statefulset
+  labels:
+    app: nginx-sts
+spec:
+  replicas: 3
+  serviceName: "nginx"
+  selector:
+    matchLabels:
+      app: nginx-sts
+  template:
+    metadata:
+      labels:
+        app: nginx-sts
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80</code></pre>
+<p>无头服务Headless Service</p>
+<pre class="highlight"><code class="language-yaml">kind: Service
+apiVersion: v1
+metadata:
+  name: nginx
+spec:
+  selector:
+    app: nginx-sts
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  clusterIP: None
+$ kubectl -n spring exec  -ti nginx-statefulset-0 sh
+/ # curl nginx-statefulset-2.nginx</code></pre>
+<h5 id="cicd_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=接入cicd流程">接入CICD流程</a></h5>
+<p>所需的文件:</p>
+<ul>
+<li>Jenkinsfile</li>
+<li>Dockerfile</li>
+<li>manifests/statefulset.yaml,service.yaml</li>
+<li>sonar-project.properties</li>
+</ul>
+<p>在pom.xml中重写jar包名称：</p>
+<pre class="highlight"><code class="language-xml">&lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+Dockerfile
+FROM openjdk:8-jdk-alpine
+ADD target/eureka.jar app.jar
+ENV JAVA_OPTS=""
+CMD [ "sh", "-c", "java $JAVA_OPTS -jar /app.jar" ]
+Jenkinsfile
+@Library('luffy-devops') _
+
+pipeline {
+    agent { label 'jnlp-slave'}
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+        gitLabConnection('gitlab')
+    }
+    environment {
+        IMAGE_REPO = "172.21.51.143:5000/spring-cloud/eureka-cluster"
+        IMAGE_CREDENTIAL = "credential-registry"
+        DINGTALK_CREDS = credentials('dingTalk')
+        PROJECT = "eureka-cluster"
+    }
+    stages {
+        stage('checkout') {
+            steps {
+                container('tools') {
+                    checkout scm
+                }
+            }
+        }
+        stage('mvn-package') {
+            steps {
+                container('tools') {
+                    script{
+                        sh 'mvn clean package'
+                    }
+                }
+            }
+        }
+        stage('CI'){
+            failFast true
+            parallel {
+                stage('Unit Test') {
+                    steps {
+                        echo "Unit Test Stage Skip..."
+                    }
+                }
+                stage('Code Scan') {
+                    steps {
+                        container('tools') {
+                            script {
+                               devops.scan().start()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('docker-image') {
+            steps {
+                container('tools') {
+                    script{
+                        devops.docker(
+                            "${IMAGE_REPO}",
+                            "${GIT_COMMIT}",
+                            IMAGE_CREDENTIAL
+                        ).build().push()
+                    }
+                }
+            }
+        }
+        stage('deploy') {
+            steps {
+                container('tools') {
+                    script{
+                        devops.deploy("manifests",false,"manifests/statefulset.yaml").start()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script{
+                devops.notificationSuccess(PROJECT,"dingTalk")
+            }
+        }
+        failure {
+            script{
+                devops.notificationFailure(PROJECT,"dingTalk")
+            }
+        }
+    }
+}
+sonar-project.properties
+sonar.projectKey=eureka-cluster
+sonar.projectName=eureka-cluster
+# if you want disabled the DTD verification for a proxy problem for example, true by default
+# JUnit like test report, default value is test.xml
+sonar.sources=src/main/java
+sonar.language=java
+sonar.tests=src/test/java
+sonar.java.binaries=target/classes</code></pre>
+<p>模板化k8s资源清单：</p>
+<pre class="highlight"><code class="language-bash"># eureka-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eureka-cluster
+  namespace: {{NAMESPACE}}
+spec:
+  serviceName: "eureka"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eureka-cluster
+  template:
+    metadata:
+      labels:
+        app: eureka-cluster
+    spec:
+      containers:
+        - name: eureka
+          image: {{IMAGE_URL}}
+...</code></pre>
+<p>维护新组件的ingress:</p>
+<pre class="highlight"><code class="language-bash">$ kubectl -n dev edit configmap devops-config
+...
+  INGRESS_EUREKA: eureka.luffy.com
+...</code></pre>
+<p>部署k8s集群时，将eureka的集群地址通过参数的形式传递到pod内部，因此本地开发时，直接按照单点模式进行：</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: ${EUREKA_PORT:8761}
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://${spring.security.user.name}:${spring.security.user.password}@localhost:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: true
+spring:
+  security:
+    user:
+      name: ${EUREKA_USER:admin}
+      password: ${EUREKA_PASS:admin}
+  application:
+    name: eureka-cluster</code></pre>
+<p>提交项目：</p>
+<p>创建develop分支，CICD部署开发环境</p>
+<h1 id="_14">服务提供者</h1>
+<h4 id="_15"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=微服务间调用">微服务间调用</a></h4>
+<h5 id="_16"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=服务提供者">服务提供者</a></h5>
+<p>前面已经将用户服务注册到了eureka注册中心，但是还没有暴漏任何API给服务消费者调用。</p>
+<p>新建controller类：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.userservice.controller;
+
+
+import com.luffy.userservice.entity.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Random;
+
+@RestController
+public class UserController {
+
+    @GetMapping("/user")
+    public String getUserService(){
+        return "this is user-service";
+    }
+
+    @GetMapping("/user-nums")
+    public Integer getUserNums(){
+        return new Random().nextInt(100);
+    }
+
+    //{"id": 123, "name": "张三", "age": 20, "sex": "male"}
+    @GetMapping("/user/{id}")
+    public User getUserInfo(@PathVariable("id") int id){
+        User user = new User();
+        user.setId(id);
+        user.setAge(20);
+        user.setName("zhangsan");
+        user.setSex("male");
+        return user;
+    }
+}</code></pre>
+<p>实体类User.java</p>
+<pre class="highlight"><code class="language-java">package com.luffy.userservice.entity;
+
+public class User {
+    private int id;
+    private String name;
+    private int age;
+    private String sex;
+
+    public int getAge() {
+        return age;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+}
+application.yml</code></pre>
+<p>增加从环境变量中读取<code>EUREKA_SERVER</code>和<code>EUREKA_INSTANCE_HOSTNAME</code>配置</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 7000
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@localhost:8761/eureka/}
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: ${INSTANCE_HOSTNAME:user-service}
+spring:
+  application:
+    name: user-service</code></pre>
+<h6 id="cicd_2"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=cicd持续交付服务提供者">CICD持续交付服务提供者</a></h6>
+<pre class="highlight"><code>deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: {{IMAGE_URL}}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7000
+          resources:
+            requests:
+              memory: 400Mi
+              cpu: 50m
+            limits:
+              memory: 2Gi
+              cpu: 2000m
+          env:
+            - name: EUREKA_SERVER
+              value: "http://admin:admin@eureka-cluster-0.eureka:8761/eureka/,http://admin:admin@eureka-cluster-1.eureka:8761/eureka/,http://admin:admin@eureka-cluster-2.eureka:8761/eureka/"
+            - name: INSTANCE_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: {{NAMESPACE}}
+spec:
+  ports:
+    - port: 7000
+      protocol: TCP
+      targetPort: 7000
+  selector:
+    app: user-service
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: user-service
+  namespace: {{NAMESPACE}}
+spec:
+  rules:
+    - host: {{INGRESS_USER_SERVICE}}
+      http:
+        paths:
+          - backend:
+              serviceName: user-service
+              servicePort: 7000
+            path: /
+status:
+  loadBalancer: {}</code></pre>
+<p>ingress配置：</p>
+<pre class="highlight"><code class="language-bash">$ kubectl -n dev edit configmap devops-config
+...
+data:
+  INGRESS_MYBLOG: blog-dev.luffy.com
+  INGRESS_SPRINGBOOTDEMO: springboot-dev.luffy.com
+  INGRESS_USER_SERVICE: user-service-dev.luffy.com
+  NAMESPACE: dev
+...
+Jenkinsfile
+@Library('luffy-devops') _
+
+pipeline {
+    agent { label 'jnlp-slave'}
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+        gitLabConnection('gitlab')
+    }
+    environment {
+        IMAGE_REPO = "172.21.51.143:5000/spring-cloud/user-service"
+        IMAGE_CREDENTIAL = "credential-registry"
+        DINGTALK_CREDS = credentials('dingTalk')
+        PROJECT = "user-service"
+    }
+    stages {
+        stage('checkout') {
+            steps {
+                container('tools') {
+                    checkout scm
+                }
+            }
+        }
+        stage('mvn-package') {
+            steps {
+                container('tools') {
+                    script{
+                        sh 'mvn clean package'
+                    }
+                }
+            }
+        }
+        stage('CI'){
+            failFast true
+            parallel {
+                stage('Unit Test') {
+                    steps {
+                        echo "Unit Test Stage Skip..."
+                    }
+                }
+                stage('Code Scan') {
+                    steps {
+                        container('tools') {
+                            script {
+                               devops.scan().start()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('docker-image') {
+            steps {
+                container('tools') {
+                    script{
+                        devops.docker(
+                            "${IMAGE_REPO}",
+                            "${GIT_COMMIT}",
+                            IMAGE_CREDENTIAL
+                        ).build().push()
+                    }
+                }
+            }
+        }
+        stage('deploy') {
+            steps {
+                container('tools') {
+                    script{
+                        devops.deploy("manifests",true,"manifests/deployment.yaml").start()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script{
+                devops.notificationSuccess(PROJECT,"dingTalk")
+            }
+        }
+        failure {
+            script{
+                devops.notificationFailure(PROJECT,"dingTalk")
+            }
+        }
+    }
+}
+pom.xml
+&lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+Dockerfile
+FROM openjdk:8-jdk-alpine
+COPY target/user-service.jar app.jar
+ENV JAVA_OPTS=""
+CMD [ "sh", "-c", "java $JAVA_OPTS -jar /app.jar" ]
+sonar-project.properties
+sonar.projectKey=user-service
+sonar.projectName=user-service
+# if you want disabled the DTD verification for a proxy problem for example, true by default
+# JUnit like test report, default value is test.xml
+sonar.sources=src/main/java
+sonar.language=java
+sonar.tests=src/test/java
+sonar.java.binaries=target/classes</code></pre>
+<p>创建user-service项目，提交代码：</p>
+<pre class="highlight"><code class="language-bash">git init
+git remote add origin http://gitlab.luffy.com/luffy-spring-cloud/user-service.git
+git add .
+git commit -m "Initial commit"
+git push -u origin master
+
+# 提交到develop分支
+git checkout -b develop
+git push -u origin develop</code></pre>
+<p>创建Jenkins任务，测试自动部署</p>
+<p>访问<code>http://user-service-dev.luffy.com/</code> 验证</p>
+<h1 id="_17"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=服务消费者">服务消费者</a></h1>
+<h6 id="resttemplate"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=resttemplate">RestTemplate</a></h6>
+<p>在<code>Spring</code>中，提供了<code>RestTemplate</code>。<code>RestTemplate</code>是<code>Spring</code>提供的用于访问Rest服务的客户端。而在<code>SpringCloud</code>中也是使用此服务进行服务调用的。</p>
+<h6 id="bill-service"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=创建bill-service项目">创建bill-service项目</a></h6>
+<p>新的模块初始化三部曲：</p>
+<ul>
+<li>pom.xml</li>
+<li>启动类</li>
+<li>配置文件</li>
+</ul>
+<p><code>pom.xml</code> 添加如下内容:</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;</code></pre>
+<p>全量内容如下:</p>
+<pre class="highlight"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.3.6.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+    &lt;groupId&gt;com.luffy&lt;/groupId&gt;
+    &lt;artifactId&gt;bill-service&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;name&gt;bill-service&lt;/name&gt;
+    &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;
+    &lt;properties&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+        &lt;spring-cloud.version&gt;Hoxton.SR9&lt;/spring-cloud.version&gt;
+    &lt;/properties&gt;
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring-cloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+&lt;/project&gt;
+BillServiceApplication
+package com.luffy.billservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
+@SpringBootApplication
+@EnableDiscoveryClient
+public class BillServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(BillService.class, args);
+    }
+}</code></pre>
+<p>application.yml</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 7001
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@localhost:8761/eureka/}
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: ${INSTANCE_HOSTNAME:bill-service}
+spring:
+  application:
+    name: bill-service</code></pre>
+<p>BillController</p>
+<pre class="highlight"><code class="language-java">package com.luffy.billservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+@RestController
+public class BillController {
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @GetMapping("/bill/user")
+    public String getUserInfo(){
+        return restTemplate.getForObject("localhost:7000/user", String.class);
+    }
+}</code></pre>
+<p>问题：</p>
+<ul>
+<li>服务调用采用指定IP+Port方式，注册中心未使用</li>
+<li>多个服务负载均衡</li>
+</ul>
+<h6 id="_18"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=使用注册中心实现服务调用">使用注册中心实现服务调用</a></h6>
+<p>修改BillController</p>
+<pre class="highlight"><code class="language-java">package com.luffy.billservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+@RestController
+public class BillController {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @GetMapping("/bill/user")
+    public String getUserInfo(){
+        return restTemplate.getForObject("http://user-service/user", String.class);
+    }
+}</code></pre>
+<p>访问测试</p>
+<p><strong>总体来说，就是通过为加入<code>@LoadBalanced</code>注解的<code>RestTemplate</code>添加一个请求拦截器，在请求前通过拦截器获取真正的请求地址，最后进行服务调用。</strong></p>
+<p><strong>友情提醒：若被<code>@LoadBalanced</code>注解的<code>RestTemplate</code>访问正常的服务地址，如<code>http://127.0.0.1:8080/hello</code>时，是会提示无法找到此服务的。</strong></p>
+<p>具体原因：<code>serverid</code>必须是我们访问的<code>服务名称</code> ，当我们直接输入<code>ip</code>的时候获取的<code>server</code>是<code>null</code>，就会抛出异常。</p>
+<p>如果想继续调用，可以通过如下方式：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.billservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+@RestController
+public class BillController {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Bean("normalRestTemplate")
+    public RestTemplate normalRestTemplate() {
+        return new RestTemplate();
+    }
+
+    @Autowired
+    @Qualifier("normalRestTemplate")
+    RestTemplate normalRestTemplate;
+
+
+    @GetMapping("/service/user")
+    public String getUserInfo(){
+        return restTemplate.getForObject("http://user-service/user", String.class);
+    }
+
+    @GetMapping("/normal")
+    public String normal() {
+        return normalRestTemplate.getForObject("localhost:7000/user", String.class);
+    }
+}</code></pre>
+<h6 id="ribbon"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=ribbon-负载均衡">Ribbon 负载均衡</a></h6>
+<p>再启动一个user-service-instance2，复制user-service项目</p>
+<p>修改user-service-instance2的application.yml的server.port</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 7002
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@peer1:8761/eureka/}
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: ${INSTANCE_HOSTNAME:user-service}
+spring:
+  application:
+    name: user-service</code></pre>
+<p>修改user-service-instance2的UserController.java，为了可以区分是哪个服务提供者的实例提供的服务</p>
+<pre class="highlight"><code class="language-java">package com.luffy.userservice.controller;
+
+
+import com.luffy.userservice.entity.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Random;
+
+@RestController
+public class UserController {
+
+    @GetMapping("/user")
+    public String getUserService(){
+        return "this is user-service-instance2";
+    }
+
+    @GetMapping("/user-nums")
+    public Integer getUserNums(){
+        return new Random().nextInt(100);
+    }
+
+    //{"id": 123, "name": "张三", "age": 20, "sex": "male"}
+    @GetMapping("/user/{id}")
+    public User getUserInfo(@PathVariable("id") int id){
+        User user = new User();
+        user.setId(id);
+        user.setAge(20);
+        user.setName("zhangsan");
+        user.setSex("male");
+        return user;
+    }
+}</code></pre>
+<p>访问bill-service，查看调用结果（默认是轮询策略）</p>
+<p><code>Spring Cloud Ribbon</code>是一个基于Http和TCP的客户端负载均衡工具，它是基于<code>Netflix Ribbon</code>实现的。与<code>Eureka</code>配合使用时，<code>Ribbon</code>可自动从<code>Eureka Server (注册中心)</code>获取服务提供者地址列表，并基于<code>负载均衡</code>算法，通过在客户端中配置<code>ribbonServerList</code>来设置服务端列表去轮询访问以达到均衡负载的作用。</p>
+<blockquote>
+<p>eureka-client中包含了ribbon的包，所以不需要单独引入</p>
+</blockquote>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/ribbon-lb.jpg" /></p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/lb-cli.jpg" /></p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/lb-server.jpg" /></p>
+<p>如何修改调用策略？</p>
+<ul>
+<li>代码中指定rule的规则</li>
+<li>配置文件配置</li>
+</ul>
+<p>在bill-service中新建package，com.luffy.rule，注意不能被springboot扫描到，不然规则就成了全局规则，所有的ribbonclient都会应用到该规则。</p>
+<pre class="highlight"><code class="language-java">package com.luffy.rule;
+
+import com.netflix.loadbalancer.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class RandomConfiguration {
+
+    @Bean
+    public IRule ribbonRule() {
+        // new BestAvailableRule();
+        // new WeightedResponseTimeRule();
+        return new RandomRule();
+    }
+}</code></pre>
+<p>修改BillController</p>
+<pre class="highlight"><code class="language-java">import com.luffy.rule.RandomConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
+
+@SpringBootApplication
+@EnableDiscoveryClient
+@RibbonClient(name = "user-service", configuration = RandomConfiguration.class)
+public class BillServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(BillServiceApplication.class, args);
+    }
+}</code></pre>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/ribbon-rules.jpg" /></p>
+<p>配置文件方式： https://docs.spring.io/spring-cloud-netflix/docs/2.2.5.RELEASE/reference/html/#customizing-the-ribbon-client-by-setting-properties</p>
+<p>注释掉代码：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.ticket;
+
+import com.luffy.rule.RandomConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
+
+@SpringBootApplication
+@EnableDiscoveryClient
+//@RibbonClient(name = "USER-SERVICE", configuration = RandomConfiguration.class)
+public class TicketApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(TicketApplication.class, args);
+    }
+}</code></pre>
+<p>修改配置文件：</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: ${SERVER_PORT:9000}
+
+spring:
+  application:
+    name: bill-service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@peer1:8762/eureka/,http://admin:admin@peer2:8763/eureka/}
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+user-service:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule</code></pre>
+<h6 id="feign"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=声明式服务feign">声明式服务Feign</a></h6>
+<p>从上一章节，我们知道，当我们要调用一个服务时，需要知道服务名和api地址，这样才能进行服务调用，服务少时，这样写觉得没有什么问题，但当服务一多，接口参数很多时，上面的写法就显得不够优雅了。所以，接下来，来说说一种更好更优雅的调用服务的方式：<strong>Feign</strong>。</p>
+<blockquote>
+<p><code>Feign</code>是<code>Netflix</code>开发的声明式、模块化的HTTP客户端。<code>Feign</code>可帮助我们更好更快的便捷、优雅地调用<code>HTTP API</code>。</p>
+</blockquote>
+<p>在<code>Spring Cloud</code>中，使用<code>Feign</code>非常简单——创建一个接口，并在接口上添加一些注解。<code>Feign</code>支持多种注释，例如Feign自带的注解或者JAX-RS注解等 Spring Cloud对Feign进行了增强，使Feign支持了Spring MVC注解，并整合了Ribbon和 Eureka,从而让Feign 的使用更加方便。<strong>只需要通过创建接口并用注解来配置它既可完成对Web服务接口的绑定。</strong></p>
+<p>https://github.com/OpenFeign/feign</p>
+<p>对bill-service项目添加openfeign的依赖引入：</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;/artifactId&gt;
+        &lt;/dependency&gt;</code></pre>
+<p>启动类中引入Feign注解：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.billservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
+@SpringBootApplication
+@EnableDiscoveryClient
+@EnableFeignClients
+public class BillServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(BillServiceApplication.class, args);
+    }
+
+}</code></pre>
+<p>建立interface</p>
+<pre class="highlight"><code class="language-java">package com.luffy.billservice.interfaces;
+
+import com.luffy.billservice.entity.User;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(name="user-service")
+public interface UserServiceCli {
+
+    @GetMapping("/user")
+    public String getUserService();
+
+    @GetMapping("/user/{id}")
+    public User getUserInfo(@PathVariable("id") int id);
+}</code></pre>
+<p>拷贝User类到当前项目：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.billservice.entity;
+
+public class User {
+    private int id;
+    private String name;
+    private int age;
+    private String sex;
+
+    public int getAge() {
+        return age;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+}</code></pre>
+<p>修改BillController</p>
+<pre class="highlight"><code class="language-java">package com.luffy.billservice.controller;
+
+import com.luffy.billservice.entity.User;
+import com.luffy.billservice.interfaces.UserServiceCli;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class BillController {
+
+    @Autowired
+    private UserServiceCli userServiceCli;
+
+
+    @GetMapping("/bill/user")
+    public String getUserInfo(){
+        return userServiceCli.getUserService();
+    }
+
+    @GetMapping("/bill/user/{id}")
+    public User getUserInfo(@PathVariable("id") int id){
+        return userServiceCli.getUserInfo(id);
+        //return restTemplate.getForObject("http://USER-SERVICE/user/" + id, String.class);
+    }
+}</code></pre>
+<h6 id="cicd_3"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=cicd持续交付服务消费者">CICD持续交付服务消费者</a></h6>
+<p>拷贝user-service的交付文件，替换如下：</p>
+<ul>
+<li>user-service -&gt; bill-service</li>
+<li>7000 -&gt; 7001</li>
+<li>INGRESS_USER_SERVICE -&gt; INGRESS_BILL_SERVICE</li>
+</ul>
+<pre class="highlight"><code class="language-bash">$ kubectl -n dev edit configmap devops-config
+...
+data:
+  INGRESS_MYBLOG: blog-dev.luffy.com
+  INGRESS_SPRINGBOOTDEMO: springboot-dev.luffy.com
+  INGRESS_USER_SERVICE: user-service-dev.luffy.com
+  INGRESS_BILL_SERVICE: user-service-dev.luffy.com
+  NAMESPACE: dev
+...</code></pre>
+<p>创建develop分支，提交代码到gitlab仓库，验证持续交付</p>
+<p>前面主要讲解了下服务消费者如何利用原生、ribbon、fegin三种方式进行服务调用的，其实每种调用方式都是使用<code>restTemplate</code>来进行调用的，只是有些进行了增强，目的是使用起来更简单高效。</p>
+<h1 id="_19">断路器</h1>
+<h5 id="hystrix"><a href="http://49.7.203.222:2023/#/spring-cloud/hystrix?id=hystrix-断路器">Hystrix 断路器</a></h5>
+<p>为什么需要断路器？</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/hystrix.jpg" /></p>
+<p>A作为服务提供者，B为A的服务消费者，C和D是B的服务消费者。A不可用引起了B的不可用，并将不可用像滚雪球一样放大到C和D时，雪崩效应就形成了。</p>
+<p>因此，需要实现一种机制，可以做到自动监控服务状态并根据调用情况进行自动处理。</p>
+<ul>
+<li>记录时间周期内服务调用失败次数</li>
+<li>维护断路器的打开、关闭、半开三种状态</li>
+<li>提供fallback机制</li>
+</ul>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/netflix-hystrix.jpg" /></p>
+<p>修改bill-service项目：</p>
+<p>pom.xml</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-hystrix&lt;/artifactId&gt;
+        &lt;/dependency&gt;</code></pre>
+<p>application.xml</p>
+<pre class="highlight"><code class="language-xml">feign:
+  hystrix:
+    enabled: true</code></pre>
+<p>启动类添加注解<code>@EnableCircuitBreaker</code></p>
+<pre class="highlight"><code class="language-java">package com.luffy.billservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
+@SpringBootApplication
+@EnableDiscoveryClient
+@EnableFeignClients
+@EnableCircuitBreaker
+public class BillServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(BillServiceApplication.class, args);
+    }
+
+}
+UserServiceCli.java
+package com.luffy.bill.interfaces;
+
+import com.luffy.bill.entity.User;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(name="user-service", fallback = UserServiceFallbackImpl.class)
+public interface UserServiceCli {
+
+    @GetMapping("/user")
+    public String getUserService();
+
+    @GetMapping("/user/{id}")
+    public User getUserInfo(@PathVariable("id") int id);
+}
+UserServiceFallbackImpl.java
+package com.luffy.billservice.interfaces;
+
+import com.luffy.billservice.entity.User;
+import org.springframework.stereotype.Component;
+
+@Component("fallback")
+public class UserServiceFallbackImpl implements UserServiceCli{
+
+    @Override
+    public String getUserService() {
+        return "fallback user service";
+    }
+
+    @Override
+    public User getUserInfo(int id) {
+        User user = new User();
+        user.setId(1);
+        user.setName("feign-fallback");
+        return user;
+    }
+}</code></pre>
+<p>停止user-service测试熔断及fallback。</p>
+<p>当注册中心后面维护的服务实例出现故障后，注册中心会存在时间差来感知到服务故障，这个时间差主要通过如下方面来调节：</p>
+<ul>
+<li>
+<p>eureka server检测实例是否过期的周期时间</p>
+</li>
+<li>
+<p>eureka server端</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: ${EUREKA_PORT:8761}
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://${spring.security.user.name}:${spring.security.user.password}@localhost:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: true
+  server:
+    # 间隔5秒执行一次检测任务
+    eviction-interval-timer-in-ms: 5000
+spring:
+  security:
+    user:
+      name: ${EUREKA_USER:admin}
+      password: ${EUREKA_PASS:admin}
+  application:
+    name: eureka-cluster</code></pre>
+</li>
+<li>
+<p>eureka client注册端设置的心跳超时后剔除该实例的时间</p>
+</li>
+<li>
+<p>针对user-service</p>
+<pre class="highlight"><code class="language-bash">server:
+  port: 7000
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@localhost:8761/eureka/}
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: ${INSTANCE_HOSTNAME:user-service}
+    #eureka客户端需要多长时间发送心跳给eureka服务器，表明他仍然或者，默认30秒
+    lease-renewal-interval-in-seconds: 2
+    #eureka服务器在接受到实例的最后一次发出的心跳后，需要等待多久才可以将此实例删除
+    lease-expiration-duration-in-seconds: 2
+spring:
+  application:
+    name: user-service</code></pre>
+</li>
+<li>
+<p>eureka client 调用端的同步eureka注册表的时间周期</p>
+<p>比如针对bill-service</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 7001
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@localhost:8761/eureka/}
+    registry-fetch-interval-seconds: 5
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: ${INSTANCE_HOSTNAME:bill-service}
+spring:
+  application:
+    name: bill-service
+user-service:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+feign:
+  hystrix:
+    enabled: true</code></pre>
+</li>
+</ul>
+<p>可以通过设置eureka-client的配置来调整：</p>
+<p>比如调整user-service的配置：</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 7000
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@localhost:8761/eureka/}
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: ${INSTANCE_HOSTNAME:user-service}
+    #eureka客户端需要多长时间发送心跳给eureka服务器，表明他仍然或者，默认30秒
+    lease-renewal-interval-in-seconds: 2
+    #eureka服务器在接受到实力的最后一次发出的心跳后，需要等待多久才可以将此实力删除
+    lease-expiration-duration-in-seconds: 4
+spring:
+  application:
+    name: user-service</code></pre>
+<h6 id="hystrix-dashboard"><a href="http://49.7.203.222:2023/#/spring-cloud/hystrix?id=hystrix-dashboard">Hystrix Dashboard</a></h6>
+<p>前面一章，我们讲解了如何整合<code>Hystrix</code>。而在实际情况下，使用了<code>Hystrix</code>的同时,还会对其进行实时的数据监控，反馈各类指标数据。今天我们就将讲解下<code>Hystrix Dashboard</code>和<code>Turbine</code>.其中<code>Hystrix Dashboard</code>是一款针对<code>Hystrix</code>进行实时监控的工具，通过<code>Hystrix Dashboard</code>我们可以在直观地看到各<code>Hystrix Command</code>的<strong>请求响应时间</strong>, <strong>请求成功率</strong>等数据,监控单个实例内的指标情况。后者<code>Turbine</code>，能够将多个实例指标数据进行聚合的工具。</p>
+<p>在eureka注册中心处访问<code>bill-service</code>的服务<code>actuator</code>地址: <code>http://192.168.136.1:7001/actuator/info</code></p>
+<p>若访问不了,需要添加如下内容:</p>
+<ul>
+<li>
+<p>为服务消费者bill-service的pom.xml添加依赖:</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+        &lt;/dependency&gt;</code></pre>
+</li>
+<li>
+<p>修改application.yml配置:</p>
+<pre class="highlight"><code class="language-yaml">management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"</code></pre>
+</li>
+</ul>
+<p>访问<code>localhost:9000/actuator/hystrix.stream</code> 即可访问到断路器的执行状态，但是显示不太友好，因此需要dashboard。</p>
+<p>新建项目，hystrix-dashboard</p>
+<blockquote>
+<p><code>Hystrix-dashboard(仪表盘)</code>是一款针对Hystrix进行实时监控的工具，通过<code>Hystrix Dashboard</code>我们可以在直观地看到各<code>Hystrix Command</code>的请求响应时间, 请求成功率等数据。</p>
+</blockquote>
+<p><code>pom.xml</code>引入依赖包：</p>
+<pre class="highlight"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.3.6.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+    &lt;groupId&gt;com.luffy&lt;/groupId&gt;
+    &lt;artifactId&gt;hystrix-dashboard&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;name&gt;hystrix-dashboard&lt;/name&gt;
+    &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;
+    &lt;properties&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+        &lt;spring.cloud-version&gt;Hoxton.SR9&lt;/spring.cloud-version&gt;
+    &lt;/properties&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-hystrix-dashboard&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring.cloud-version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+&lt;/project&gt;</code></pre>
+<p>启动类加上<code>@EnableHystrixDashboard</code>注解：</p>
+<pre class="highlight"><code class="language-java">package com.luffy.hystrixdashboard;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
+
+@SpringBootApplication
+@EnableHystrixDashboard
+public class HystrixDashboardApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(HystrixDashboardApplication.class, args);
+    }
+
+}</code></pre>
+<p>application.yml</p>
+<pre class="highlight"><code class="language-yaml">#应用名称
+server:
+  port: 9696
+
+spring:
+  application:
+    name: hystrix-dashboard
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "*"</code></pre>
+<p>访问<code>localhost:9696/hystrix</code></p>
+<ul>
+<li>
+<p>实心圆：它有颜色和大小之分，分别代表实例的监控程度和流量大小。如上图所示，它的健康度从绿色、黄色、橙色、红色递减。通过该实心圆的展示，我们就可以在大量的实例中快速的发现故障实例和高压力实例。</p>
+</li>
+<li>
+<p>曲线：用来记录 2 分钟内流量的相对变化，我们可以通过它来观察到流量的上升和下降趋势。</p>
+</li>
+<li>
+<p>其他一些数量指标如下图所示</p>
+</li>
+</ul>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/hystric-dashboard.jpg" /></p>
+<h1 id="_20"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=微服务网关">微服务网关</a></h1>
+<h6 id="_21"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=为什么需要网关">为什么需要网关</a></h6>
+<p>在微服务框架中，每个对外服务都是独立部署的，对外的api或者服务地址都不是不尽相同的。对于内部而言，很简单，通过注册中心自动感知即可。但我们大部分情况下，服务都是提供给外部系统进行调用的，不可能同享一个注册中心。同时一般上内部的微服务都是在内网的，和外界是不连通的。而且，就算我们每个微服务对外开放，对于调用者而言，调用不同的服务的地址或者参数也是不尽相同的，这样就会造成消费者客户端的复杂性，同时想想，可能微服务可能是不同的技术栈实现的，有的是<code>http</code>、<code>rpc</code>或者<code>websocket</code>等等，也会进一步加大客户端的调用难度。所以，<strong>一般上都有会有个api网关，根据请求的url不同，路由到不同的服务上去，同时入口统一了，还能进行统一的身份鉴权、日志记录、分流等操作</strong>。</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/before-gateway.png" /></p>
+<h6 id="_22"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=网关的功能">网关的功能</a></h6>
+<ul>
+<li>减少api请求次数</li>
+<li>限流</li>
+<li>缓存</li>
+<li>统一认证</li>
+<li>降低微服务的复杂度</li>
+<li>支持混合通信协议(前端只和api通信，其他的由网关调用)</li>
+<li>...</li>
+</ul>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/gateway-zuul.png" /></p>
+<h6 id="zuul"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=zuul实践">Zuul实践</a></h6>
+<p>新建模块，gateway-zuul,(spring cloud)</p>
+<p>pom.xml中需要引入zuul和eureka服务发现的依赖</p>
+<pre class="highlight"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.3.6.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+    &lt;groupId&gt;com.luffy&lt;/groupId&gt;
+    &lt;artifactId&gt;gateway-zuul&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;name&gt;gateway-zuul&lt;/name&gt;
+    &lt;description&gt;gateway-zuul&lt;/description&gt;
+
+    &lt;properties&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+        &lt;spring-cloud.version&gt;Hoxton.SR9&lt;/spring-cloud.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-zuul&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring-cloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;build&gt;
+        &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;&lt;!--打jar包去掉版本号--&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+&lt;/project&gt;</code></pre>
+<p>启动类添加注解</p>
+<pre class="highlight"><code class="language-java">package com.luffy.gatewayzuul;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+
+@SpringBootApplication
+@EnableZuulProxy
+@EnableDiscoveryClient
+public class GatewayZuulApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayZuulApplication.class, args);
+    }
+
+}</code></pre>
+<p>配置文件：</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 10000
+
+spring:
+  application:
+    name: gateway-zuul
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@localhost:8761/eureka/}
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: ${INSTANCE_HOSTNAME:gateway-zuul}
+    #eureka客户端需要多长时间发送心跳给eureka服务器，表明他仍然或者，默认30秒
+    lease-renewal-interval-in-seconds: 2
+    #eureka服务器在接受到实力的最后一次发出的心跳后，需要等待多久才可以将此实力删除
+    lease-expiration-duration-in-seconds: 2</code></pre>
+<p>启动后，访问：</p>
+<p><span v-pre>
+localhost:10000/bill-service/bill/user/1
+localhost:10000/user-service/user
+</span> </p>
+<p>filter 过滤器</p>
+<p><strong>BILL-SERVICE</strong> =》 <a href="http://192.168.136.1:7001/actuator/info">bill-service:7001</a></p>
+<p>通过如下方式，配置短路径：</p>
+<pre class="highlight"><code class="language-yaml">zuul:
+  routes:
+    user-service: /users/**
+    bill-service:
+      path: /bill/**
+      service-id: bill-service
+
+&lt;span v-pre&gt;      
+localhost:10000/users/user/1
+                                                 ---&gt;  localhost:7000/user/1
+localhost:10000/user-service/user/1
+
+
+
+localhost:10000/bill/service/user/2 
+                                                 ---&gt;localhost:7001/service/user/2
+localhost:10000/bill-service/service/user/2
+
+&lt;/span&gt; </code></pre>
+<p>zuul如何指定对外暴漏api的path，如：</p>
+<p>所有的api都是这样：<code>http://zuul-host:zuul-port/apis/</code>，可以添加<code>zuul.prefix：/apis</code></p>
+<p>配置一下配置文件</p>
+<pre class="highlight"><code class="language-yaml">management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"</code></pre>
+<p>可以访问到zuul的route列表，<span v-pre>  localhost:10000/actuator/routes/ </span> ，添加details可以访问到详细信息</p>
+<pre class="highlight"><code class="language-json">{
+"/apis/users/**": "user-service",
+"/apis/bill/**": "bill-service",
+"/apis/bill-service/**": "bill-service",
+"/apis/user-service/**": "user-service"
+}</code></pre>
+<blockquote>
+<p>提交代码到代码仓库</p>
+</blockquote>
+<h1 id="_23"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=调用链路追踪">调用链路追踪</a></h1>
+<h6 id="_24"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=介绍">介绍</a></h6>
+<p>服务追踪的追踪单元是从客户发起请求（request）抵达被追踪系统的边界开始，到被追踪系统向客户返回响应（response）为止的过程，称为一个 trace。每个 trace 中会调用若干个服务，为了记录调用了哪些服务，以及每次调用的消耗时间等信息，在每次调用服务时，埋入一个调用记录，称为一个 span。这样，若干个有序的 span 就组成了一个 trace。在系统向外界提供服务的过程中，会不断地有请求和响应发生，也就会不断生成 trace，把这些带有 span 的 trace 记录下来，就可以描绘出一幅系统的服务拓扑图。附带上 span 中的响应时间，以及请求成功与否等信息，就可以在发生问题的时候，找到异常的服务；根据历史数据，还可以从系统整体层面分析出哪里性能差，定位性能优化的目标。</p>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/640.jpg" /></p>
+<p>Spring Cloud Sleuth 为服务之间调用提供链路追踪。通过 Sleuth 可以很清楚的了解到一个服务请求经过了哪些服务，每个服务处理花费了多长。从而让我们可以很方便的理清各微服务间的调用关系。此外 Sleuth 可以帮助我们：</p>
+<ul>
+<li>
+<p>耗时分析: 通过 Sleuth 可以很方便的了解到每个采样请求的耗时，从而分析出哪些服务调用比较耗时;</p>
+</li>
+<li>
+<p>链路优化: 对于调用比较频繁的服务，可以针对这些服务实施一些优化措施。</p>
+</li>
+<li>
+<p>可视化错误: 对于程序未捕捉的异常，可以通过集成 Zipkin 服务界面上看到; Spring Cloud Sleuth 可以结合 Zipkin，将信息发送到 Zipkin，利用 Zipkin 的存储来存储信息，利用 Zipkin UI 来展示数据。</p>
+</li>
+</ul>
+<p>https://zipkin.io/pages/quickstart</p>
+<h6 id="zipkin"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=启动zipkin">启动zipkin</a></h6>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+        - name: zipkin
+          image: openzipkin/zipkin:2.22
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9411
+          resources:
+            requests:
+              memory: 400Mi
+              cpu: 50m
+            limits:
+              memory: 2Gi
+              cpu: 2000m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin
+  namespace: dev
+spec:
+  ports:
+    - port: 9411
+      protocol: TCP
+      targetPort: 9411
+  selector:
+    app: zipkin
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: zipkin
+  namespace: dev
+spec:
+  rules:
+  - host: zipkin.luffy.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: zipkin
+            port:
+              number: 9411</code></pre>
+<h6 id="_25"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=实践">实践</a></h6>
+<p>分别对<code>bill-service</code>和<code>user-service</code>进行改造：</p>
+<p>pom.xml中添加：</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-zipkin&lt;/artifactId&gt;
+        &lt;/dependency&gt;</code></pre>
+<p>application.yml</p>
+<pre class="highlight"><code class="language-yaml">spring:
+  zipkin:
+    base-url: http://zipkin.luffy.com  # zipkin服务器的地址
+    sender:
+      type: web  # 设置使用http的方式传输数据
+  sleuth:
+    sampler:
+      probability: 1  # 设置抽样采集为100%，默认为0.1，即10%
+logging:
+  level:
+    org.springframework.cloud: debug</code></pre>
+<p>访问zuul网关的接口 <span v-pre> <code>localhost:10000/apis/bill-service/bill/user/2</code> </span></p>
+<h1 id="springboot-admin"><a href="http://49.7.203.222:2023/#/spring-cloud/admin?id=springboot-admin监控">SpringBoot Admin监控</a></h1>
+<p>新建项目，<code>springboot-admin</code></p>
+<pre class="highlight"><code>pom.xml
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;2.3.6.RELEASE&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+    &lt;groupId&gt;com.luffy&lt;/groupId&gt;
+    &lt;artifactId&gt;springboot-admin&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;name&gt;springboot-admin&lt;/name&gt;
+    &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;
+    &lt;properties&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+        &lt;spring-cloud.version&gt;Hoxton.SR9&lt;/spring-cloud.version&gt;
+    &lt;/properties&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;de.codecentric&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-admin-starter-server&lt;/artifactId&gt;
+            &lt;version&gt;2.2.1&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    &lt;dependencyManagement&gt;
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
+                &lt;version&gt;${spring-cloud.version}&lt;/version&gt;
+                &lt;type&gt;pom&lt;/type&gt;
+                &lt;scope&gt;import&lt;/scope&gt;
+            &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    &lt;/dependencyManagement&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+&lt;/project&gt;</code></pre>
+<p>配置文件</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 8769
+
+spring:
+  application:
+    name: springboot-admin
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://admin:admin@localhost:8761/eureka/}
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: ${INSTANCE_HOSTNAME:springboot-admin}
+    #eureka客户端需要多长时间发送心跳给eureka服务器，表明他仍然或者，默认30秒
+    lease-renewal-interval-in-seconds: 2
+    #eureka服务器在接受到实力的最后一次发出的心跳后，需要等待多久才可以将此实力删除
+    lease-expiration-duration-in-seconds: 2</code></pre>
+<p>启动类</p>
+<pre class="highlight"><code class="language-java">package com.luffy.springbootadmin;
+
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
+@SpringBootApplication
+@EnableDiscoveryClient
+@EnableAdminServer
+public class SpringbootAdminApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringbootAdminApplication.class, args);
+    }
+
+}</code></pre>
+<p>客户端，所有注册到eureka的服务，添加依赖即可</p>
+<pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;de.codecentric&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-admin-starter-client&lt;/artifactId&gt;
+            &lt;version&gt;2.2.1&lt;/version&gt;
+        &lt;/dependency&gt;</code></pre>
+<h1 id="_26"><a href="http://49.7.203.222:2023/#/spring-cloud/summary?id=小结">小结</a></h1>
+<ol>
+<li>伴随着业务场景复杂度的提高，单体架构应用弊端显现，微服务的思想逐步盛行，微服务架构带来诸多便捷的同时，也带来了很多问题，最主要的是多个微服务的服务治理（服务发现、调用、负载均衡、跟踪）</li>
+<li>为了解决服务治理问题，出现了微服务框架（Dubbo、Spring Cloud等）</li>
+<li>Spring Cloud是一个大的生态，基于Java语言封装了一系列的工具，方便业务直接使用来解决上述服务治理相关的问题</li>
+<li>Spring Cloud Netflix 体系下提供了eureka、ribbon、feign、hystrix、zuul等工具结合spring cloud sleuth合zipkin实现服务跟踪</li>
+<li>SpringBoot是微服务的开发框架，通过maven与Spring Cloud生态中的组件集成，极大方便了java应用程序的交付</li>
+</ol>
+<p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/arch-1669083777635340.png" /></p>
+<p>问题：</p>
+<ol>
+<li>无论是Dubbo还是SpringCloud，均属于Java语言体系下的产物，跨语言没法共用，同时，通过走了一遍内部集成的过程，可以清楚的发现，服务治理过程中，各模块的集成，均需要对原始业务逻辑形成侵入。</li>
+<li>在kubernetes的生态下，已经与生俱来带了很多好用的功能（自动服务发现与负载均衡）</li>
+<li>服务治理的根本其实是网络节点通信的治理，因此，以istio为代表的第二代服务治理平台开始逐步兴起</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../8%E5%9F%BA%E4%BA%8EsharedLibrary%E8%BF%9B%E8%A1%8CCICD%E6%B5%81%E7%A8%8B%E7%9A%84%E4%BC%98%E5%8C%96/" class="btn btn-neutral float-left" title="基于sharedLibrary进行CICD流程的优化"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/" class="btn btn-neutral float-right" title="基于Istio实现微服务治理">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../8%E5%9F%BA%E4%BA%8EsharedLibrary%E8%BF%9B%E8%A1%8CCICD%E6%B5%81%E7%A8%8B%E7%9A%84%E4%BC%98%E5%8C%96/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

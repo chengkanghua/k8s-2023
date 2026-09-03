@@ -1,0 +1,20 @@
+site_name: k8s-2023
+nav:
+  - 走进Docker的世界: 1走进Docker的世界.md
+  - Kubernetes安装文档: 2Kubernetes安装文档.md
+  - Kubernetes落地实践之旅: 3Kubernetes落地实践之旅.md
+  - Kubernetes进阶实践: 4Kubernetes进阶实践.md
+  - 基于EFK的Kubernetes日志采集方案: 5基于EFK的Kubernetes日志采集方案.md
+  - 基于Prometheus的Kubernetes监控方案: 6基于Prometheus的Kubernetes监控方案.md
+  - 基于Kubernetes的DevOps平台实践: 7基于Kubernetes的DevOps平台实践.md
+  - 基于sharedLibrary进行CICD流程的优化: 8基于sharedLibrary进行CICD流程的优化.md
+  - SpringCloud微服务项目交付: 9SpringCloud微服务项目交付.md
+  - 基于Istio实现微服务治理: 10基于Istio实现微服务治理.md
+  - 问题记录: 问题记录.md
+  - About: index.md
+theme: readthedocs
+
+markdown_extensions:
+  # 支持列表项内缩进的代码围栏（原生 fenced_code 只识别顶格围栏，
+  # 缩进的围栏会被当成普通文本，页面上直接显示 ```bash）
+  - pymdownx.superfences
