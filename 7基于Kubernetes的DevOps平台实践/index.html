@@ -122,7 +122,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="devops-ci-cd">DevOps CI CD 介绍</h1>
+                <h1 id="devops-ci-cd">DevOps CI CD 介绍<a class="headerlink" href="#devops-ci-cd" title="Permanent link">&para;</a></h1>
 <p>持续集成工具：</p>
 <ul>
 <li>Jenkins</li>
@@ -139,19 +139,36 @@
 <li>sonarQube代码扫描与Jenkins的集成</li>
 <li>实践Django项目的基于Jenkinsfile实现开发、测试环境的CI/CD</li>
 </ul>
-<h4 id="devopscicd"><a href="http://49.7.203.222:2023/#/devops/introduction?id=devops、ci、cd介绍">DevOps、CI、CD介绍</a></h4>
+<h4 id="devopscicd"><a href="http://49.7.203.222:2023/#/devops/introduction?id=devops、ci、cd介绍">DevOps、CI、CD介绍</a><a class="headerlink" href="#devopscicd" title="Permanent link">&para;</a></h4>
 <p>Continuous Integration (<em>CI</em>) / Continuous Delivery (<em>CD</em>)</p>
 <p>软件交付流程</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/devops-roles.jpg" /></p>
+<pre class="highlight"><code class="language-text">软件交付流程(各阶段):
+  规划 -&gt; 编码 -&gt; 构建 -&gt; 测试 -&gt; 发布 -&gt; 部署 -&gt; 维护
+  (角色: 开发 / 测试 / 运维 分工协作)</code></pre>
 <p>一个软件从零开始到最终交付，大概包括以下几个阶段：规划、编码、构建、测试、发布、部署和维护，基于这些阶段，我们的软件交付模型大致经历了几个阶段：</p>
-<h5 id="_1"><a href="http://49.7.203.222:2023/#/devops/introduction?id=瀑布式流程">瀑布式流程</a></h5>
+<h5 id="_1"><a href="http://49.7.203.222:2023/#/devops/introduction?id=瀑布式流程">瀑布式流程</a><a class="headerlink" href="#_1" title="Permanent link">&para;</a></h5>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/devops-waterfall.jpg" /></p>
+<pre class="highlight"><code class="language-text">瀑布模型:
+  需求确立
+    -&gt; 开发(数周/数月一次性开发完)
+    -&gt; 交给 QA 测试
+    -&gt; 交给 运维 部署
+  (阶段串行, 反馈慢)</code></pre>
 <p>前期需求确立之后，软件开发人员花费数周和数月编写代码，把所有需求一次性开发完，然后将代码交给QA（质量保障）团队进行测试，然后将最终的发布版交给运维团队去部署。瀑布模型，简单来说，就是等一个阶段所有工作完成之后，再进入下一个阶段。这种模式的问题也很明显，产品迭代周期长，灵活性差。一个周期动辄几周几个月，适应不了当下产品需要快速迭代的场景。</p>
-<h5 id="_2"><a href="http://49.7.203.222:2023/#/devops/introduction?id=敏捷开发">敏捷开发</a></h5>
+<h5 id="_2"><a href="http://49.7.203.222:2023/#/devops/introduction?id=敏捷开发">敏捷开发</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h5>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/devops-agile.jpg" /></p>
+<pre class="highlight"><code class="language-text">敏捷开发:
+  任务由大拆小
+  开发 / 测试 协同(小步快跑)
+  注重 开发敏捷, 不重视 交付敏捷</code></pre>
 <p>任务由大拆小，开发、测试协同工作，注重开发敏捷，不重视交付敏捷</p>
-<h5 id="devops"><a href="http://49.7.203.222:2023/#/devops/introduction?id=devops">DevOps</a></h5>
+<h5 id="devops"><a href="http://49.7.203.222:2023/#/devops/introduction?id=devops">DevOps</a><a class="headerlink" href="#devops" title="Permanent link">&para;</a></h5>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/devops-compire.jpg" /></p>
+<pre class="highlight"><code class="language-text">DevOps:
+  开发 / 测试 / 运维 协同工作
+  持续开发 + 持续交付 (CI/CD)
+  打破部门墙, 自动化流转</code></pre>
 <p>开发、测试、运维协同工作, 持续开发+持续交付。</p>
 <p>我们是否可以认为DevOps = 提倡开发、测试、运维协同工作来实现持续开发、持续交付的一种软件交付模式？</p>
 <p>大家想一下为什么最初的开发模式没有直接进入DevOps的时代？</p>
@@ -160,6 +177,10 @@
 <p>那DevOps时代如何解决角色之间的成本问题？DevOps的核心就是自动化。自动化的能力靠什么来支撑，工具和技术。</p>
 <p>DevOps工具链</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/devops-tools.jpg" /></p>
+<pre class="highlight"><code class="language-text">DevOps 工具链(实现自动化, 降低协作成本):
+  代码: GitLab      构建/CI: Jenkins
+  制品: Harbor      部署: Kubernetes
+  监控: Prometheus / EFK   质量: SonarQube</code></pre>
 <p>靠这些工具和技术，才实现了自动化流程，进而解决了协作成本，使得devops具备了可落地性。因此我们可以大致给devops一个定义：</p>
 <p>devops = 提倡开发、测试、运维协同工作来实现持续开发、持续交付的一种软件交付模式 + 基于工具和技术支撑的自动化流程的落地实践。</p>
 <p>因此devops不是某一个具体的技术，而是一种思想+自动化能力，来使得构建、测试、发布软件能够更加地便捷、频繁和可靠的落地实践。本次课程核心内容就是要教会大家如何利用工具和技术来实现完整的DevOps平台的建设。我们主要使用的工具有：</p>
@@ -172,8 +193,8 @@
 <li>Kubernetes</li>
 <li>Docker</li>
 </ol>
-<h1 id="k8sjenkins">K8S中安装配置Jenkins</h1>
-<h5 id="kubernetesjenkins">Kubernetes环境中部署jenkins</h5>
+<h1 id="k8sjenkins">K8S中安装配置Jenkins<a class="headerlink" href="#k8sjenkins" title="Permanent link">&para;</a></h1>
+<h5 id="kubernetesjenkins">Kubernetes环境中部署jenkins<a class="headerlink" href="#kubernetesjenkins" title="Permanent link">&para;</a></h5>
 <p><a href="https://jenkins.io/zh/doc/book/installing/">其他部署方式</a></p>
 <p>注意点：</p>
 <ol>
@@ -342,6 +363,10 @@ This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
 <p>访问服务：</p>
 <p>配置hosts解析，<code>172.16.1.226 jenkins.luffy.com</code>，然后使用浏览器域名访问服务。第一次访问需要大概几分钟的初始化时间。</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/jenkins_setup.jpg" /></p>
+<pre class="highlight"><code class="language-text">Jenkins 初始化:
+  1. 配置 hosts: 172.16.1.226 jenkins.luffy.com
+  2. 浏览器域名访问, 首次需几分钟初始化
+  3. 用启动日志中的管理员密码解锁</code></pre>
 <p>使用jenkins启动日志中的密码，或者执行下面的命令获取解锁的管理员密码：</p>
 <pre class="highlight"><code class="language-bash">$ kubectl -n jenkins exec  -ti jenkins-master-57fc5c84c7-ftd68 -- bash
 / # cat /var/jenkins_home/secrets/initialAdminPassword
@@ -358,10 +383,14 @@ https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json
 </code></pre>
 <p>选择右上角admin-&gt;configure-&gt;password重新设置管理员密码，设置完后，会退出要求重新登录，使用admin/xxxxxx(新密码)，登录即可。</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/jenkins-mainpage.jpg" /></p>
+<pre class="highlight"><code class="language-text">Jenkins 主页面:
+  admin -&gt; configure -&gt; password 重设管理员密码
+  改完退出重新登录(admin / 新密码)
+  提示: 访问 /restart 重启使国内插件生效</code></pre>
 <blockquote>
 <p>注意: 此时访问 http://jenkins.luffy.com/restart   重启一次jenkins,使国内插件生效!</p>
 </blockquote>
-<h5 id="_3"><a href="http://49.7.203.222:2023/#/devops/install?id=安装汉化插件">安装汉化插件</a></h5>
+<h5 id="_3"><a href="http://49.7.203.222:2023/#/devops/install?id=安装汉化插件">安装汉化插件</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h5>
 <p>Jenkins -&gt; manage Jenkins -&gt; Plugin Manager -&gt; Avaliable，搜索 <code>chinese</code>关键字</p>
 <p>安装的插件 </p>
 <p>GitLab Plugin </p>
@@ -369,15 +398,19 @@ https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json
 <p>Blue Ocean </p>
 <p>Localization: Chinese (Simplified)</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/jenkins-install-plugins.jpg" /></p>
+<pre class="highlight"><code class="language-text">安装汉化插件:
+  Manage Jenkins -&gt; Manage Plugins
+  安装 Locale / 中文社区插件
+  (实现 Jenkins 界面汉化)</code></pre>
 <p>选中后，选择[Install without restart]，等待下载完成，然后点击[ Restart Jenkins when installation is complete and no jobs are running ]，让Jenkins自动重启</p>
 <p>启动后，界面默认变成中文。</p>
-<h1 id="jenkins"><a href="http://49.7.203.222:2023/#/devops/basic-usage?id=jenkins基本使用演示">Jenkins基本使用演示</a></h1>
-<h6 id="_4"><a href="http://49.7.203.222:2023/#/devops/basic-usage?id=演示目标">演示目标</a></h6>
+<h1 id="jenkins"><a href="http://49.7.203.222:2023/#/devops/basic-usage?id=jenkins基本使用演示">Jenkins基本使用演示</a><a class="headerlink" href="#jenkins" title="Permanent link">&para;</a></h1>
+<h6 id="_4"><a href="http://49.7.203.222:2023/#/devops/basic-usage?id=演示目标">演示目标</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h6>
 <ul>
 <li>代码提交gitlab，自动触发Jenkins任务</li>
 <li>Jenkins任务完成后发送钉钉消息通知</li>
 </ul>
-<h6 id="-gitlab">演示准备 - gitlab</h6>
+<h6 id="-gitlab">演示准备 - gitlab<a class="headerlink" href="#-gitlab" title="Permanent link">&para;</a></h6>
 <p><em>gitlab代码仓库搭建</em></p>
 <p>https://github.com/sameersbn/docker-gitlab</p>
 <pre class="highlight"><code class="language-bash">## 全量部署的组件
@@ -808,9 +841,17 @@ git push -u origin --all  #根据提示输入账号密码 root  Admin@123.com
 https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562c36e8e30d9d15bc5b9de1712fa7d469744</code></pre>
 </li>
 </ul>
-<h6 id="_5"><a href="http://49.7.203.222:2023/#/devops/basic-usage?id=演示过程">演示过程</a></h6>
+<h6 id="_5"><a href="http://49.7.203.222:2023/#/devops/basic-usage?id=演示过程">演示过程</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h6>
 <p>流程示意图：</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/jenkins-gitlab.png" /></p>
+<pre class="highlight"><code class="language-text">Jenkins + GitLab 集成流程:
+  开发者 push 代码 -&gt; GitLab
+        |
+        v  webhook 触发
+   Jenkins 拉取代码 -&gt; 构建/测试
+        |
+        v
+   构建结果通知(钉钉 / GitLab 状态)</code></pre>
 <ol>
 <li>安装gitlab plugin</li>
 </ol>
@@ -820,14 +861,28 @@ https://oapi.dingtalk.com/robot/send?access_token=740b792c8b2a02d4ead9826263b562
 </ol>
 <p>系统管理-&gt;系统配置-&gt;Gitlab，其中的API Token，需要从下个步骤中获取</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/gitlab-connection.jpg" /></p>
+<pre class="highlight"><code class="language-text">Jenkins 连接 GitLab:
+  系统管理 -&gt; 系统配置 -&gt; GitLab
+  填入 API Token(来自 GitLab Personal Access Token)
+  Credentials: 添加该 Token
+  (Test Connection 验证)</code></pre>
 <p>Credentials: 添加</p>
 <p><img alt="image-20241026125356951" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241026125356951.png" /></p>
+<pre class="highlight"><code class="language-text">添加 Jenkins Credentials:
+  类型: GitLab API Token
+  Scope: 全局
+  API Token: &lt;GitLab Personal Access Token&gt;
+  (供 Jenkins 调用 GitLab API)</code></pre>
 <ol>
 <li>获取AccessToken</li>
 </ol>
 <p>登录gitlab，选择user-&gt;Settings-&gt;access tokens新建一个访问token</p>
 <p>http://gitlab.luffy.com/profile/personal_access_tokens</p>
 <p><img alt="image-20241026124824021" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241026124824021.png" /></p>
+<pre class="highlight"><code class="language-text">获取 GitLab AccessToken:
+  访问 .../profile/personal_access_tokens
+  勾选 api / read_user / write_repository 等 scope
+  生成 token 并复制到 Jenkins</code></pre>
 <pre class="highlight"><code class="language-bash">复制gitlab token #Your new personal access token
 v37Evs6VmTYLFzTifXRV</code></pre>
 <blockquote>
@@ -900,6 +955,10 @@ ID : gitlab-user</code></pre>
 <p>设置地址参考: http://gitlab.luffy.com/admin/application_settings/network</p>
 <p>Collapse，勾选第一项即可。再次test push events，成功。</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/gitlab-webhook-success.jpg" /></p>
+<pre class="highlight"><code class="language-text">GitLab Webhook 测试:
+  项目 -&gt; Settings -&gt; Webhooks
+  URL 指向 Jenkins 构建触发地址
+  Test -&gt; Push events -&gt; 返回 200 / Hook executed successfully</code></pre>
 <ol>
 <li>配置free项目，增加构建步骤，执行shell，将发送钉钉消息的shell保存</li>
 </ol>
@@ -915,8 +974,8 @@ $ git add .
 $ git commit -m "touch test"
 $ git push -u origin master
 </code></pre>
-<h1 id="master-slave">Master-Slave模式</h1>
-<h5 id="master-slavesagent"><a href="http://49.7.203.222:2023/#/devops/master-slaves?id=master-slaves（agent）模式">Master-Slaves（agent）模式</a></h5>
+<h1 id="master-slave">Master-Slave模式<a class="headerlink" href="#master-slave" title="Permanent link">&para;</a></h1>
+<h5 id="master-slavesagent"><a href="http://49.7.203.222:2023/#/devops/master-slaves?id=master-slaves（agent）模式">Master-Slaves（agent）模式</a><a class="headerlink" href="#master-slavesagent" title="Permanent link">&para;</a></h5>
 <p>上面演示的任务，默认都是在master节点执行的，多个任务都在master节点执行，对master节点的性能会造成一定影响，如何将任务分散到不同的节点，做成多slave的方式？</p>
 <ol>
 <li>
@@ -929,8 +988,17 @@ $ git push -u origin master
 <li>启动方式选择通过java web启动代理，代理是运行jar包，通过JNLP（是一种允许客户端启动托管在远程Web服务器上的应用程序的协议 ）启动连接到master节点服务中</li>
 </ul>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/jenkins-new-node.jpg" /></p>
-<p>保存之后根据提示操作</p>
-<pre class="highlight"><code class="language-bash"># Run from agent command line: (Unix) 
+</li>
+</ol>
+<pre class="highlight"><code class="language-text">新建 Jenkins 节点(Master-Slaves):
+  节点名: 如 172.16.1.228
+  标签: 任务选择节点的依据
+  启动方式: 通过 Java Web 启动代理(JNLP)
+  (agent 运行 jar 包连接 master)</code></pre>
+<pre class="highlight"><code>保存之后根据提示操作
+
+```bash
+# Run from agent command line: (Unix) 
 curl -sO http://jenkins.luffy.com/jnlpJars/agent.jar
 java -jar agent.jar -url http://jenkins.luffy.com/ -secret 72a9b018e2079b60626998f75c7545d16226ccac113568a5b8707fb82f657905 -name "172.16.1.228" -webSocket -workDir "/opt/jenkins_jobs"
 
@@ -938,8 +1006,9 @@ java -jar agent.jar -url http://jenkins.luffy.com/ -secret 72a9b018e2079b6062699
 # Or run from agent command line, with the secret stored in a file: (Unix)
 echo 72a9b018e2079b60626998f75c7545d16226ccac113568a5b8707fb82f657905 &gt; secret-file
 curl -sO http://jenkins.luffy.com/jnlpJars/agent.jar
-java -jar agent.jar -url http://jenkins.luffy.com/ -secret @secret-file -name "172.16.1.228" -webSocket -workDir "/opt/jenkins_jobs"</code></pre>
-</li>
+java -jar agent.jar -url http://jenkins.luffy.com/ -secret @secret-file -name "172.16.1.228" -webSocket -workDir "/opt/jenkins_jobs"
+```</code></pre>
+<ol>
 <li>
 <p>执行java命令启动agent服务</p>
 <pre class="highlight"><code class="language-bash"># jenkins服务器装的是jdk17, 所有slave服务器也要安装相同版本
@@ -980,11 +1049,17 @@ java.io.IOException: http://jenkins.luffy.com/ provided port:50000 is not reacha
 <p>可以选择： 配置从节点 -&gt; 高级 -&gt; Tunnel连接位置，参考下图进行设置:</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/slave-tunnel.jpg" /></p>
 </li>
-<li>
-<p>查看Jenkins节点列表，新节点已经处于可用状态</p>
-</li>
+</ol>
+<pre class="highlight"><code class="language-text">从节点 Tunnel 配置:
+  配置从节点 -&gt; 高级 -&gt; Tunnel 连接位置
+  (指定 master 的 JNLP 端口隧道, 穿透网络)</code></pre>
+<ol>
+<li>查看Jenkins节点列表，新节点已经处于可用状态</li>
 </ol>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/jenkins-node-lists.jpg" /></p>
+<pre class="highlight"><code class="language-text">节点列表:
+  新节点已处于 可用(Online) 状态
+  (可在任务中通过标签指定该节点执行)</code></pre>
 <ol>
 <li>
 <p>测试使用新节点执行任务</p>
@@ -1010,7 +1085,7 @@ Cloning repository http://gitlab.luffy.com/root/myblog.git
  ...</code></pre>
 </li>
 </ol>
-<h1 id="jenkins_1"><a href="http://49.7.203.222:2023/#/devops/customize?id=jenkins定制化容器">Jenkins定制化容器</a></h1>
+<h1 id="jenkins_1"><a href="http://49.7.203.222:2023/#/devops/customize?id=jenkins定制化容器">Jenkins定制化容器</a><a class="headerlink" href="#jenkins_1" title="Permanent link">&para;</a></h1>
 <p>由于每次新部署Jenkins环境，均需要安装很多必要的插件，因此考虑把插件提前做到镜像中</p>
 <p><em>Dockerfile</em></p>
 <pre class="highlight"><code class="language-dockerfile"># jenkins:2.482-slim-jdk17  #这个版本有空再试试
@@ -1084,18 +1159,26 @@ $ sed -i 's#jenkinsci/blueocean#172.16.1.226:5000/jenkins:v20200404#g' jenkins-a
 
 ## 重新创建服务
 $ kubectl create -f jenkins-all.yaml</code></pre>
-<h5 id="_6"><a href="http://49.7.203.222:2023/#/devops/customize?id=本章小结">本章小结</a></h5>
+<h5 id="_6"><a href="http://49.7.203.222:2023/#/devops/customize?id=本章小结">本章小结</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h5>
 <p>自由风格项目弊端：</p>
 <ul>
 <li>任务的完成需要在Jenkins端维护大量的配置</li>
 <li>没法做版本控制</li>
 <li>可读性、可移植性很差，不够优雅</li>
 </ul>
-<h1 id="_7">流水线语法</h1>
-<h4 id="_8"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=流水线入门">流水线入门</a></h4>
+<h1 id="_7">流水线语法<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h1>
+<h4 id="_8"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=流水线入门">流水线入门</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/pipeline-factory.jpeg" /></p>
+<pre class="highlight"><code class="language-text">流水线(Pipeline):
+  Jenkinsfile 定义 构建-&gt;测试-&gt;部署 全流程
+  像工厂生产线: 源码 -&gt; ... -&gt; 发布线上
+  (代码即流水线, 可版本化)</code></pre>
 <p><a href="https://jenkins.io/zh/doc/book/pipeline/getting-started/">官方文档</a></p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/realworld-pipeline-flow.png" /></p>
+<pre class="highlight"><code class="language-text">真实流水线流程:
+  SCM(代码) -&gt; 构建(Build) -&gt; 测试(Test)
+     -&gt; 打包/镜像 -&gt; 部署(Deploy) -&gt; 线上环境
+  (pipeline 贯穿 源码 到 发布)</code></pre>
 <p>为什么叫做流水线，和工厂产品的生产线类似，pipeline是从源码到发布到线上环境。关于流水线，需要知道的几个点：</p>
 <ul>
 <li>重要的功能插件，帮助Jenkins定义了一套工作流框架；</li>
@@ -1103,7 +1186,7 @@ $ kubectl create -f jenkins-all.yaml</code></pre>
 <li>将WebUI上需要定义的任务，以脚本代码的方式表述出来；</li>
 <li>帮助jenkins实现持续集成CI（Continue Integration）和持续部署CD（Continue Deliver）的重要手段；</li>
 </ul>
-<h5 id="_9"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=流水线基础语法">流水线基础语法</a></h5>
+<h5 id="_9"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=流水线基础语法">流水线基础语法</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h5>
 <p><a href="https://jenkins.io/zh/doc/book/pipeline/syntax/">官方文档</a></p>
 <p>两种语法类型：</p>
 <ul>
@@ -1111,7 +1194,7 @@ $ kubectl create -f jenkins-all.yaml</code></pre>
 <li>Declarative Pipeline，声明式流水线，为Pipeline plugin在2.5版本之后新增的一种脚本类型，后续Open Blue Ocean所支持的类型。与原先的Scripted Pipeline一样，都可以用来编写脚本。Declarative Pipeline 是后续Open Blue Ocean所支持的类型，写法简单，支持内嵌Scripted Pipeline代码</li>
 </ul>
 <p><em>为与BlueOcean脚本编辑器兼容，通常建议使用Declarative Pipeline的方式进行编写,从jenkins社区的动向来看，很明显这种语法结构也会是未来的趋势。</em></p>
-<h6 id="_10"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=脚本示例">脚本示例</a></h6>
+<h6 id="_10"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=脚本示例">脚本示例</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-json">pipeline { 
     agent {label '172.16.1.228'}
     environment { 
@@ -1152,7 +1235,7 @@ $ kubectl create -f jenkins-all.yaml</code></pre>
         }
     }
 }</code></pre>
-<h6 id="_11"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=脚本解释：">脚本解释：</a></h6>
+<h6 id="_11"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=脚本解释：">脚本解释：</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h6>
 <ul>
 <li>
 <p><code>checkout</code>步骤为检出代码; <code>scm</code>是一个特殊变量，指示<code>checkout</code>步骤克隆触发此Pipeline运行的特定修订</p>
@@ -1335,7 +1418,7 @@ git push -u origin master
 <li>生成 Secret token    #复制token </li>
 <li>配置gitlab，创建webhook，(粘贴到创建webhook页面, ) , 发送test push events测试</li>
 </ul>
-<h6 id="blue-ocean"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=blue-ocean">Blue Ocean:</a></h6>
+<h6 id="blue-ocean"><a href="http://49.7.203.222:2023/#/devops/pipeline-gram?id=blue-ocean">Blue Ocean:</a><a class="headerlink" href="#blue-ocean" title="Permanent link">&para;</a></h6>
 <p><a href="https://jenkins.io/zh/doc/book/blueocean/getting-started/">官方文档</a></p>
 <p>我们需要知道的几点：</p>
 <ul>
@@ -1348,9 +1431,9 @@ git push -u origin master
 <li>每个项目都把大量的pipeline脚本写在Jenkins端，对于谁去维护及维护成本是一个问题</li>
 <li>没法做版本控制</li>
 </ol>
-<h1 id="jenkinsflie"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=jenkinsflie">Jenkinsflie实战</a></h1>
+<h1 id="jenkinsflie"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=jenkinsflie">Jenkinsflie实战</a><a class="headerlink" href="#jenkinsflie" title="Permanent link">&para;</a></h1>
 <p>Jenkins Pipeline 提供了一套可扩展的工具，用于将“简单到复杂”的交付流程实现为“持续交付即代码”。Jenkins Pipeline 的定义通常被写入到一个文本文件（称为 <code>Jenkinsfile</code> ）中，该文件可以被放入项目的源代码控制库中。</p>
-<h6 id="1jenkinsfilepipeline"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示1：使用jenkinsfile管理pipeline">演示1：使用Jenkinsfile管理<strong>pipeline</strong></a></h6>
+<h6 id="1jenkinsfilepipeline"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示1：使用jenkinsfile管理pipeline">演示1：使用Jenkinsfile管理<strong>pipeline</strong></a><a class="headerlink" href="#1jenkinsfilepipeline" title="Permanent link">&para;</a></h6>
 <ul>
 <li>在项目中源代码 新建Jenkinsfile文件，拷贝已有script内容 #上面--实际修改的版本</li>
 <li>配置pipeline任务，流水线 定义为 Pipeline Script from SCM (scoure code manage 源代码管理)</li>
@@ -1408,7 +1491,7 @@ pipeline {
 }
 
 </code></pre>
-<h6 id="2"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示2：优化及丰富流水线内容">演示2：优化及丰富流水线内容</a></h6>
+<h6 id="2"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示2：优化及丰富流水线内容">演示2：优化及丰富流水线内容</a><a class="headerlink" href="#2" title="Permanent link">&para;</a></h6>
 <ul>
 <li>优化代码检出阶段</li>
 </ul>
@@ -1548,7 +1631,7 @@ EOF
 git add .
 git commit -am 'modify Jenkinsfile and Dockerfile'
 git push -u origin master </code></pre>
-<h6 id="3k8s"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示3：使用k8s部署服务">演示3：使用k8s部署服务</a></h6>
+<h6 id="3k8s"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示3：使用k8s部署服务">演示3：使用k8s部署服务</a><a class="headerlink" href="#3k8s" title="Permanent link">&para;</a></h6>
 <ul>
 <li>
 <p>在源代码新建mainfests目录，将k8s所需的文件放到mainfests目录中</p>
@@ -1716,7 +1799,7 @@ pipeline {
 
 
 </code></pre>
-<h6 id="4"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示4：使用凭据管理敏感信息">演示4：使用凭据管理敏感信息</a></h6>
+<h6 id="4"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=演示4：使用凭据管理敏感信息">演示4：使用凭据管理敏感信息</a><a class="headerlink" href="#4" title="Permanent link">&para;</a></h6>
 <p>上述Jenkinsfile中存在的问题是敏感信息使用明文，暴漏在代码中，如何管理流水线中的敏感信息（包含账号密码），之前我们在对接gitlab的时候，需要账号密码，已经使用过凭据来管理这类敏感信息，同样的，我们可以使用凭据来存储钉钉的token信息，创建凭据:</p>
 <p>[Dashboard] ==&gt; [系统管理]==&gt;[凭据]==&gt; [系统] =&gt;  <a href="http://jenkins.luffy.com/manage/credentials/store/system/domain/_/">全局凭据 (unrestricted)</a></p>
 <p>new credentials :</p>
@@ -1853,7 +1936,7 @@ vi Jenkinsfile
 git commit -am "modify Jenkinsfile"
 
 git push -u origin master</code></pre>
-<h6 id="_12"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=本章小结">本章小结</a></h6>
+<h6 id="_12"><a href="http://49.7.203.222:2023/#/devops/jenkinsfile-pratice?id=本章小结">本章小结</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h6>
 <p>上面我们已经通过Jenkinsfile完成了最简单的项目的构建和部署，那么我们来思考目前的方式：</p>
 <ol>
 <li>目前都是在项目的单一分支下进行操作，企业内一般会使用feature、develop、release、master等多个分支来管理整个代码提交流程，如何根据不同的分支来做构建？</li>
@@ -1861,10 +1944,10 @@ git push -u origin master</code></pre>
 <li>如何不配置webhook的方式实现构建？</li>
 <li>如何根据不同的分支选择发布到不同的环境(开发、测试、生产)？</li>
 </ol>
-<h1 id="_13"><a href="http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=多分支流水线">多分支流水线实战</a></h1>
+<h1 id="_13"><a href="http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=多分支流水线">多分支流水线实战</a><a class="headerlink" href="#_13" title="Permanent link">&para;</a></h1>
 <p><a href="https://jenkins.io/zh/doc/tutorials/build-a-multibranch-pipeline-project/">官方示例</a></p>
 <p>我们简化一下流程，假如使用develop分支作为开发分支，master分支作为集成测试分支，看一下如何使用多分支流水线来管理。</p>
-<h6 id="1">[演示1：多分支流水线的使用]</h6>
+<h6 id="1">[演示1：多分支流水线的使用]<a class="headerlink" href="#1" title="Permanent link">&para;</a></h6>
 <ol>
 <li>提交develop分支：</li>
 </ol>
@@ -1904,7 +1987,7 @@ git push --set-upstream origin develop  #推送新分支到远程仓库时, --se
 </li>
 </ol>
 <p>保存后，会自动检索项目中所有存在Jenkinsfile文件的分支和标签，若匹配我们设置的过滤正则表达式，则会添加到多分支的构建视图中。所有添加到视图中的分支和标签，会默认执行一次构建任务。</p>
-<h6 id="2_1">[演示2：美化消息通知内容]</h6>
+<h6 id="2_1">[演示2：美化消息通知内容]<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h6>
 <ul>
 <li>添加构建阶段记录</li>
 <li>使用markdown格式，添加构建分支消息</li>
@@ -2010,10 +2093,10 @@ EOF
 
 git commit -am "muilt pipeline jenkinsfile"
 git push -u origin develop</code></pre>
-<h6 id="3gitlab"><a href="http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=演示3：通知gitlab构建状态">演示3：通知gitlab构建状态</a></h6>
+<h6 id="3gitlab"><a href="http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=演示3：通知gitlab构建状态">演示3：通知gitlab构建状态</a><a class="headerlink" href="#3gitlab" title="Permanent link">&para;</a></h6>
 <p>Jenkins端做了构建，可以通过gitlab通过的api将构建状态通知过去，作为开发人员发起Merge Request或者合并Merge Request的依据之一。</p>
 <p><em>注意一定要指定gitLabConnection('gitlab')，不然没法认证到Gitlab端</em> </p>
-<h1 id="gitlabjeknis-gitlab-connections-connection-name">这里gitlab就是最开始在jeknis 系统设置里配置的 gitlab connections --&gt;Connection name</h1>
+<h1 id="gitlabjeknis-gitlab-connections-connection-name">这里gitlab就是最开始在jeknis 系统设置里配置的 gitlab connections --&gt;Connection name<a class="headerlink" href="#gitlabjeknis-gitlab-connections-connection-name" title="Permanent link">&para;</a></h1>
 <pre class="highlight"><code class="language-bash">   #配置说明 
    options {
         buildDiscarder(logRotator(numToKeepStr: '10'))  # 保留构建记录个数
@@ -2142,9 +2225,16 @@ git push  #在develop 分支</code></pre>
 <p>我们可以访问gitlab，然后找到commit记录，查看同步状态</p>
 <p>http://gitlab.luffy.com/eladmin/eladmin-api/-/pipelines/</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/gitlab-cicd.jpg" /></p>
+<pre class="highlight"><code class="language-text">GitLab 构建状态通知:
+  Jenkins 构建完成后, 将状态回写 GitLab
+  在 GitLab pipeline 页面可见
+  (作为合并代码的依据之一)</code></pre>
 <p>提交merge request，也可以查看到相关的任务状态，可以作为项目owner合并代码的依据之一：</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/gitlab-merge-request.jpg" /></p>
-<h6 id="_14"><a href="http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=本章小节">本章小节</a></h6>
+<pre class="highlight"><code class="language-text">Merge Request 关联:
+  提交 MR 时可看到相关任务/构建状态
+  项目 owner 据此决定是否合并</code></pre>
+<h6 id="_14"><a href="http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=本章小节">本章小节</a><a class="headerlink" href="#_14" title="Permanent link">&para;</a></h6>
 <p>优势:</p>
 <ul>
 <li>根据分支展示, 视图人性化</li>
@@ -2155,16 +2245,16 @@ git push  #在develop 分支</code></pre>
 <li>Jenkins的slave端，没有任务的时候处于闲置状态，slave节点多的话造成资源浪费</li>
 <li>是否可以利用kubernetes的Pod来启动slave，动态slave pod来执行构建任务</li>
 </ul>
-<h1 id="jenkinsk8s">Jenkins与K8S集成</h1>
-<h4 id="jenkinsfile"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=工具集成与jenkinsfile实践篇">工具集成与Jenkinsfile实践篇</a></h4>
+<h1 id="jenkinsk8s">Jenkins与K8S集成<a class="headerlink" href="#jenkinsk8s" title="Permanent link">&para;</a></h1>
+<h4 id="jenkinsfile"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=工具集成与jenkinsfile实践篇">工具集成与Jenkinsfile实践篇</a><a class="headerlink" href="#jenkinsfile" title="Permanent link">&para;</a></h4>
 <ol>
 <li>Jenkins如何对接kubernetes集群</li>
 <li>使用kubernetes的Pod-Template来作为动态的agent执行Jenkins任务</li>
 <li>如何制作agent容器实现不同类型的业务的集成</li>
 <li>集成代码扫描、docker镜像自动构建、k8s服务部署、自动化测试</li>
 </ol>
-<h5 id="kubernetes">[集成Kubernetes]</h5>
-<h6 id="_15">[插件安装及配置]</h6>
+<h5 id="kubernetes">[集成Kubernetes]<a class="headerlink" href="#kubernetes" title="Permanent link">&para;</a></h5>
+<h6 id="_15">[插件安装及配置]<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h6>
 <p><a href="https://plugins.jenkins.io/kubernetes/">插件官方文档</a></p>
 <ol>
 <li>[系统管理] -&gt; [插件管理] -&gt; [搜索kubernetes]-&gt;直接安装</li>
@@ -2205,14 +2295,21 @@ git push  #在develop 分支</code></pre>
 </li>
 <li>
 <p>工作空间卷：选择hostpath，设置/opt/jenkins,注意需要设置目录权限，否则Pod没有权限 <img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/workspace-volume.png" /></p>
-<pre class="highlight"><code class="language-bash"># 打了标签的节点上操作
-chown -R 1000:1000 /opt/jenkins
-chmod 777 /opt/jenkins</code></pre>
-<p>节点选择器: jnlp-slave</p>
 </li>
 </ol>
+<pre class="highlight"><code class="language-text">Jenkins K8s Pod 模板 - 工作空间:
+  工作空间卷: hostPath, 路径 /opt/jenkins
+  需设置目录权限, 否则 Pod 无权限写入
+  (agent 改为 Pod 内容器, 非宿主机)</code></pre>
+<pre class="highlight"><code> ```bash
+ # 打了标签的节点上操作
+ chown -R 1000:1000 /opt/jenkins
+ chmod 777 /opt/jenkins
+ ```
+
+ 节点选择器: jnlp-slave</code></pre>
 <p>工作空间卷:  host path workspace volume --&gt; 主机路径:  /opt/jenkins</p>
-<h6 id="slave-pod"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=演示动态slave-pod">演示动态slave pod</a></h6>
+<h6 id="slave-pod"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=演示动态slave-pod">演示动态slave pod</a><a class="headerlink" href="#slave-pod" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash"># 为准备运行jnlp-slave-agent的pod的节点打上label
 kubectl label node k8s-slave1 jnlp-slave=true
 # kubectl label node k8s-slave2 jnlp-slave=true
@@ -2224,13 +2321,16 @@ agent { label 'jnlp-slave'}</code></pre>
 <pre class="highlight"><code class="language-bash">$ docker pull jenkins/inbound-agent:latest-jdk17</code></pre>
 <p>保存jenkinsfile提交后，会出现报错，因为我们的agent已经不再是宿主机，而是Pod中的容器内，报错如下：</p>
 <p><img alt="image-20241028082420049" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241028082420049.png" /></p>
+<pre class="highlight"><code class="language-text">现象: 切换 agent 为 Pod 内容器后报错
+  原因: 原命令依赖宿主机环境/工具, 容器内缺失
+  需把所需命令行工具集成进 Pod 的容器镜像</code></pre>
 <p>因此我们需要将用到的命令行工具集成到Pod的容器内，但是思考如下问题：</p>
 <ul>
 <li>目前是用的jnlp的容器，是java的环境，我们在此基础上需要集成很多工具，能不能创建一个新的容器，让新容器来做具体的任务，jnlp-slave容器只用来负责连接jenkins-master</li>
 <li>针对不同的构建环境（java、python、go、nodejs），可以制作不同的容器，来执行对应的任务</li>
 </ul>
 <blockquote></blockquote>
-<h6 id="pod-template"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=pod-template中容器镜像的制作">Pod-Template中容器镜像的制作</a></h6>
+<h6 id="pod-template"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=pod-template中容器镜像的制作">Pod-Template中容器镜像的制作</a><a class="headerlink" href="#pod-template" title="Permanent link">&para;</a></h6>
 <p>为解决上述问题，我们制作一个tools镜像，集成常用的工具，来完成常见的构建任务，需要注意的几点：</p>
 <ul>
 <li>使用alpine基础镜像，自身体积比较小</li>
@@ -2287,13 +2387,17 @@ $ docker run --rm -ti 172.16.1.226:5000/devops/tools:v1 bash
 
 ## 重新挂载docker的sock文件
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -ti 172.16.1.226:5000/devops/tools:v1 bash</code></pre>
-<h6 id="jenkinsfiledemokubenetes"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=实践通过jenkinsfile实现demo项目自动发布到kubenetes环境">实践通过Jenkinsfile实现demo项目自动发布到kubenetes环境</a></h6>
+<h6 id="jenkinsfiledemokubenetes"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-k8s?id=实践通过jenkinsfile实现demo项目自动发布到kubenetes环境">实践通过Jenkinsfile实现demo项目自动发布到kubenetes环境</a><a class="headerlink" href="#jenkinsfiledemokubenetes" title="Permanent link">&para;</a></h6>
 <p>更新Jenkins中的PodTemplate，添加tools镜像，注意同时要先添加名为jnlp的container，因为我们是使用自定义的PodTemplate覆盖掉默认的模板：</p>
 <p>名称: jnlp</p>
 <p>docker镜像: jenkins/inbound-agent:latest-jdk17  #版本和jenkins的jdk一致</p>
 <p>运行的命令:  空</p>
 <p>命令的参数: 空</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/pod-template-jnlp.png" /></p>
+<pre class="highlight"><code class="language-text">Pod Template 配置:
+  第一个 container: jnlp(默认 agent 容器)
+  命令参数: 空
+  (作为 Jenkins agent 的基础容器)</code></pre>
 <p><strong>再添加第二个container Template</strong></p>
 <p>名称: tools</p>
 <p>Docker 镜像:  172.16.1.226:5000/devops/tools:v1</p>
@@ -2333,6 +2437,9 @@ registry-172-16-1-226   kubernetes.io/dockerconfigjson   1      13s
 <p>​   Secret Volume: kubeconfig</p>
 <p>​   挂载路径: /root/.kube/</p>
 <p><img alt="image-20241028090608549" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241028090608549.png" /></p>
+<pre class="highlight"><code class="language-text">tools 容器配置:
+  挂载路径: /root/.kube/
+  (将 kubeconfig 挂入, 使容器内 kubectl 能访问集群)</code></pre>
 <p>tools容器做好后，我们需要对Jenkinsfile做如下调整：</p>
 <blockquote>
 <p>在jenkins添加一个全局凭证 用于 容器仓库登录 push</p>
@@ -2476,8 +2583,12 @@ EOF
 git commit -am "add tools container time"
 git push </code></pre>
 <p><img alt="image-20241028105341608" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241028105341608.png" /></p>
-<h1 id="jenkinssonarqube">jenkins集成Sonarqube</h1>
-<h5 id="sonarqube">[集成sonarQube实现代码扫描]</h5>
+<pre class="highlight"><code class="language-text">Jenkins 集成 SonarQube:
+  git push 触发流水线
+  流水线中调用 sonar-scanner 做代码扫描
+  (扫描结果回传 SonarQube 服务端)</code></pre>
+<h1 id="jenkinssonarqube">jenkins集成Sonarqube<a class="headerlink" href="#jenkinssonarqube" title="Permanent link">&para;</a></h1>
+<h5 id="sonarqube">[集成sonarQube实现代码扫描]<a class="headerlink" href="#sonarqube" title="Permanent link">&para;</a></h5>
 <p>Sonar可以从以下七个维度检测代码质量，而作为开发人员至少需要处理前5种代码质量问题。</p>
 <ol>
 <li>不遵循代码标准 sonar可以通过PMD,CheckStyle,Findbugs等等代码规则检测工具规范代码编写。</li>
@@ -2488,8 +2599,14 @@ git push </code></pre>
 <li>缺乏单元测试 sonar可以很方便地统计并展示单元测试覆盖率。</li>
 <li>糟糕的设计 通过sonar可以找出循环，展示包与包、类与类之间的相互依赖关系，可以检测自定义的架构规则 通过sonar可以管理第三方的jar包，可以利用LCOM4检测单个任务规则的应用情况， 检测耦合。</li>
 </ol>
-<h6 id="sonarqube_1"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=sonarqube架构简介">sonarqube架构简介</a></h6>
+<h6 id="sonarqube_1"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=sonarqube架构简介">sonarqube架构简介</a><a class="headerlink" href="#sonarqube_1" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/sonarqube.webp" /></p>
+<pre class="highlight"><code class="language-text">SonarQube 架构(CS 架构):
+  SonarQube Server(Web / API / 计算引擎)
+     |
+     v
+  SonarQube Database(元数据)
+  扫描端: sonar-scanner(客户端) 采集代码 -&gt; 上报</code></pre>
 <ol>
 <li>CS架构</li>
 <li>sonarqube scanner</li>
@@ -2498,7 +2615,7 @@ git push </code></pre>
 <li>执行完后，将分析报告被发送到SonarQube服务器进行处理</li>
 <li>SonarQube服务器处理和存储分析报告导致SonarQube数据库，并显示结果在UI中</li>
 </ol>
-<h6 id="sonarqube-on-kubernetes"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=sonarqube-on-kubernetes环境搭建">sonarqube on kubernetes环境搭建</a></h6>
+<h6 id="sonarqube-on-kubernetes"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=sonarqube-on-kubernetes环境搭建">sonarqube on kubernetes环境搭建</a><a class="headerlink" href="#sonarqube-on-kubernetes" title="Permanent link">&para;</a></h6>
 <ol>
 <li>
 <p>资源文件准备</p>
@@ -2734,7 +2851,7 @@ sonar.sources=src/main/java
 sonar.language=java
 sonar.tests=src/test/java
 sonar.java.binaries=target/classes</code></pre>
-<h6 id="_16"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=插件安装及配置">插件安装及配置</a></h6>
+<h6 id="_16"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=插件安装及配置">插件安装及配置</a><a class="headerlink" href="#_16" title="Permanent link">&para;</a></h6>
 <ol>
 <li>
 <p>集成到tools容器中</p>
@@ -2846,7 +2963,7 @@ ENV SONAR_RUNNER_HOME=/usr/lib/sonar-scanner
 <p>我们在 https://jenkins.io/doc/pipeline/steps/sonar/ 官方介绍中可以看到：</p>
 </li>
 </ul>
-<h6 id="jenkinsfilesonarqube">[Jenkinsfile集成sonarqube演示]</h6>
+<h6 id="jenkinsfilesonarqube">[Jenkinsfile集成sonarqube演示]<a class="headerlink" href="#jenkinsfilesonarqube" title="Permanent link">&para;</a></h6>
 <p>修改Jenkinsfile</p>
 <pre class="highlight"><code class="language-bash">cat &lt;&lt;\EOF&gt;Jenkinsfile
 pipeline {
@@ -3013,14 +3130,22 @@ EOF
 git commit -am"add ci"
 git push</code></pre>
 <p>若Jenkins执行任务过程中sonarqube端报类似下图的错： <img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/sonar-scanner-err.png" /></p>
+<pre class="highlight"><code class="language-text">SonarQube 报错(pending):
+  Jenkins 任务中 sonar-scanner 报 pending 类错误
+  原因: SonarQube 未收到 webhook 回调
+  需在 SonarQube 服务端配置 webhook</code></pre>
 <p>则需要在sonarqube服务端进行如下配置，添加一个webhook： </p>
 <p>Name: jenkins</p>
 <p>URL: http://jenkins:8080/sonarqube-webhook/</p>
 <p><img alt="img" src="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/fix-sonar-scanner-pending-err.png" /></p>
-<h1 id="jenkinsrobotframework">jenkins集成robotFramework</h1>
-<h5 id="robotframework">[集成RobotFramework实现验收测试]</h5>
+<pre class="highlight"><code class="language-text">修复: 添加 SonarQube Webhook
+  SonarQube 管理 -&gt; 配置 -&gt; Webhooks
+  URL: http://jenkins:8080/sonarqube-webhook/
+  (扫描完成后回调 Jenkins, 解除 pending)</code></pre>
+<h1 id="jenkinsrobotframework">jenkins集成robotFramework<a class="headerlink" href="#jenkinsrobotframework" title="Permanent link">&para;</a></h1>
+<h5 id="robotframework">[集成RobotFramework实现验收测试]<a class="headerlink" href="#robotframework" title="Permanent link">&para;</a></h5>
 <p>一个基于Python语言，用于验收测试和验收测试驱动开发（ATDD）的通用测试自动化框架，提供了一套特定的语法，并且有非常丰富的测试库 。</p>
-<h6 id="robot">[robot用例简介]</h6>
+<h6 id="robot">[robot用例简介]<a class="headerlink" href="#robot" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash"># cat robot/robot.txt
 cat &lt;&lt;\EOF &gt; robot.txt
 *** Settings ***
@@ -3069,7 +3194,7 @@ options ndots:5
 # vi robot.txt #复制上面的代码
 #使用robot命令做测试
 $ robot -d artifacts/ robot.txt</code></pre>
-<h6 id="tools"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=与tools工具镜像集成">与tools工具镜像集成</a></h6>
+<h6 id="tools"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=与tools工具镜像集成">与tools工具镜像集成</a><a class="headerlink" href="#tools" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-powershell">cd tools  #k8s-slave1 
 cat &lt;&lt;\EOF &gt;requirements.txt
 robotframework
@@ -3124,7 +3249,7 @@ docker build . -t 172.16.1.226:5000/devops/tools:v3
 
 docker push 172.16.1.226:5000/devops/tools:v3</code></pre>
 <p>更新Jenkins中kubernetes中的containers pod template</p>
-<h6 id="_17"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=插件安装及配置">插件安装及配置</a></h6>
+<h6 id="_17"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=插件安装及配置">插件安装及配置</a><a class="headerlink" href="#_17" title="Permanent link">&para;</a></h6>
 <p>为什么要安装robot插件？</p>
 <ol>
 <li>
@@ -3156,7 +3281,7 @@ docker push 172.16.1.226:5000/devops/tools:v3</code></pre>
     }</code></pre>
 </li>
 </ol>
-<h6 id="jenkinsfiledemo"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=实践通过jenkinsfile实现demo项目的验收测试">实践通过Jenkinsfile实现demo项目的验收测试</a></h6>
+<h6 id="jenkinsfiledemo"><a href="http://49.7.203.222:2023/#/devops/jenkins-with-robotframework?id=实践通过jenkinsfile实现demo项目的验收测试">实践通过Jenkinsfile实现demo项目的验收测试</a><a class="headerlink" href="#jenkinsfiledemo" title="Permanent link">&para;</a></h6>
 <p>项目源代码添加robot.txt文件：</p>
 <pre class="highlight"><code class="language-bash">cat &lt;&lt;\EOF &gt;robot.txt
 *** Settings ***
@@ -3385,7 +3510,7 @@ java.io.IOException: Failed to connect to http://jenkins:8080/tcpSlaveAgentListe
 重启 kubectl -n kube-system  get po   重启里面的容器(删除容器自己会重启)
 每个节点systemctl restart kubectl
 问题产生原因：  k8s机器卡住，强制重启服务器后。集群内部网络混乱了</code></pre>
-<h1 id="_18">小结</h1>
+<h1 id="_18">小结<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h1>
 <p>思路：</p>
 <ol>
 <li>讲解最基础的Jenkins的使用</li>
@@ -3443,6 +3568,8 @@ java.io.IOException: Failed to connect to http://jenkins:8080/tcpSlaveAgentListe
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {

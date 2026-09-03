@@ -112,7 +112,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="1-code-unimplemented-desc-unknown-service-runtimev1imageservice">问题1: code = Unimplemented desc = unknown service runtime.v1.ImageService"</h2>
+                <h2 id="1-code-unimplemented-desc-unknown-service-runtimev1imageservice">问题1: code = Unimplemented desc = unknown service runtime.v1.ImageService"<a class="headerlink" href="#1-code-unimplemented-desc-unknown-service-runtimev1imageservice" title="Permanent link">&para;</a></h2>
 <pre class="highlight"><code class="language-bash">[root@k8s-master ~]# kubeadm config images pull --config kubeadm.yaml
 failed to pull image "registry.aliyuncs.com/google_containers/kube-apiserver:v1.24.4": output: time="2023-02-12T00:12:41+08:00" level=fatal msg="validate service connection: CRI v1 image API is not implemented for endpoint \"unix:///var/run/containerd/containerd.sock\": rpc error: code = Unimplemented desc = unknown service runtime.v1.ImageService"
 , error: exit status 1
@@ -165,6 +165,8 @@ systemctl restart containerd
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {

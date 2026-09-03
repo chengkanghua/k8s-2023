@@ -54,12 +54,6 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Kubernetes进阶实践</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#etcd_1">ETCD常用操作</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#_1">锦囊妙计</a>
-    </li>
-        </ul>
-    </li>
     </ul>
                 </li>
               </ul>
@@ -118,8 +112,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="etcd">操作etcd</h1>
-<h4 id="etcd_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/etcd?id=etcd常用操作">ETCD常用操作</a></h4>
+                <p>操作etcd</p>
+<h4 id="etcd"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/etcd?id=etcd常用操作">ETCD常用操作</a><a class="headerlink" href="#etcd" title="Permanent link">&para;</a></h4>
 <p>官网： https://github.com/etcd-io/etcd</p>
 <p>拷贝etcdctl命令行工具：</p>
 <pre class="highlight"><code class="language-bash">wget https://github.com/etcd-io/etcd/releases/download/v3.5.3/etcd-v3.5.3-linux-amd64.tar.gz
@@ -194,9 +188,8 @@ The connection to the server 172.16.1.226:6443 was refused - did you specify the
 
 # systemctl status kubelet -l
 # grep staticPodPath /var/lib/kubelet/config.yaml
-staticPodPath: /etc/kubernetes/manifests   #这个目录是一个静态pod路径
-
-</code></pre>
+staticPodPath: /etc/kubernetes/manifests   #这个目录是一个静态pod路径</code></pre>
+<p>```</p>
 </li>
 <li>
 <p>移走当前数据目录</p>
@@ -233,11 +226,9 @@ namespace/test created
 #另一个窗口查看
 [root@k8s-master ~]# kubectl get ns
 NAME                   STATUS        AGE
-test                   Terminating   7s  #如果一直卡住 Terminating 的状态 删除不掉 ,怎么办?
-
-
-# 查询namespace相关的元数据
-$ etcdctl get / --prefix --keys-only|grep namespace
+test                   Terminating   7s  #如果一直卡住 Terminating 的状态 删除不掉 ,怎么办?</code></pre>
+<h1 id="namespace">查询namespace相关的元数据<a class="headerlink" href="#namespace" title="Permanent link">&para;</a></h1>
+<p>$ etcdctl get / --prefix --keys-only|grep namespace
 /registry/clusterrolebindings/system:controller:namespace-controller
 /registry/clusterroles/system:controller:namespace-controller
 /registry/namespaces/default
@@ -247,14 +238,13 @@ $ etcdctl get / --prefix --keys-only|grep namespace
 /registry/namespaces/kube-public
 /registry/namespaces/kube-system
 /registry/namespaces/luffy
-/registry/serviceaccounts/kube-system/namespace-controller
-
-# 比如eladmin这个名称空间无法删除，则可以通过命令删除
-$ etcdctl delete /registry/namespaces/eladmin
-</code></pre>
+/registry/serviceaccounts/kube-system/namespace-controller</p>
+<h1 id="eladmin">比如eladmin这个名称空间无法删除，则可以通过命令删除<a class="headerlink" href="#eladmin" title="Permanent link">&para;</a></h1>
+<p>$ etcdctl delete /registry/namespaces/eladmin</p>
+<p>```</p>
 </li>
 </ol>
-<h6 id="_1">锦囊妙计</h6>
+<h6 id="_1">锦囊妙计<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h6>
 <p>由于ETCD中存储了k8s集群全部的业务数据，考虑最坏的情况，当etcd节点的机器故障，机器无法恢复怎么办？</p>
 <p>在新机器中将备份数据恢复至数据目录中：</p>
 <pre class="highlight"><code class="language-bash"># python -m SimpleHTTPServer 8008  #基于当前目录启动了一个http服务
@@ -398,8 +388,8 @@ mv *.yaml yaml
 kubectl -f yaml/  #直接在新的k8s恢复了
 
 </code></pre>
-<h1 id="kubernetes">Kubernetes调度器</h1>
-<h6 id="pod">为何要控制Pod应该如何调度</h6>
+<h1 id="kubernetes">Kubernetes调度器<a class="headerlink" href="#kubernetes" title="Permanent link">&para;</a></h1>
+<h6 id="pod">为何要控制Pod应该如何调度<a class="headerlink" href="#pod" title="Permanent link">&para;</a></h6>
 <ul>
 <li>集群中有些机器的配置高（SSD，更好的内存等），我们希望核心的服务（比如说数据库）运行在上面</li>
 <li>某两个服务的网络传输很频繁，我们希望它们最好在同一台机器上</li>
@@ -407,7 +397,12 @@ kubectl -f yaml/  #直接在新的k8s恢复了
 </ul>
 <p>Kubernetes Scheduler 的作用是将待调度的 Pod 按照一定的调度算法和策略绑定到集群中一个合适的 Worker Node 上，并将绑定信息写入到 etcd 中，之后目标 Node 中 kubelet 服务通过 API Server 监听到 Scheduler 产生的 Pod 绑定事件获取 Pod 信息，然后下载镜像启动容器。</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/kube-scheduler-1.jpg" /></p>
-<h6 id="_2"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=调度的过程">调度的过程</a></h6>
+<pre class="highlight"><code class="language-text">Kubernetes Scheduler:
+  Pod(待调度) --调度算法/策略--&gt; 选定合适的 Worker Node
+        |
+        v  绑定信息写入
+     etcd</code></pre>
+<h6 id="_2"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=调度的过程">调度的过程</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h6>
 <p>Scheduler 提供的调度流程分为预选 (Predicates) 和优选 (Priorities) 两个步骤：</p>
 <ul>
 <li>预选，K8S会遍历当前集群中的所有 Node，筛选出其中符合要求的 Node 作为候选</li>
@@ -415,8 +410,23 @@ kubectl -f yaml/  #直接在新的k8s恢复了
 </ul>
 <p>经过预选筛选和优选打分之后，K8S选择分数最高的 Node 来运行 Pod，如果最终有多个 Node 的分数最高，那么 Scheduler 将从当中随机选择一个 Node 来运行 Pod。</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/kube-scheduler-process.png" /></p>
+<pre class="highlight"><code class="language-text">调度过程:
+  预选(Predicates): 过滤不满足条件的 Node
+        |
+        v
+  优选(Priorities): 对候选 Node 打分
+        |
+        v
+  选分数最高的 Node 运行 Pod
+  (若多个并列最高, 随机选一个)</code></pre>
 <p>预选：</p>
-<p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/kube-scheduler-pre.jpg" /></p>
+<pre class="highlight"><code class="language-text">预选(Predicates) 规则(部分):
+  - PodFitsResources      : 节点资源是否满足
+  - PodFitsHost           : 指定 hostname
+  - NoDiskConflict        : 卷冲突检查
+  - MatchNodeSelector     : 节点选择器匹配
+  - PodToleratesNodeTaints: 污点容忍
+  (不满足任一则被过滤掉)</code></pre>
 <table>
 <thead>
 <tr>
@@ -524,7 +534,11 @@ kubectl -f yaml/  #直接在新的k8s恢复了
 </tbody>
 </table>
 <p>优选：</p>
-<p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/kube-scheduler-pro.jpg" /></p>
+<pre class="highlight"><code class="language-text">优选(Priorities) 打分(部分):
+  - LeastRequestedPriority     : 资源剩余越多分越高
+  - BalancedResourceAllocation : CPU/内存均衡
+  - TaintTolerationPriority
+  (按权重求和, 总分最高者入选)</code></pre>
 <table>
 <thead>
 <tr>
@@ -615,7 +629,7 @@ kubectl -f yaml/  #直接在新的k8s恢复了
 </tr>
 </tbody>
 </table>
-<h6 id="nodeselector"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=nodeselector">NodeSelector</a></h6>
+<h6 id="nodeselector"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=nodeselector">NodeSelector</a><a class="headerlink" href="#nodeselector" title="Permanent link">&para;</a></h6>
 <p><code>label</code>是<code>kubernetes</code>中一个非常重要的概念，用户可以非常灵活的利用 label 来管理集群中的资源，POD 的调度可以根据节点的 label 进行特定的部署。</p>
 <p>查看节点的label：</p>
 <pre class="highlight"><code class="language-bash">$ kubectl get nodes --show-labels</code></pre>
@@ -634,7 +648,7 @@ spec:
   - name: mysql
       image: mysql:5.7
 ...</code></pre>
-<h6 id="nodeaffinity">nodeAffinity</h6>
+<h6 id="nodeaffinity">nodeAffinity<a class="headerlink" href="#nodeaffinity" title="Permanent link">&para;</a></h6>
 <p>Pod -&gt; Node的标签</p>
 <p>节点亲和性 ， 比上面的<code>nodeSelector</code>更加灵活，它可以进行一些简单的逻辑组合，不只是简单的相等匹配 。分为两种，硬策略和软策略。</p>
 <p>requiredDuringSchedulingIgnoredDuringExecution ： 硬策略，如果没有满足条件的节点的话，就不断重试直到满足条件为止，简单说就是你必须满足我的要求，不然我就不会调度Pod。</p>
@@ -678,7 +692,7 @@ spec:
 <li>DoesNotExist：某个 label 不存在</li>
 </ul>
 <p><em>如果nodeSelectorTerms下面有多个选项的话，满足任何一个条件就可以了；如果matchExpressions有多个选项的话，则必须同时满足这些条件才能正常调度 Pod</em></p>
-<h6 id="pod_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=pod亲和性和反亲和性">pod亲和性和反亲和性</a></h6>
+<h6 id="pod_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=pod亲和性和反亲和性">pod亲和性和反亲和性</a><a class="headerlink" href="#pod_1" title="Permanent link">&para;</a></h6>
 <p>Pod -&gt; Pod的标签</p>
 <p>场景：</p>
 <blockquote>
@@ -727,7 +741,7 @@ spec:
 <blockquote>
 <p>https://kubernetes.io/zh/docs/concepts/scheduling-eviction/assign-pod-node/</p>
 </blockquote>
-<h6 id="taintstolerations"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=污点（taints）与容忍（tolerations）">污点（Taints）与容忍（tolerations）</a></h6>
+<h6 id="taintstolerations"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=污点（taints）与容忍（tolerations）">污点（Taints）与容忍（tolerations）</a><a class="headerlink" href="#taintstolerations" title="Permanent link">&para;</a></h6>
 <p>对于<code>nodeAffinity</code>无论是硬策略还是软策略方式，都是调度 Pod 到预期节点上，而<code>Taints</code>恰好与之相反，如果一个节点标记为 Taints ，除非 Pod 也被标识为可以容忍污点节点，否则该 Taints 节点不会被调度Pod。</p>
 <p>Taints(污点)是Node的一个属性，设置了Taints(污点)后，因为有了污点，所以Kubernetes是不会将Pod调度到这个Node上的。于是Kubernetes就给Pod设置了个属性Tolerations(容忍)，只要Pod能够容忍Node上的污点，那么Kubernetes就会忽略Node上的污点，就能够(不是必须)把Pod调度过去。</p>
 <p>场景一：私有云服务中，某业务使用GPU进行大规模并行计算。为保证性能，希望确保该业务对服务器的专属性，避免将普通业务调度到部署GPU的服务器。</p>
@@ -790,7 +804,7 @@ spec:
 <blockquote>
 <p>NoExecute</p>
 </blockquote>
-<h6 id="cordon"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=cordon">Cordon</a></h6>
+<h6 id="cordon"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=cordon">Cordon</a><a class="headerlink" href="#cordon" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">
 # 停止调度  # 单词cordon 警戒线 ;旧有的pod不会受到影响，仍正常对外提供服务
 # 影响最小，只会将node调为SchedulingDisabled
@@ -819,7 +833,7 @@ drain的参数
 --delete-local-data
 如果有mount local volumn的pod，会强制杀掉该pod并把料清除掉
 另外如果跟本身的配置讯息有冲突时，drain就不会执行</code></pre>
-<h6 id="pod_2"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=pod驱逐策略">Pod驱逐策略</a></h6>
+<h6 id="pod_2"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/scheduler?id=pod驱逐策略">Pod驱逐策略</a><a class="headerlink" href="#pod_2" title="Permanent link">&para;</a></h6>
 <p>K8S 有个特色功能叫 pod eviction，它在某些场景下如节点 NotReady，或者资源不足时，把 pod 驱逐至其它节点，这也是出于业务保护的角度去考虑的。</p>
 <ol>
 <li>
@@ -842,6 +856,12 @@ drain的参数
 <p>即各pod可以独立设置驱逐容忍时间。</p>
 <p><img alt="image-20241020132548617" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241020132548617.png" /></p>
 </li>
+</ol>
+<pre class="highlight"><code class="language-text">Pod 驱逐(Eviction):
+  Kubelet 周期检查本节点资源(内存/磁盘/pid)
+  资源不足时 -&gt; 按 优先级/QoS 驱逐部分 Pod
+  (也可为各 Pod 独立设置驱逐容忍时间)</code></pre>
+<ol>
 <li>
 <p>Kubelet: 周期性检查本节点资源，当资源不足时，按照优先级驱逐部分 pod</p>
 </li>
@@ -853,9 +873,17 @@ drain的参数
 <li><code>imagefs.available</code>：镜像存储盘的可用空间</li>
 <li><code>imagefs.inodesFree</code>：镜像存储盘的inodes可用数量</li>
 </ol>
-<h1 id="kubernetes_1">Kubernetes认证与授权</h1>
-<h6 id="apiserver">APIServer安全控制</h6>
+<h1 id="kubernetes_1">Kubernetes认证与授权<a class="headerlink" href="#kubernetes_1" title="Permanent link">&para;</a></h1>
+<h6 id="apiserver">APIServer安全控制<a class="headerlink" href="#apiserver" title="Permanent link">&para;</a></h6>
 <p><img alt="image-20221122085209765" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20221122085209765.png" /></p>
+<pre class="highlight"><code class="language-text">APIServer 安全控制(三层):
+  Authentication 身份认证 (你是谁)
+        |
+        v
+  Authorization  鉴权 (RBAC 等, 能做什么)
+        |
+        v
+  Admission Control 准入控制 (mutate/validate)</code></pre>
 <ul>
 <li>
 <p>Authentication：身份认证</p>
@@ -939,7 +967,7 @@ spec:
 </li>
 <li>webhook admission，实现业务自定义的控制需求</li>
 </ul>
-<h6 id="kubectl"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=kubectl的认证授权">kubectl的认证授权</a></h6>
+<h6 id="kubectl"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=kubectl的认证授权">kubectl的认证授权</a><a class="headerlink" href="#kubectl" title="Permanent link">&para;</a></h6>
 <p>kubectl的日志调试级别：</p>
 <table>
 <thead>
@@ -1035,6 +1063,12 @@ Certificate:
 <p>认证通过后，提取出签发证书时指定的CN(Common Name),<code>kubernetes-admin</code>，作为请求的用户名 (User Name), 从证书中提取O(Organization)字段作为请求用户所属的组 (Group)，<code>group = system:masters</code>，然后传递给后面的授权模块。</p>
 <p>kubeadm在init初始引导集群启动过程中，创建了许多默认的RBAC规则， 在k8s有关RBAC的官方文档中，我们看到下面一些<code>default clusterrole</code>列表:</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/kubeadm-default-clusterrole-list.png" /></p>
+<pre class="highlight"><code class="language-text">kubeadm 初始化时创建的默认 ClusterRole(部分):
+  - cluster-admin (绑定 system:masters 组, 最高权限)
+  - admin
+  - edit
+  - view
+  (RBAC 规则以 default clusterrole 形式预置)</code></pre>
 <p>其中第一个cluster-admin这个cluster role binding绑定了system:masters group，这和authentication环节传递过来的身份信息不谋而合。 沿着system:masters group对应的cluster-admin clusterrolebinding“追查”下去，真相就会浮出水面。</p>
 <p>我们查看一下这一binding：</p>
 <pre class="highlight"><code class="language-yaml">$ kubectl describe clusterrolebinding cluster-admin
@@ -1061,7 +1095,13 @@ PolicyRule:
              [*]                []              [*]</code></pre>
 <p>非资源类，如查看集群健康状态。</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/how-kubectl-be-authorized.png" /></p>
-<h6 id="rbac"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=rbac">RBAC</a></h6>
+<pre class="highlight"><code class="language-text">kubectl 请求如何被授权:
+  kubectl -&gt; APIServer
+     -&gt; Authentication(身份)
+     -&gt; Authorization(RBAC: 用户/组 对 资源 的 动词权限)
+        资源类(如 pods) / 非资源类(如 /healthz)
+  (结合 ClusterRole + ClusterRoleBinding 判定)</code></pre>
+<h6 id="rbac"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=rbac">RBAC</a><a class="headerlink" href="#rbac" title="Permanent link">&para;</a></h6>
 <p>Role-Based Access Control，基于角色的访问控制， apiserver启动参数添加--authorization-mode=RBAC 来启用RBAC认证模式，kubeadm安装的集群默认已开启。<a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">官方介绍</a></p>
 <p>查看开启：</p>
 <pre class="highlight"><code class="language-bash"># master节点查看apiserver进程
@@ -1162,10 +1202,27 @@ roleRef:
 </li>
 </ul>
 <p><img alt="image-20241020165305022" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241020165305022.png" /></p>
+<pre class="highlight"><code class="language-text">查看 apiserver 进程 / RBAC 配置示例:
+  kubectl get clusterrole &lt;name&gt; -o yaml
+  (可见 rules: apiGroup / resources / verbs)</code></pre>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/rbac-2.jpg" /></p>
+<pre class="highlight"><code class="language-text">RBAC 四要素:
+  Role / ClusterRole        (权限集合: 对哪些资源能做什么)
+        ^ 绑定
+  RoleBinding / ClusterRoleBinding (把 用户/组/SA 绑定到 Role)
+  Subject: User / Group / ServiceAccount</code></pre>
 <p><img alt="image-20241020165439548" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241020165439548.png" /></p>
+<pre class="highlight"><code class="language-text">RBAC 绑定示例:
+  ClusterRoleBinding
+    subjects: [ {kind: User, name: xxx} ]
+    roleRef:   { kind: ClusterRole, name: cluster-admin }
+  (将身份与权限关联起来)</code></pre>
 <p><img alt="image-20241020230020796" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241020230020796.png" /></p>
-<h6 id="kubelet"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=kubelet的认证授权">kubelet的认证授权</a></h6>
+<pre class="highlight"><code class="language-text">ServiceAccount 与 RBAC:
+  Pod 使用 SA 的 token 访问 APIServer
+  SA 经 RoleBinding 获得对应权限
+  (二次开发 / 组件常用此方式鉴权)</code></pre>
+<h6 id="kubelet"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=kubelet的认证授权">kubelet的认证授权</a><a class="headerlink" href="#kubelet" title="Permanent link">&para;</a></h6>
 <p>查看kubelet进程</p>
 <pre class="highlight"><code class="language-bash">$ systemctl status kubelet
 ● kubelet.service - kubelet: The Kubernetes Node Agent
@@ -1287,7 +1344,7 @@ kube-apiserver --authorization-mode=Node,RBAC  --enable-admission-plugins=NodeRe
 <p><em>Node authorization is a special-purpose authorization mode that specifically authorizes API requests made by kubelets.</em></p>
 <p><em>In future releases, the node authorizer may add or remove permissions to ensure kubelets have the minimal set of permissions required to operate correctly.</em></p>
 <p><em>In order to be authorized by the Node authorizer, kubelets must use a credential that identifies them as being in the <code>system:nodes</code> group, with a username of <code>system:node:&lt;nodeName&gt;</code></em></p>
-<h6 id="kubeconfig"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=创建用户认证授权的kubeconfig文件">创建用户认证授权的kubeconfig文件</a></h6>
+<h6 id="kubeconfig"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=创建用户认证授权的kubeconfig文件">创建用户认证授权的kubeconfig文件</a><a class="headerlink" href="#kubeconfig" title="Permanent link">&para;</a></h6>
 <p>签发证书对：</p>
 <pre class="highlight"><code class="language-bash"># 生成私钥
 $ openssl genrsa -out luffy.key 2048
@@ -1371,7 +1428,7 @@ export KUBECONFIG=luffy.kubeconfig
 kubectl get pods  #没有权限,
 kubectl -n luffy get pods   #查看luffy 命名空间权限ok
 </code></pre>
-<h6 id="service-accountk8s-api"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=service-account及k8s-api调用">Service Account及K8S Api调用</a></h6>
+<h6 id="service-accountk8s-api"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=service-account及k8s-api调用">Service Account及K8S Api调用</a><a class="headerlink" href="#service-accountk8s-api" title="Permanent link">&para;</a></h6>
 <p>前面说，认证可以通过证书，也可以通过使用ServiceAccount（服务账户）的方式来做认证。大多数时候，我们在基于k8s做二次开发时都是选择通过ServiceAccount + RBAC 的方式。</p>
 <p><em>思考：ingress-nginx-controller 需要监听ingress资源，权限如何获取？</em></p>
 <pre class="highlight"><code class="language-bash"># 查看ingress-nginx-controller的deployment
@@ -1461,6 +1518,10 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6InFQRmxuWUd5UU9fTVhnSktxQjhOTUJmanZpX25RSFpoWXNwWl9x
 <p>Pod中若指定了<code>serviceAccount</code>，则k8s自动为Pod挂载<code>/run/secrets/kubernetes.io/serviceaccount/token</code>这个文件，文件内容为token信息，业务程序可以使用该token进行k8s api的调用，同时，该token的访问权限与对应的<code>serviceAccount</code>的权限一致。</p>
 <pre class="highlight"><code class="language-bash">curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InFQRmxuWUd5UU9fTVhnSktxQjhOTUJmanZpX25RSFpoWXNwWl9xdDNRcGsifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNzYxMTMyNDM3LCJpYXQiOjE3Mjk1OTY0MzcsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJpbmdyZXNzLW5naW54IiwicG9kIjp7Im5hbWUiOiJpbmdyZXNzLW5naW54LWNvbnRyb2xsZXItNWNmNWI2ODVjNS1sNXY5NSIsInVpZCI6Ijc0YjQwM2IxLTAzYzAtNGNjNC04YjRlLTE5NWU2OWYzZmNmYSJ9LCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiaW5ncmVzcy1uZ2lueCIsInVpZCI6IjUzM2ZiMWRhLWUxYzYtNGExYy1iNDUwLWU1ZjAwZWM2ZGRjZiJ9LCJ3YXJuYWZ0ZXIiOjE3Mjk2MDAwNDR9LCJuYmYiOjE3Mjk1OTY0MzcsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDppbmdyZXNzLW5naW54OmluZ3Jlc3MtbmdpbngifQ.maHtg5BLj7OrgawRYwS2UPCreFd3i_XhlJ3jJbvmhqvfv6losJHjCwtD4ZUvUUCt6THwyUNKk-pPx_bAjyVR2_WhhcaQjkm2PFtjHb2bqXyKoRwjNms-smn4bsaVfUa_mfQ82mh-FsbZ28SZ023t6CoCGZlkANbJ4ihtYEV8eBXRqOSI_kKsQlXUnqQgbkOxgrAjaV8qtdGvm9P5qay4xXgc-PiT13iK4gxJ0COal6V76I-lBBz343Qumb2ZNM-0H85MGenUkqp2fmErvtXyeuV7Qkop6uhR_SUskx7vEEFHi_BgcgNFvX2wVVwWSEGoDK6YA0mLFCZExBV_VLW1UQ" https://172.16.1.226:6443/api/v1/nodes</code></pre>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/rbac.jpg" /></p>
+<pre class="highlight"><code class="language-text">示例: 仅允许访问 luffy 命名空间的 pod
+  ServiceAccount: luffy-pods-admin
+    -&gt; RoleBinding(luffy ns) -&gt; Role(允许 pods 的 get/list/watch)
+  curl -k -H "Authorization: Bearer &lt;token&gt;" APIServer</code></pre>
 <p>只允许访问luffy命名空间的pod资源：</p>
 <pre class="highlight"><code class="language-bash">cat &lt;&lt;EOF &gt; luffy-admin-rbac.yaml
 apiVersion: v1
@@ -1512,23 +1573,33 @@ kubectl get clusterolebindings.rbac.authorization.k8s.io -oyaml|grep system:mast
 kubectl get clusterolebindings.rbac.authorization.k8s.io -oyaml|grep -n15 system:masters
 
 </code></pre>
-<h6 id="_3"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=认证、鉴权图鉴">认证、鉴权图鉴</a></h6>
+<h6 id="_3"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/auth?id=认证、鉴权图鉴">认证、鉴权图鉴</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/AUTH.jpg" /></p>
-<h1 id="hpa"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=通过hpa实现业务应用的动态扩缩容">通过HPA实现业务应用的动态扩缩容</a></h1>
-<h5 id="hpa_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=hpa控制器介绍">HPA控制器介绍</a></h5>
+<pre class="highlight"><code class="language-text">认证与授权全貌:
+  kubectl / kubelet / 组件 / 二次开发
+     -&gt; Authentication -&gt; Authorization(RBAC) -&gt; Admission
+  (掌握: kubectl、kubelet、rbac 及二次开发如何调用 API)</code></pre>
+<h1 id="hpa"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=通过hpa实现业务应用的动态扩缩容">通过HPA实现业务应用的动态扩缩容</a><a class="headerlink" href="#hpa" title="Permanent link">&para;</a></h1>
+<h5 id="hpa_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=hpa控制器介绍">HPA控制器介绍</a><a class="headerlink" href="#hpa_1" title="Permanent link">&para;</a></h5>
 <p>当系统资源过高的时候，我们可以使用如下命令来实现 Pod 的扩缩容功能</p>
 <pre class="highlight"><code class="language-bash">$ kubectl -n luffy scale deployment eladmin-web --replicas=2</code></pre>
 <p>但是这个过程是手动操作的。在实际项目中，我们需要做到是的是一个自动化感知并自动扩容的操作。Kubernetes 也为提供了这样的一个资源对象：Horizontal Pod Autoscaling（Pod 水平自动伸缩），简称<a href="https://v1-14.docs.kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">HPA</a></p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/hpa2.jpg" /></p>
+<pre class="highlight"><code class="language-text">HPA (Horizontal Pod Autoscaler):
+  监控分析 Pod 负载变化
+     |
+     v 超过阈值
+  自动调整 Pod 副本数量(扩容/缩容)
+  (替代人工手动扩缩)</code></pre>
 <p>基本原理：HPA 通过监控分析控制器控制的所有 Pod 的负载变化情况来确定是否需要调整 Pod 的副本数量</p>
-<h5 id="metric-server"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=metric-server">Metric Server</a></h5>
+<h5 id="metric-server"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=metric-server">Metric Server</a><a class="headerlink" href="#metric-server" title="Permanent link">&para;</a></h5>
 <p><a href="https://v1-14.docs.kubernetes.io/docs/tasks/debug-application-cluster/resource-metrics-pipeline/#metrics-server">官方介绍</a></p>
 <pre class="highlight"><code>...
 Metric server collects metrics from the Summary API, exposed by Kubelet on each node.
 
 Metrics Server registered in the main API server through Kubernetes aggregator, which was introduced in Kubernetes 1.7
 ...</code></pre>
-<h6 id="_4"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=安装">安装</a></h6>
+<h6 id="_4"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=安装">安装</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h6>
 <p>官方代码仓库地址：https://github.com/kubernetes-sigs/metrics-server</p>
 <p>Depending on your cluster setup, you may also need to change flags passed to the Metrics Server container. Most useful flags:</p>
 <ul>
@@ -1565,14 +1636,21 @@ NAME         CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
 k8s-master   201m         10%    1336Mi          71%
 k8s-slave1   84m          2%     1163Mi          61%
 k8s-slave2   87m          2%     489Mi           26%</code></pre>
-<h5 id="hpa_2"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=hpa实践">HPA实践</a></h5>
+<h5 id="hpa_2"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=hpa实践">HPA实践</a><a class="headerlink" href="#hpa_2" title="Permanent link">&para;</a></h5>
 <p>HPA的实现有两个版本：</p>
 <ul>
 <li>autoscaling/v1，只包含了根据CPU指标的检测，稳定版本</li>
 <li>autoscaling/v2，支持根据cpu、memory或者用户自定义指标进行伸缩</li>
 </ul>
-<h6 id="cpu"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=基于cpu和内存的动态伸缩">基于CPU和内存的动态伸缩</a></h6>
+<h6 id="cpu"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=基于cpu和内存的动态伸缩">基于CPU和内存的动态伸缩</a><a class="headerlink" href="#cpu" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/hpa.png" /></p>
+<pre class="highlight"><code class="language-text">基于 CPU / 内存的 HPA:
+  Metrics-Server 采集 Pod CPU/内存利用率
+     |
+     v 与预期目标比较
+  HPA 计算 desiredReplicas = 当前 * (实际/目标)
+     |
+     v 调整 Deployment 副本数</code></pre>
 <p>创建hpa对象：</p>
 <pre class="highlight"><code class="language-bash"># 方式一
 cat &lt;&lt;EOF &gt; hpa-eladmin-web.yaml
@@ -1648,13 +1726,28 @@ eladmin-web-7f46789b7-z2j5k    0/1     Running   0             33s
 The value for this option is a duration that specifies how long the autoscaler has to wait before another downscale operation can be performed after the current one has completed. The default value is 5 minutes (5m0s).</code></pre>
 <p>也可以通过设置每个hpa的<code>behavior</code>来控制<code>scaleDown</code>和<code>scaleUp</code>的行为。</p>
 <p>是一个逐步的过程，当前的缩放完成后，下次缩放的时间间隔，比如从3个副本降低到1个副本，中间大概会等待2*5min = 10分钟</p>
-<h6 id="_5"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=基于自定义指标的动态伸缩">基于自定义指标的动态伸缩</a></h6>
+<h6 id="_5"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=基于自定义指标的动态伸缩">基于自定义指标的动态伸缩</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h6>
 <p>除了基于 CPU 和内存来进行自动扩缩容之外，我们还可以根据自定义的监控指标来进行。这个我们就需要使用 <code>Prometheus Adapter</code>，Prometheus 用于监控应用的负载和集群本身的各种指标，<code>Prometheus Adapter</code> 可以帮我们使用 Prometheus 收集的指标并使用它们来制定扩展策略，这些指标都是通过 APIServer 暴露的，而且 HPA 资源对象也可以很轻易的直接使用。</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/custom-hpa.webp" /></p>
+<pre class="highlight"><code class="language-text">基于自定义指标的 HPA:
+  应用暴露自定义指标(如 QPS)
+     |
+     v Prometheus 采集
+  Prometheus Adapter 翻译为 custom.metrics.k8s.io
+     |
+     v HPA 据此扩缩</code></pre>
 <p>架构图：</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/hpa-prometheus-custom.png" /></p>
-<h5 id="_6"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=实现原理篇">实现原理篇</a></h5>
-<h6 id="pod_3"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=如何获取pod的监控数据">如何获取Pod的监控数据</a></h6>
+<pre class="highlight"><code class="language-text">HPA + Prometheus 自定义指标架构:
+  应用 -&gt; /metrics -&gt; Prometheus
+                    |
+                    v
+              Prometheus Adapter -&gt; custom.metrics.k8s.io
+                    |
+                    v
+                  HPA -&gt; 调整副本</code></pre>
+<h5 id="_6"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=实现原理篇">实现原理篇</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h5>
+<h6 id="pod_3"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=如何获取pod的监控数据">如何获取Pod的监控数据</a><a class="headerlink" href="#pod_3" title="Permanent link">&para;</a></h6>
 <ul>
 <li>k8s 1.8以下：使用heapster，1.11版本完全废弃</li>
 <li>k8s 1.8以上：使用metric-server</li>
@@ -1703,7 +1796,15 @@ $ curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InFQRmxuWUd5UU9
 }</code></pre>
 <p>目前的采集流程：</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/k8s-hpa-ms.png" /></p>
-<h6 id="kubelet_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=kubelet的指标采集">kubelet的指标采集</a></h6>
+<pre class="highlight"><code class="language-text">指标采集流程:
+  Pod 内 cAdvisor/kubelet 暴露指标
+     |
+     v
+  Metrics-Server 聚合
+     |
+     v
+  HPA 读取 (或通过 Adapter 暴露自定义指标)</code></pre>
+<h6 id="kubelet_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/hpa?id=kubelet的指标采集">kubelet的指标采集</a><a class="headerlink" href="#kubelet_1" title="Permanent link">&para;</a></h6>
 <p>无论是 heapster还是 metric-server，都只是数据的中转和聚合，两者都是调用的 kubelet 的 api 接口获取的数据，而 kubelet 代码中实际采集指标的是 cadvisor 模块，你可以在 node 节点访问 10250 端口获取监控数据：</p>
 <ul>
 <li>Kubelet Summary metrics: https://127.0.0.1:10250/metrics，暴露 node、pod 汇总数据</li>
@@ -1720,11 +1821,22 @@ $ curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InFQRmxuWUd5UU9
 <p>cgroup文件中的值是监控数据的最终来源</p>
 <p>Metrics数据流：</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/hap-flow.webp" /></p>
+<pre class="highlight"><code class="language-text">Metrics 数据流:
+  Kubelet(cAdvisor) --metrics--&gt; Metrics-Server
+     |
+     v (kube-aggregator 注册为 API)
+  HPA / kubectl top 通过 metrics.k8s.io 读取</code></pre>
 <p><em>思考：Metrics Server是独立的一个服务，只能服务内部实现自己的api，是如何做到通过标准的kubernetes 的API格式暴露出去的</em></p>
 <p><a href="https://github.com/kubernetes/kube-aggregator">kube-aggregator</a></p>
-<h6 id="kube-aggregatormetric-server">[kube-aggregator聚合器及Metric-Server的实现]</h6>
+<h6 id="kube-aggregatormetric-server">[kube-aggregator聚合器及Metric-Server的实现]<a class="headerlink" href="#kube-aggregatormetric-server" title="Permanent link">&para;</a></h6>
 <p>kube-aggregator是对 apiserver 的api的一种拓展机制，它允许开发人员编写一个自己的服务，并把这个服务注册到k8s的api里面，即扩展 API 。</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/kube-aggregation.webp" /></p>
+<pre class="highlight"><code class="language-text">kube-aggregator (聚合层):
+  允许把自定义服务注册到 k8s API
+     |
+     v
+  Metrics-Server 以 Extension APIServer 方式注册
+  /apis/metrics.k8s.io 由聚合层转发给 Metrics-Server</code></pre>
 <p>看下metric-server的实现：</p>
 <pre class="highlight"><code class="language-bash">$ kubectl get apiservice 
 NAME                       SERVICE                      AVAILABLE                      
@@ -1781,9 +1893,9 @@ $ curl -k  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InFQRmxuWUd5UU9
     }
   ]
 }</code></pre>
-<h1 id="_7">对接外部存储</h1>
-<h4 id="kubernetes_2">kubernetes对接分部式存储</h4>
-<h5 id="pvpvc">PV与PVC快速入门</h5>
+<h1 id="_7">对接外部存储<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h1>
+<h4 id="kubernetes_2">kubernetes对接分部式存储<a class="headerlink" href="#kubernetes_2" title="Permanent link">&para;</a></h4>
+<h5 id="pvpvc">PV与PVC快速入门<a class="headerlink" href="#pvpvc" title="Permanent link">&para;</a></h5>
 <p>k8s存储的目的就是保证Pod重建后，数据不丢失。简单的数据持久化的下述方式：</p>
 <ul>
 <li>
@@ -1870,6 +1982,11 @@ spec:
 <li>ReadWriteMany（RWX）：读写权限，可以被多个节点挂载</li>
 </ul>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/pv-access-mode.webp" /></p>
+<pre class="highlight"><code class="language-text">PV 访问模式:
+  RWO (ReadWriteOnce) : 单节点读写
+  ROX (ReadOnlyMany)  : 多节点只读
+  RWX (ReadWriteMany) : 多节点读写
+  (创建 PV 时声明, PVC 需匹配)</code></pre>
 <ul>
 <li>persistentVolumeReclaimPolicy，pv的回收策略, 目前只有 NFS 和 HostPath 两种类型支持回收策略</li>
 <li>Retain（保留）- 保留数据，需要管理员手工清理数据</li>
@@ -1879,6 +1996,11 @@ spec:
 <p>因为PV是直接对接底层存储的，就像集群中的Node可以为Pod提供计算资源（CPU和内存）一样，PV可以为Pod提供存储资源。因此PV不是namespaced的资源，属于集群层面可用的资源。Pod如果想使用该PV，需要通过创建PVC挂载到Pod中。</p>
 <p>PVC全写是PersistentVolumeClaim（持久化卷声明），PVC 是用户存储的一种声明，创建完成后，可以和PV实现一对一绑定。对于真正使用存储的用户不需要关心底层的存储实现细节，只需要直接使用 PVC 即可。</p>
 <p><img alt="image-20241022225423472" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241022225423472.png" /></p>
+<pre class="highlight"><code class="language-text">PV 与 PVC:
+  PV  (集群级存储资源, 管理员创建)
+   | 一对一绑定
+  PVC (用户声明所需存储)
+  (使用方只关心 PVC, 不关心底层实现)</code></pre>
 <pre class="highlight"><code class="language-yaml">apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -1908,8 +2030,8 @@ spec:
         persistentVolumeClaim:              #指定pvc
           claimName: pvc-nfs
 ...</code></pre>
-<h5 id="pvpvcnfs"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=pv与pvc管理nfs存储卷实践">PV与PVC管理NFS存储卷实践</a></h5>
-<h6 id="_8"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=环境准备">环境准备</a></h6>
+<h5 id="pvpvcnfs"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=pv与pvc管理nfs存储卷实践">PV与PVC管理NFS存储卷实践</a><a class="headerlink" href="#pvpvcnfs" title="Permanent link">&para;</a></h5>
+<h6 id="_8"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=环境准备">环境准备</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h6>
 <p>服务端：172.16.1.227</p>
 <pre class="highlight"><code class="language-bash">yum -y install nfs-utils rpcbind
 
@@ -1924,7 +2046,7 @@ systemctl enable nfs &amp;&amp; systemctl start nfs</code></pre>
 <pre class="highlight"><code class="language-bash">yum -y install nfs-utils rpcbind
 mkdir /nfsdata
 mount -t nfs 172.16.1.227:/data/k8s /nfsdata #这里挂载是测试, 可以不挂载</code></pre>
-<h6 id="pvpvc_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=pv与pvc演示">PV与PVC演示</a></h6>
+<h6 id="pvpvc_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=pv与pvc演示">PV与PVC演示</a><a class="headerlink" href="#pvpvc_1" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash"># 在nfs-server机器中创建
 mkdir -p /data/k8s/nginx
 
@@ -2041,10 +2163,22 @@ kubectl delete deploy nfs-pvc
 kubectl delete pvc pvc-nfs
 kubectl delete pv nfs-pv
 </code></pre>
-<h6 id="storageclass"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=storageclass实现动态挂载">storageClass实现动态挂载</a></h6>
+<h6 id="storageclass"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=storageclass实现动态挂载">storageClass实现动态挂载</a><a class="headerlink" href="#storageclass" title="Permanent link">&para;</a></h6>
 <p>创建pv及pvc过程是手动，且pv与pvc一一对应，手动创建很繁琐。因此，通过storageClass + provisioner的方式来实现通过PVC自动创建并绑定PV。</p>
 <p><img alt="image-20241023092630377" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/image-20241023092630377.png" /></p>
+<pre class="highlight"><code class="language-text">StorageClass 动态供给:
+  PVC 指定 storageClassName
+     |
+     v provisioner 自动创建
+  PV (动态生成并绑定 PVC)
+  (免去手动逐一创建 PV)</code></pre>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/storage-class.png" /></p>
+<pre class="highlight"><code class="language-text">StorageClass 机制:
+  PVC --引用--&gt; StorageClass
+                  |
+                  v provisioner(NFS/Ceph/... 实现)
+              动态创建 PV 并绑定
+  (NFS / ceph-rbd / cephfs 均提供对应 provisioner)</code></pre>
 <p>部署： https://github.com/kubernetes-retired/external-storage</p>
 <p><em>provisioner.yaml</em></p>
 <pre class="highlight"><code class="language-yaml">cat &lt;&lt;EOF &gt;provisioner.yaml
@@ -2323,9 +2457,9 @@ mysql&gt; use eladmin;
 mysql&gt; show tables;
 
 </code></pre>
-<h5 id="_9"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=安装容器管理平台">安装容器管理平台</a></h5>
+<h5 id="_9"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=安装容器管理平台">安装容器管理平台</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h5>
 <p>市面上存在很多开源的容器管理平台，可以帮助用户快速管理k8s平台中的业务服务，今天学习下<code>kubesphere</code>的使用。</p>
-<h6 id="_10"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=安装">安装</a></h6>
+<h6 id="_10"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=安装">安装</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h6>
 <p>安装的版本为<code>v3.3.1</code></p>
 <ul>
 <li>
@@ -2348,15 +2482,13 @@ wget https://raw.githubusercontent.com/kubesphere/notification-manager/master/co
 #备用地址
 wget https://gitee.com/chengkanghua/script/raw/master/k8s/bundle.yaml
 wget https://gitee.com/chengkanghua/script/raw/master/k8s/cluster-configuration.yaml
-wget https://gitee.com/chengkanghua/script/raw/master/k8s/kubesphere-installer.yaml
-
-
-# 修改配置为外部监控,  如果是干净的K8S(没有安装其他的监控,可以不用修改)
-# vim cluster-configuration.yaml
-42     monitoring:
-43       type: external  
-44       endpoint: http://prometheus.monitor:9090 
-</code></pre>
+wget https://gitee.com/chengkanghua/script/raw/master/k8s/kubesphere-installer.yaml</code></pre>
+<h1 id="k8s">修改配置为外部监控,  如果是干净的K8S(没有安装其他的监控,可以不用修改)<a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h1>
+<h1 id="vim-cluster-configurationyaml">vim cluster-configuration.yaml<a class="headerlink" href="#vim-cluster-configurationyaml" title="Permanent link">&para;</a></h1>
+<p>42     monitoring:
+43       type: external<br />
+44       endpoint: http://prometheus.monitor:9090 </p>
+<p>```</p>
 </li>
 <li>
 <p>安装</p>
@@ -2378,14 +2510,12 @@ wget https://gitee.com/chengkanghua/script/raw/master/k8s/kubesphere-delete.sh
 
 kubectl delete -f kubesphere-installer.yaml
 kubectl delete -f cluster-configuration.yaml
-kubectl delete -f bundle.yaml
-
-
-# sh kubesphere-delete.sh
-</code></pre>
+kubectl delete -f bundle.yaml</code></pre>
+<h1 id="sh-kubesphere-deletesh">sh kubesphere-delete.sh<a class="headerlink" href="#sh-kubesphere-deletesh" title="Permanent link">&para;</a></h1>
+<p>```</p>
 </li>
 </ul>
-<h5 id="ceph"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=对接ceph存储实践">对接Ceph存储实践</a></h5>
+<h5 id="ceph"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=对接ceph存储实践">对接Ceph存储实践</a><a class="headerlink" href="#ceph" title="Permanent link">&para;</a></h5>
 <p>ceph集群的安装及使用参考https://i4t.com/5267.html</p>
 <p>单点快速安装： https://blog.csdn.net/h106140873/article/details/90201379</p>
 <p>以<code>k8s-slave2</code>为例的步骤：</p>
@@ -2496,7 +2626,11 @@ AQCdaG9jP09dJBAAZsl58WHL/xLNvUq7IXh1zQ==
 
 mount -t ceph 172.16.1.228:6789:/ /mnt/cephfs -o name=admin,secret=AQCdaG9jP09dJBAAZsl58WHL/xLNvUq7IXh1zQ==</code></pre>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/ceph-art.png" /></p>
-<h6 id="storageclass_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=storageclass实现动态挂载-1">storageClass实现动态挂载</a></h6>
+<pre class="highlight"><code class="language-text">Ceph 存储:
+  ceph auth get-key client.admin
+  mount -t ceph &lt;mon&gt;:6789:/ /mnt/cephfs -o name=admin,secret=...
+  (CephFS / RBD 作为 K8s 后端存储, 提供 provisioner)</code></pre>
+<h6 id="storageclass_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=storageclass实现动态挂载-1">storageClass实现动态挂载</a><a class="headerlink" href="#storageclass_1" title="Permanent link">&para;</a></h6>
 <p>创建pv及pvc过程是手动，且pv与pvc一一对应，手动创建很繁琐。因此，通过storageClass + provisioner的方式来实现通过PVC自动创建并绑定PV</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/storage-class.png" /></p>
 <p>NFS，ceph-rbd，cephfs均提供了对应的provisioner</p>
@@ -2612,7 +2746,7 @@ kubectl create -f cephfs-storage-class.yaml
 
 # 查看pod状态
 kubectl -n kube-system get pod|grep cephfs</code></pre>
-<h6 id="pvc"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=动态pvc验证及实现分析">动态pvc验证及实现分析</a></h6>
+<h6 id="pvc"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/pv?id=动态pvc验证及实现分析">动态pvc验证及实现分析</a><a class="headerlink" href="#pvc" title="Permanent link">&para;</a></h6>
 <p>使用流程： 创建pvc，指定storageclass和存储大小，即可实现动态存储。</p>
 <p>创建pvc测试自动生成pv</p>
 <pre class="highlight"><code class="language-bash">$ cat cephfs-pvc-test.yaml
@@ -2660,10 +2794,15 @@ $ kubectl create -f test-pvc-cephfs.yaml</code></pre>
 <p>宿主机上的volume持久化，因为要支持数据漂移，所以通常是数据存储在分布式存储中，宿主机本地挂载远程存储（NFS，Ceph，OSS），这样即使Pod漂移也不影响数据。</p>
 <p>k8s的pod的挂载盘通常的格式为：</p>
 <pre class="highlight"><code class="language-bash">/var/lib/kubelet/pods/&lt;Pod的ID&gt;/volumes/kubernetes.io~&lt;Volume类型&gt;/&lt;Volume名字&gt;</code></pre>
-<h1 id="_11">集群网络</h1>
-<h4 id="kubernetes_3"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=kubernetes集群的网络实现">Kubernetes集群的网络实现</a></h4>
-<h5 id="_12"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=容器网络回顾">容器网络回顾</a></h5>
+<h1 id="_11">集群网络<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h1>
+<h4 id="kubernetes_3"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=kubernetes集群的网络实现">Kubernetes集群的网络实现</a><a class="headerlink" href="#kubernetes_3" title="Permanent link">&para;</a></h4>
+<h5 id="_12"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=容器网络回顾">容器网络回顾</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h5>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/docker-bridge.jpeg" /></p>
+<pre class="highlight"><code class="language-text">容器网络回顾(Docker):
+  Docker 创建容器时:
+    1. 创建 veth pair
+    2. 一端进容器(eth0), 一端连 docker0 网桥
+    3. 通过 docker0 + iptables 与外界通信</code></pre>
 <p>Docker 创建一个容器的时候，会执行如下操作：</p>
 <ul>
 <li>创建一对虚拟接口/网卡，也就是veth pair；</li>
@@ -2672,7 +2811,7 @@ $ kubectl create -f test-pvc-cephfs.yaml</code></pre>
 <li>从网桥可用地址段中（也就是与该bridge对应的network）获取一个空闲地址分配给容器的 eth0</li>
 <li>配置容器的默认路由</li>
 </ul>
-<h5 id="pod-ip"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=pod-ip唯一性保障">Pod IP唯一性保障</a></h5>
+<h5 id="pod-ip"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=pod-ip唯一性保障">Pod IP唯一性保障</a><a class="headerlink" href="#pod-ip" title="Permanent link">&para;</a></h5>
 <p>Kubernetes网络模型的核心要求之一是每个Pod应该获得自己的IP地址，如何实现？</p>
 <pre class="highlight"><code class="language-bash">$ cat /etc/kubernetes/manifests/kube-controller-manager.yaml
 ...
@@ -2682,7 +2821,7 @@ $ kubectl create -f test-pvc-cephfs.yaml</code></pre>
 # 为每个节点从cidr中分配一个网段，供该节点分配pod ip
 $ kubectl describe node k8s-slave1</code></pre>
 <p><em>思考：谁来配置Pod网络？当Pod调度到 k8s-slave1节点后，网络的配置流程是怎样</em></p>
-<h5 id="pod_4"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=pod配置网络流程">Pod配置网络流程</a></h5>
+<h5 id="pod_4"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=pod配置网络流程">Pod配置网络流程</a><a class="headerlink" href="#pod_4" title="Permanent link">&para;</a></h5>
 <p>CNI：容器网络接口（Container Network Interface）， 主要能力是对接 Kubelet 完成容器网卡的创建，申请和设置 ip 地址，路由设置，网关设置，实现kubernetes集群的Pod网络通信及管理。</p>
 <p>CNI的具体实现有很多种：</p>
 <ul>
@@ -2696,6 +2835,11 @@ $ kubectl describe node k8s-slave1</code></pre>
 <p>k8s本身不提供cni的实现，因此安装完k8s集群后，需要单独安装网络组件</p>
 </blockquote>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/kubelet-cni-process.jpg" /></p>
+<pre class="highlight"><code class="language-text">Pod 网络配置流程:
+  1. Pod 调度到节点 k8s-slave1
+  2. kubelet 调用 CNI 插件
+  3. CNI 插件为 Pod 配置网络(接口/IP/路由)
+  (k8s 不自带 CNI 实现, 需单独安装网络组件)</code></pre>
 <ol>
 <li>Pod调度到k8s的节点k8s-slave1中</li>
 <li>slave1的kubelet调用containerd创建Pod</li>
@@ -2722,6 +2866,12 @@ $ kubectl describe node k8s-slave1</code></pre>
 </ul>
 <p>更细致的CNI调用过程：</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/cni-network.webp" /></p>
+<pre class="highlight"><code class="language-text">CNI 调用过程:
+  kubelet -&gt; 容器运行时(CRI) -&gt; 创建 pause 容器
+     |
+     v
+  CNI 插件(如 bridge/flannel) 被调用
+     -&gt; 添加网络接口, 分配 IP, 设置路由</code></pre>
 <ul>
 <li>
 <p>Flannel CNI</p>
@@ -2745,6 +2895,11 @@ $ kubectl describe node k8s-slave1</code></pre>
 <p>Host-local IPAM（IP地址管理）插件从子网返回容器的IP地址，并将分配的IP本地存储在主机上</p>
 <p>经过Pod网络配置后，本机的Pod应该是这样的：</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/pod-local.png" /></p>
+<pre class="highlight"><code class="language-text">本机 Pod 网络形态:
+  cni0 网桥
+    |-- pod1 eth0 (veth) -- 10.244.x.2
+    |-- pod2 eth0 (veth) -- 10.244.x.3
+  (同节点 Pod 经 cni0 互通)</code></pre>
 <p>思考：</p>
 <ul>
 <li>flannel插件和kube-flannel的Pod什么关系</li>
@@ -2761,7 +2916,7 @@ IP 封装：当一个 Pod 在节点 A 上要与另一个在节点 B 上的 Pod �
 解封装和路由：在节点 B 上，kube-flannel的 Pod 会解封装数据包，提取出原始的 Pod 间通信数据包，并根据内部的路由表将数据包转发到目标 Pod 所在的容器网络接口。
 Kubernetes 服务发现：Kubernetes 还提供了服务发现机制，使得跨节点的 Pod 可以通过服务的名称和端口来进行通信，而无需直接知道目标 Pod 的具体 IP 地址。Kubernetes 的服务通过在每个节点上创建一个代理（通常是 kube-proxy）来实现负载均衡和服务发现，进一步简化了跨节点的 Pod 通信。
 </code></pre>
-<h5 id="kube-flannel"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=kube-flannel的作用">kube-flannel的作用</a></h5>
+<h5 id="kube-flannel"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=kube-flannel的作用">kube-flannel的作用</a><a class="headerlink" href="#kube-flannel" title="Permanent link">&para;</a></h5>
 <p>从Pod的启动进程，看flannel的Pod：</p>
 <pre class="highlight"><code class="language-bash">$ kubectl -n kube-flannel get pod kube-flannel-ds-gdvpx -oyaml
 
@@ -2774,9 +2929,12 @@ Kubernetes 服务发现：Kubernetes 还提供了服务发现机制，使得跨�
 <li>拷贝flannel的网络插件到宿主机中，为containerd调用</li>
 <li>考虑flannel的配置文件，当成宿主机的CNI配置，告知containerd使用flannel</li>
 </ol>
-<h5 id="pod_5"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=跨主机pod通信">跨主机Pod通信</a></h5>
+<h5 id="pod_5"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=跨主机pod通信">跨主机Pod通信</a><a class="headerlink" href="#pod_5" title="Permanent link">&para;</a></h5>
 <p>跨主机间的通信流程：</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/pods-network.webp" /></p>
+<pre class="highlight"><code class="language-text">跨主机 Pod 通信(以 Flannel 为例):
+  PodA(节点1) --cni0--&gt; flannel.1(vxlan) --隧道--&gt; flannel.1(节点2) --cni0--&gt; PodB
+  (通过 overlay 隧道打通二层)</code></pre>
 <p>flannel的网络有多种后端实现：</p>
 <ul>
 <li>udp</li>
@@ -2801,9 +2959,13 @@ $ kubectl -n kube-flannel exec  kube-flannel-ds-amd64-cb7hs cat /etc/kube-flanne
 <li>启动flannel.1作为VTEP设备，用来封包、解包，实现跨主机通信</li>
 <li>监听宿主机的Pod CIDR，维护本机路由表</li>
 </ul>
-<h6 id="vxlan">[vxlan介绍及点对点通信的实现]</h6>
+<h6 id="vxlan">[vxlan介绍及点对点通信的实现]<a class="headerlink" href="#vxlan" title="Permanent link">&para;</a></h6>
 <p>VXLAN 全称是虚拟可扩展的局域网（ Virtual eXtensible Local Area Network），它是一种 overlay 技术，通过三层的网络来搭建虚拟的二层网络。</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/vxlan.png" /></p>
+<pre class="highlight"><code class="language-text">VXLAN (虚拟扩展局域网):
+  overlay 技术, 在三层 IP 网络之上构建虚拟二层
+  每个端点有 vtep 负责封包/解包
+  (三层可达即可部署, 不依赖物理二层)</code></pre>
 <p>它创建在原来的 IP 网络（三层）上，只要是三层可达（能够通过 IP 互相通信）的网络就能部署 vxlan。在每个端点上都有一个 vtep 负责 vxlan 协议报文的封包和解包，也就是在虚拟报文上封装 vtep 通信的报文头部。物理网络上可以创建多个 vxlan 网络，这些 vxlan 网络可以认为是一个隧道，不同节点的虚拟机能够通过隧道直连。每个 vxlan 网络由唯一的 VNI 标识，不同的 vxlan 可以不相互影响。</p>
 <ul>
 <li>VTEP（VXLAN Tunnel Endpoints）：vxlan 网络的边缘设备，用来进行 vxlan 报文的处理（封包和解包）。vtep 可以是网络设备（比如交换机），也可以是一台机器（比如虚拟化集群中的宿主机）</li>
@@ -2811,6 +2973,10 @@ $ kubectl -n kube-flannel exec  kube-flannel-ds-amd64-cb7hs cat /etc/kube-flanne
 </ul>
 <p>演示：在k8s-slave1和k8s-slave2两台机器间，利用vxlan的点对点能力，实现虚拟二层网络的通信</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/vxlan-p2p-1.jpg" /></p>
+<pre class="highlight"><code class="language-text">VXLAN 点对点演示(k8s-slave1 &lt;-&gt; k8s-slave2):
+  在两端创建 vxlan 接口, 配置 vtep
+  实现虚拟二层直连通信
+  (172.16.1.227 节点 ...)</code></pre>
 <p><code>172.16.1.227</code>节点：</p>
 <pre class="highlight"><code class="language-bash"># 创建vTEP设备，对端指向172.16.1.228节点，指定VNI及underlay网络使用的网卡
 $ ip link add vxlan20 type vxlan id 20 remote 172.16.1.228 dstport 4789 dev eth0
@@ -2844,6 +3010,9 @@ $ ip route add 10.245.1.0/24 dev vxlan20
 # 再次ping
 $ ping 10.245.2.5</code></pre>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/vxlan-p2p-2.jpg" /></p>
+<pre class="highlight"><code class="language-text">VXLAN 隧道验证:
+  ping 10.245.2.5  (跨 vxlan 二层互通)
+  隧道: 虚拟通道, 通信双方误以为直连, 不知底层网络</code></pre>
 <p>隧道是一个逻辑上的概念，在 vxlan 模型中并没有具体的物理实体相对应。隧道可以看做是一种虚拟通道，vxlan 通信双方（图中的虚拟机）认为自己是在直接通信，并不知道底层网络的存在。从整体来说，每个 vxlan 网络像是为通信的虚拟机搭建了一个单独的通信通道，也就是隧道。</p>
 <p>实现的过程：</p>
 <p>虚拟机的报文通过 vtep 添加上 vxlan 以及外部的报文层，然后发送出去，对方 vtep 收到之后拆除 vxlan 头部然后根据 VNI 把原始报文发送到目的虚拟机。</p>
@@ -2920,10 +3089,18 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 #根据路由规则转发到cni0网桥,然后由网桥转到具体的Pod中</code></pre>
 <p>实际的请求图：</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/flannel-actual.png" /></p>
-<h6 id="host-gw"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=利用host-gw模式提升集群网络性能">利用host-gw模式提升集群网络性能</a></h6>
+<pre class="highlight"><code class="language-text">Flannel 实际通信:
+  源 Pod -&gt; veth -&gt; cni0 -&gt; flannel.1
+     -&gt; 封装 vxlan 经宿主机 eth0 发往对端
+  对端 vtep 解包, 按路由送目的 Pod</code></pre>
+<h6 id="host-gw"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=利用host-gw模式提升集群网络性能">利用host-gw模式提升集群网络性能</a><a class="headerlink" href="#host-gw" title="Permanent link">&para;</a></h6>
 <p>vxlan模式适用于三层可达的网络环境，对集群的网络要求很宽松，但是同时由于会通过VTEP设备进行额外封包和解包，因此给性能带来了额外的开销。</p>
 <p>网络插件的目的其实就是将本机的cni0网桥的流量送到目的主机的cni0网桥。实际上有很多集群是部署在同一二层网络环境下的，可以直接利用二层的主机当作流量转发的网关。这样的话，可以不用进行封包解包，直接通过路由表去转发流量。</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/flannel-host-gw.png" /></p>
+<pre class="highlight"><code class="language-text">Flannel host-gw 模式:
+  利用二层网络下的主机当网关
+  本机 cni0 流量 -&gt; 直接经主机网关路由到目的主机 cni0
+  (省去 vxlan 封装, 性能更好, 要求二层可达)</code></pre>
 <p>为什么三层可达的网络不直接利用网关转发流量？</p>
 <pre class="highlight"><code class="language-bash">内核当中的路由规则，网关必须在跟主机当中至少一个 IP 处于同一网段。
 由于k8s集群内部各节点均需要实现Pod互通，因此，也就意味着host-gw模式需要整个集群节点都在同一二层网络内。</code></pre>
@@ -2964,7 +3141,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 10.244.2.0      172.16.1.228   255.255.255.0   UG    0      0        0 eth0
 169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 eth0
 172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0</code></pre>
-<h5 id="_13"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=总结">总结</a></h5>
+<h5 id="_13"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/cni?id=总结">总结</a><a class="headerlink" href="#_13" title="Permanent link">&para;</a></h5>
 <p>flannel pod做的几个事情：</p>
 <ul>
 <li>为了配置本机的Pod网络</li>
@@ -2977,9 +3154,9 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 <li>创建flannel.1 vtep设备，支持vxlan模式下封包解包</li>
 <li>维护本机路由表，转发Pod的流量</li>
 </ul>
-<h1 id="helm">Helm部署应用</h1>
-<h4 id="helm3"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=使用helm3管理复杂应用的部署">使用Helm3管理复杂应用的部署</a></h4>
-<h5 id="helm_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=认识helm">认识Helm</a></h5>
+<h1 id="helm">Helm部署应用<a class="headerlink" href="#helm" title="Permanent link">&para;</a></h1>
+<h4 id="helm3"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=使用helm3管理复杂应用的部署">使用Helm3管理复杂应用的部署</a><a class="headerlink" href="#helm3" title="Permanent link">&para;</a></h4>
+<h5 id="helm_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=认识helm">认识Helm</a><a class="headerlink" href="#helm_1" title="Permanent link">&para;</a></h5>
 <ol>
 <li>Helm的重要概念</li>
 <li>chart，应用的信息集合，包括各种对象的配置模板、参数定义、依赖关系、文档说明等</li>
@@ -2993,7 +3170,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 <li>在kubernetes集群中安装、卸载 release</li>
 <li>更新、回滚、测试 release</li>
 </ul>
-<h5 id="_14"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=安装与快速入门实践">安装与快速入门实践</a></h5>
+<h5 id="_14"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=安装与快速入门实践">安装与快速入门实践</a><a class="headerlink" href="#_14" title="Permanent link">&para;</a></h5>
 <p>下载最新的稳定版本：https://get.helm.sh/helm-v3.2.4-linux-amd64.tar.gz</p>
 <p>或者：链接: https://pan.baidu.com/s/1zE9KE8p_RbreZoKx0gA3cg 提取码: hmfm</p>
 <pre class="highlight"><code class="language-bash"># k8s-master节点
@@ -3054,8 +3231,8 @@ $ helm -n demo ls
 
 #
 $ kubectl -n demo get all</code></pre>
-<h5 id="chart"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=chart的模板语法及开发">Chart的模板语法及开发</a></h5>
-<h6 id="nginxchart"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=nginx的chart实现分析">nginx的chart实现分析</a></h6>
+<h5 id="chart"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=chart的模板语法及开发">Chart的模板语法及开发</a><a class="headerlink" href="#chart" title="Permanent link">&para;</a></h5>
+<h6 id="nginxchart"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=nginx的chart实现分析">nginx的chart实现分析</a><a class="headerlink" href="#nginxchart" title="Permanent link">&para;</a></h6>
 <p>格式：</p>
 <pre class="highlight"><code class="language-bash">$ tree nginx/
 nginx/
@@ -3228,7 +3405,7 @@ spec:
         targetAverageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
   {{- end }}
 {{- end }}</code></pre>
-<h6 id="release"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=创建release的时候赋值">创建Release的时候赋值</a></h6>
+<h6 id="release"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=创建release的时候赋值">创建Release的时候赋值</a><a class="headerlink" href="#release" title="Permanent link">&para;</a></h6>
 <ul>
 <li>set的方式</li>
 </ul>
@@ -3264,10 +3441,17 @@ $ helm install -f nginx-values.yaml nginx-3 ./nginx</code></pre>
 <pre class="highlight"><code class="language-bash">$ helm -n luffy template nginx ./nginx --set replicaCount=2 --set image.tag=alpine --set autoscaling.enabled=true</code></pre>
 <p>更多语法参考：</p>
 <p>https://helm.sh/docs/topics/charts/</p>
-<h5 id="helmharborchart"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=实战：使用helm部署harbor镜像及chart仓库">实战：使用Helm部署Harbor镜像及chart仓库</a></h5>
-<h6 id="harbor"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=harbor部署">harbor部署</a></h6>
+<h5 id="helmharborchart"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=实战：使用helm部署harbor镜像及chart仓库">实战：使用Helm部署Harbor镜像及chart仓库</a><a class="headerlink" href="#helmharborchart" title="Permanent link">&para;</a></h5>
+<h6 id="harbor"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=harbor部署">harbor部署</a><a class="headerlink" href="#harbor" title="Permanent link">&para;</a></h6>
 <p>架构 https://github.com/goharbor/harbor/wiki/Architecture-Overview-of-Harbor</p>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/harbor-architecture.png" /></p>
+<pre class="highlight"><code class="language-text">Harbor 镜像仓库架构(核心组件):
+  Proxy(nginx) -&gt; Core(核心)
+     |-- Portal(UI)
+     |-- Registry(镜像存储)
+     |-- Harbor DB(元数据库)
+     |-- Job Service / Chart Museum
+  (企业级镜像仓库, 含权限/复制/漏洞扫描)</code></pre>
 <ul>
 <li>Core，核心组件</li>
 <li>API Server，接收处理用户请求</li>
@@ -3370,10 +3554,8 @@ kubectl create -f harbor-pvc.yaml</code></pre>
 227       subPath: "chartmuseum"
 228       accessMode: ReadWriteOnce
 229       size: 5Gi
-230       annotations: {}
-
-
-246     # If external database is used, the following settings for database will
+230       annotations: {}</code></pre>
+<p>246     # If external database is used, the following settings for database will
 247     # be ignored
 248     database:
 249       existingClaim: "harbor-data"
@@ -3397,7 +3579,8 @@ kubectl create -f harbor-pvc.yaml</code></pre>
 267       subPath: "trivy"
 268       accessMode: ReadWriteOnce
 269       size: 5Gi
-270       annotations: {}</code></pre>
+270       annotations: {}
+```</p>
 </li>
 <li>
 <p>管理员账户密码（382行）</p>
@@ -3412,22 +3595,21 @@ kubectl create -f harbor-pvc.yaml</code></pre>
 641     # repository the repository for Trivy adapter image
 642     repository: goharbor/trivy-adapter-photon
 643     # tag the tag for Trivy adapter image
-644     tag: v2.6.2
-
-
-710 notary:
+644     tag: v2.6.2</code></pre>
+<p>710 notary:
 711   enabled: false
 712   server:
 713     # set the service account to be used, default if left empty
 714     serviceAccountName: ""
 715     # mount the service account token
-716     automountServiceAccountToken: false</code></pre>
+716     automountServiceAccountToken: false
+```</p>
 </li>
 </ul>
 <p>helm创建：</p>
 <pre class="highlight"><code class="language-bash"># 使用本地chart安装
 $ helm -n harbor install harbor ./harbor</code></pre>
-<h6 id="harbor_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=推送镜像到harbor仓库">推送镜像到Harbor仓库</a></h6>
+<h6 id="harbor_1"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=推送镜像到harbor仓库">推送镜像到Harbor仓库</a><a class="headerlink" href="#harbor_1" title="Permanent link">&para;</a></h6>
 <p>配置hosts及docker非安全仓库：</p>
 <pre class="highlight"><code class="language-bash">$ cat /etc/hosts
 ...
@@ -3465,7 +3647,7 @@ server = "https://harbor.luffy.com"
 
 # 快速启动服务验证
 $ kubectl create deployment test --image=harbor.luffy.com/library/nginx:alpine</code></pre>
-<h6 id="chartharbor"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=推送chart到harbor仓库">推送chart到Harbor仓库</a></h6>
+<h6 id="chartharbor"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/helm?id=推送chart到harbor仓库">推送chart到Harbor仓库</a><a class="headerlink" href="#chartharbor" title="Permanent link">&para;</a></h6>
 <p>helm3默认没有安装helm push插件，需要手动安装。插件地址 https://github.com/chartmuseum/helm-push</p>
 <p>安装插件：</p>
 <pre class="highlight"><code class="language-bash">$ helm plugin install https://github.com/chartmuseum/helm-push</code></pre>
@@ -3491,7 +3673,7 @@ $ helm repo ls</code></pre>
 <p>推送chart到仓库：</p>
 <pre class="highlight"><code class="language-bash">$ helm push harbor luffy --ca-file=harbor.ca.crt -u admin -p Harbor12345!
 </code></pre>
-<h1 id="_15"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/summary?id=课程小结">课程小结</a></h1>
+<h1 id="_15"><a href="http://49.7.203.222:2023/#/kubernetes-advanced/summary?id=课程小结">课程小结</a><a class="headerlink" href="#_15" title="Permanent link">&para;</a></h1>
 <p>使用k8s的进阶内容。</p>
 <ol>
 <li>
@@ -3502,26 +3684,40 @@ $ helm repo ls</code></pre>
 </li>
 </ol>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/kube-scheduler-process-1669078918768155.png" /></p>
+<pre class="highlight"><code class="language-text">小结: 调度
+  理解 k8s 调度过程(预选/优选)
+  掌握影响调度策略的设置</code></pre>
 <ol>
 <li>Flannel网络的原理学习，了解网络的流向，帮助定位问题</li>
 </ol>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/pods-network-1669078918768157.webp" /></p>
+<pre class="highlight"><code class="language-text">小结: Flannel 网络
+  理解原理与流量走向, 帮助定位网络问题</code></pre>
 <ol>
 <li>认证与授权，掌握kubectl、kubelet、rbac及二次开发如何调度API</li>
 </ol>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/AUTH-1669078918768159.jpg" /></p>
+<pre class="highlight"><code class="language-text">小结: 认证与授权
+  掌握 kubectl / kubelet / rbac 及二次开发如何调用 API</code></pre>
 <ol>
 <li>利用HPA进行业务动态扩缩容，通过metrics-server了解整个k8s的监控体系</li>
 </ol>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/hpa-prometheus-custom-1669078918768161.png" /></p>
+<pre class="highlight"><code class="language-text">小结: HPA 动态扩缩
+  通过 metrics-server 理解整个 k8s 监控体系</code></pre>
 <ol>
 <li>PV + PVC</li>
 </ol>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/storage-class-1669078918768163.png" /></p>
+<pre class="highlight"><code class="language-text">小结: PV + PVC
+  掌握存储声明与动态供给(StorageClass)</code></pre>
 <ol>
 <li>Helm</li>
 </ol>
 <p><img alt="img" src="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5.assets/helm3.jpg" /></p>
+<pre class="highlight"><code class="language-text">小结: Helm
+  K8s 包管理工具, 用 Chart 模板化部署应用
+  (v3 取消 tiller, 直接对接 APIServer)</code></pre>
               
             </div>
           </div><footer>
@@ -3561,6 +3757,8 @@ $ helm repo ls</code></pre>
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {

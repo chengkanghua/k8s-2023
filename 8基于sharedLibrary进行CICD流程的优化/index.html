@@ -118,8 +118,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="library">library工作流程</h1>
-<h3 id="sharedlibrarycicd"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/workflow?id=基于sharedlibrary进行cicd流程的优化">基于sharedLibrary进行CI/CD流程的优化</a></h3>
+                <h1 id="library">library工作流程<a class="headerlink" href="#library" title="Permanent link">&para;</a></h1>
+<h3 id="sharedlibrarycicd"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/workflow?id=基于sharedlibrary进行cicd流程的优化">基于sharedLibrary进行CI/CD流程的优化</a><a class="headerlink" href="#sharedlibrarycicd" title="Permanent link">&para;</a></h3>
 <p>由于公司内部项目众多，大量的项目使用同一套流程做CICD</p>
 <ul>
 <li>那么势必会存在大量的重复代码</li>
@@ -127,7 +127,7 @@
 </ul>
 <p>因此本章主要通过使用groovy实现Jenkins的sharedLibrary的开发，以提取项目在CICD实践过程中的公共逻辑，提供一系列的流程的接口供公司内各项目调用。</p>
 <p>开发完成后，对项目进行Jenkinsfile的改造，最后仅需通过简单的Jenkinsfile的配置，即可优雅的完成CICD流程的整个过程，此方式已在大型企业内部落地应用。</p>
-<h5 id="library_1"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/workflow?id=library工作模式">Library工作模式</a></h5>
+<h5 id="library_1"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/workflow?id=library工作模式">Library工作模式</a><a class="headerlink" href="#library_1" title="Permanent link">&para;</a></h5>
 <p>由于流水线被组织中越来越多的项目所采用，常见的模式很可能会出现。 在多个项目之间共享流水线有助于减少冗余并保持代码 "DRY"。</p>
 <p>流水线支持引用 "共享库" ，可以在外部源代码控制仓库中定义并加载到现有的流水线中。</p>
 <pre class="highlight"><code>@Library('my-shared-library') _</code></pre>
@@ -157,16 +157,16 @@
     }
   }
 ...</code></pre>
-<h1 id="_1">开发环境搭建</h1>
+<h1 id="_1">开发环境搭建<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>Groovy及SpringBoot、SpringCloud</p>
 <ul>
 <li>java</li>
 <li>groovy</li>
 <li>intelliJ idea</li>
 </ul>
-<h6 id="_2"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/env?id=下载安装包">下载安装包</a></h6>
+<h6 id="_2"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/env?id=下载安装包">下载安装包</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h6>
 <p>链接：https://pan.baidu.com/s/1B-bg2_IsB8dU7_62IEtnTg 提取码：wx6j</p>
-<h6 id="java"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/env?id=安装java">安装java</a></h6>
+<h6 id="java"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/env?id=安装java">安装java</a><a class="headerlink" href="#java" title="Permanent link">&para;</a></h6>
 <p>安装路径：D:\software\java\jdk</p>
 <p>环境变量：</p>
 <ul>
@@ -174,18 +174,18 @@
 <li>CLASSPATH .;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;</li>
 <li>PATH %JAVA_HOME%\bin</li>
 </ul>
-<h6 id="groovy"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/env?id=安装groovy">安装groovy</a></h6>
+<h6 id="groovy"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/env?id=安装groovy">安装groovy</a><a class="headerlink" href="#groovy" title="Permanent link">&para;</a></h6>
 <p>解压路径：D:\software\groovy-3.0.2</p>
 <p>环境变量：</p>
 <ul>
 <li>GROOVY_PATH D:\software\groovy-3.0.2</li>
 <li>PATH D:\software\groovy-3.0.2\bin</li>
 </ul>
-<h6 id="idea"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/env?id=安装idea">安装idea</a></h6>
+<h6 id="idea"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/env?id=安装idea">安装idea</a><a class="headerlink" href="#idea" title="Permanent link">&para;</a></h6>
 <p>安装路径：D:\software\IntelliJ IDEA 2019.2.3</p>
 <p>新建项目测试</p>
-<h1 id="groovy_1">groovy语法介绍</h1>
-<h5 id="library_2"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/syntax?id=library代码结构介绍">Library代码结构介绍</a></h5>
+<h1 id="groovy_1">groovy语法介绍<a class="headerlink" href="#groovy_1" title="Permanent link">&para;</a></h1>
+<h5 id="library_2"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/syntax?id=library代码结构介绍">Library代码结构介绍</a><a class="headerlink" href="#library_2" title="Permanent link">&para;</a></h5>
 <p>共享库的目录结构如下:</p>
 <pre class="highlight"><code class="language-bash">(root)
 +- src                     # Groovy source files
@@ -197,7 +197,7 @@
 |   +- foo.txt             # help for 'foo' variable</code></pre>
 <p><code>src</code> 目录应该看起来像标准的 Java 源目录结构。当执行流水线时，该目录被添加到类路径下。</p>
 <p><code>vars</code> 目录定义可从流水线访问的全局变量的脚本。 每个 <code>*.groovy</code> 文件的基名应该是一个 Groovy (~ Java) 标识符, 通常是 <code>camelCased</code>。</p>
-<h5 id="groovy_2"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/syntax?id=groovy基本语法介绍">Groovy基本语法介绍</a></h5>
+<h5 id="groovy_2"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/syntax?id=groovy基本语法介绍">Groovy基本语法介绍</a><a class="headerlink" href="#groovy_2" title="Permanent link">&para;</a></h5>
 <p>新建Groovy项目</p>
 <ul>
 <li>
@@ -291,10 +291,8 @@ exceptionDemo()</code></pre>
 </li>
 <li>
 <p>计时器与循环</p>
-<pre class="highlight"><code class="language-groovy">import groovy.time.TimeCategory
-
-
-use( TimeCategory ) {
+<pre class="highlight"><code class="language-groovy">import groovy.time.TimeCategory</code></pre>
+<p>use( TimeCategory ) {
     def endTime = TimeCategory.plus(new Date(), TimeCategory.getSeconds(15))
     def counter = 0
     while(true) {
@@ -305,7 +303,8 @@ use( TimeCategory ) {
             break
         }
     }
-}</code></pre>
+}
+```</p>
 </li>
 <li>
 <p>解析yaml文件</p>
@@ -323,10 +322,10 @@ def readYaml(){
 readYaml()</code></pre>
 </li>
 </ul>
-<h1 id="jenkinslibrary">jenkins集成第三方library</h1>
-<h5 id="libraryjenkins"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/library-within-jenkins?id=library与jenkins集成">library与Jenkins集成</a></h5>
+<h1 id="jenkinslibrary">jenkins集成第三方library<a class="headerlink" href="#jenkinslibrary" title="Permanent link">&para;</a></h1>
+<h5 id="libraryjenkins"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/library-within-jenkins?id=library与jenkins集成">library与Jenkins集成</a><a class="headerlink" href="#libraryjenkins" title="Permanent link">&para;</a></h5>
 <p>先来看一下如何使用shared library实现最简单的helloworld输出功能，来理清楚使用shared library的流程。</p>
-<h6 id="hellogroovy"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/library-within-jenkins?id=hellogroovy">Hello.groovy</a></h6>
+<h6 id="hellogroovy"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/library-within-jenkins?id=hellogroovy">Hello.groovy</a><a class="headerlink" href="#hellogroovy" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-groovy">package com.luffy.devops
 
 /**
@@ -365,14 +364,14 @@ out
 # git记住密码
 $ git config --global credential.helper store</code></pre>
 <p>在gitlab创建项目，把library代码推送到镜像仓库。</p>
-<h6 id="jenkins"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/library-within-jenkins?id=配置jenkins">配置Jenkins</a></h6>
+<h6 id="jenkins"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/library-within-jenkins?id=配置jenkins">配置Jenkins</a><a class="headerlink" href="#jenkins" title="Permanent link">&para;</a></h6>
 <p>[系统管理] -&gt; [系统设置] -&gt; [ <strong>Global Pipeline Libraries</strong> ]</p>
 <ul>
 <li>Library Name：luffy-devops</li>
 <li>Default Version：master</li>
 <li>Source Code Management：Git</li>
 </ul>
-<h6 id="jenkinsfile"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/library-within-jenkins?id=jenkinsfile中引用">Jenkinsfile中引用</a></h6>
+<h6 id="jenkinsfile"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/library-within-jenkins?id=jenkinsfile中引用">Jenkinsfile中引用</a><a class="headerlink" href="#jenkinsfile" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code>jenkins/pipelines/p11.yaml
 @Library('luffy-devops') _
 
@@ -406,8 +405,8 @@ pipeline {
 def hello(String content) {
     return new Hello().init(content)
 }</code></pre>
-<h1 id="library_3">library集成镜像构建及推送</h1>
-<h5 id="library_4"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-image-build?id=library集成镜像构建及推送">library集成镜像构建及推送</a></h5>
+<h1 id="library_3">library集成镜像构建及推送<a class="headerlink" href="#library_3" title="Permanent link">&para;</a></h1>
+<h5 id="library_4"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-image-build?id=library集成镜像构建及推送">library集成镜像构建及推送</a><a class="headerlink" href="#library_4" title="Permanent link">&para;</a></h5>
 <p>需要实现的逻辑点：</p>
 <ul>
 <li>docker build，docker push，docker login</li>
@@ -415,7 +414,7 @@ def hello(String content) {
 <li>docker login 172.21.51.143:5000</li>
 <li>try catch</li>
 </ul>
-<h6 id="_3"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-image-build?id=镜像构建逻辑实现">镜像构建逻辑实现</a></h6>
+<h6 id="_3"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-image-build?id=镜像构建逻辑实现">镜像构建逻辑实现</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code>devops.groovy
 /**
  *
@@ -570,7 +569,7 @@ pipeline {
         }
     }
 }</code></pre>
-<h6 id="_4"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-image-build?id=丰富构建通知逻辑">丰富构建通知逻辑</a></h6>
+<h6 id="_4"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-image-build?id=丰富构建通知逻辑">丰富构建通知逻辑</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h6>
 <p>目前的构建镜像逻辑中缺少如下内容：</p>
 <ul>
 <li>try逻辑中，若发生异常，是否该把异常抛出</li>
@@ -652,12 +651,9 @@ def updateBuildMessage(String source, String add) {
     ...
     this.msg = new BuildMessage()
     return this
-}
-
-
-...
-
-def build() {
+}</code></pre>
+<p>...</p>
+<p>def build() {
 ...
         // check if build success
         def stage = env.STAGE_NAME + '-build'
@@ -669,11 +665,11 @@ def build() {
             this.msg.updateBuildMessage(env.BUILD_TASKS, "${stage} Failed...  x")
             // throw exception，aborted pipeline
             error errMsg
-        }
-
-        return this
-    }
+        }</p>
+<pre class="highlight"><code>    return this
 }</code></pre>
+<p>}
+```</p>
 </li>
 </ol>
 <p>使用<code>Jenkinsfile</code>来验证上述修改是否正确：</p>
@@ -867,8 +863,8 @@ def getRegistry(){
     return this.repo
 }</code></pre>
 <p>再次测试构建</p>
-<h1 id="libraryk8s"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-k8s-deploy?id=library集成k8s服务部署">library集成k8s服务部署</a></h1>
-<h6 id="library_5"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-k8s-deploy?id=library实现部署简单版">library实现部署简单版</a></h6>
+<h1 id="libraryk8s"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-k8s-deploy?id=library集成k8s服务部署">library集成k8s服务部署</a><a class="headerlink" href="#libraryk8s" title="Permanent link">&para;</a></h1>
+<h6 id="library_5"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-k8s-deploy?id=library实现部署简单版">library实现部署简单版</a><a class="headerlink" href="#library_5" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code>devops.groovy
 /**
  * kubernetes deployer
@@ -925,7 +921,7 @@ def start(){
                 }
             }
         }</code></pre>
-<h6 id="library_6"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-k8s-deploy?id=library实现自动部署优化版">library实现自动部署优化版</a></h6>
+<h6 id="library_6"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-k8s-deploy?id=library实现自动部署优化版">library实现自动部署优化版</a><a class="headerlink" href="#library_6" title="Permanent link">&para;</a></h6>
 <p>简单版本最明显的问题就是无法检测部署后的Pod状态，如果想做集成测试，通常要等到最新版本的Pod启动后再开始。因此有必要在部署的时候检测Pod是否正常运行。</p>
 <p>比如要去检查myblog应用的pod是否部署正常，人工检查的大致步骤：</p>
 <ol>
@@ -1215,9 +1211,9 @@ def isDeploymentReady(deployJson) {
                 }
             }
         }</code></pre>
-<h1 id="library_7">library集成消息推送</h1>
-<h5 id="library_8"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-msg-notify?id=library实现即时消息推送">library实现即时消息推送</a></h5>
-<h6 id="_5"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-msg-notify?id=实现消息通知">实现消息通知</a></h6>
+<h1 id="library_7">library集成消息推送<a class="headerlink" href="#library_7" title="Permanent link">&para;</a></h1>
+<h5 id="library_8"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-msg-notify?id=library实现即时消息推送">library实现即时消息推送</a><a class="headerlink" href="#library_8" title="Permanent link">&para;</a></h5>
+<h6 id="_5"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-msg-notify?id=实现消息通知">实现消息通知</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h6>
 <p>由于发送消息通知属于通用的功能，因此有必要把消息通知抽象成为通用的功能。</p>
 <pre class="highlight"><code>devops.groovy
 /**
@@ -1373,7 +1369,7 @@ def markDown(String title, String text, String credentialsId, Boolean verbose=fa
     this.sendRequest("POST", data, credentialsId, verbose)
 }</code></pre>
 <p>需要用到Http Request来发送消息，安装一下插件：http_request</p>
-<h6 id="jenkinsfile_1"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-msg-notify?id=jenkinsfile调用">jenkinsfile调用</a></h6>
+<h6 id="jenkinsfile_1"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-msg-notify?id=jenkinsfile调用">jenkinsfile调用</a><a class="headerlink" href="#jenkinsfile_1" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-groovy">@Library('luffy-devops') _
 
 pipeline {
@@ -1431,7 +1427,7 @@ pipeline {
         }
     }
 }</code></pre>
-<h1 id="library_9"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-code-scanner?id=library集成代码扫描">library集成代码扫描</a></h1>
+<h1 id="library_9"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-code-scanner?id=library集成代码扫描">library集成代码扫描</a><a class="headerlink" href="#library_9" title="Permanent link">&para;</a></h1>
 <p>sonarqube代码扫描作为通用功能，同样可以使用library实现。</p>
 <pre class="highlight"><code>devops.groovy
 /**
@@ -1516,7 +1512,7 @@ def startToSonar() {
                 }
             }
         }</code></pre>
-<h1 id="libraryrobot"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-robot-framework?id=集成robot自动化测试">library集成robot自动化测试</a></h1>
+<h1 id="libraryrobot"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-robot-framework?id=集成robot自动化测试">library集成robot自动化测试</a><a class="headerlink" href="#libraryrobot" title="Permanent link">&para;</a></h1>
 <p>关于集成测试，我们需要知道的几点:</p>
 <ul>
 <li>测试人员进行编写</li>
@@ -1531,7 +1527,7 @@ def startToSonar() {
 <li>配置Jenkins任务，实现该项目的自动化执行</li>
 <li>在myblog模块的流水线中，对该流水线项目进行调用</li>
 </ol>
-<h6 id="robot-cases"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-robot-framework?id=初始化robot-cases项目">初始化robot-cases项目</a></h6>
+<h6 id="robot-cases"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-robot-framework?id=初始化robot-cases项目">初始化robot-cases项目</a><a class="headerlink" href="#robot-cases" title="Permanent link">&para;</a></h6>
 <ol>
 <li>
 <p>新建gitlab项目，名称为<code>robot-cases</code></p>
@@ -1546,7 +1542,7 @@ def startToSonar() {
     └── robot.txt</code></pre>
 </li>
 </ol>
-<h6 id="jenkinsfile_2"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-robot-framework?id=配置jenkinsfile及自动化任务">配置Jenkinsfile及自动化任务</a></h6>
+<h6 id="jenkinsfile_2"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-robot-framework?id=配置jenkinsfile及自动化任务">配置Jenkinsfile及自动化任务</a><a class="headerlink" href="#jenkinsfile_2" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">robot-cases/
 ├── Jenkinsfile
 └── myblog
@@ -1605,9 +1601,16 @@ Jenkinsfile</code></pre>
 }</code></pre>
 <p>如何实现将<code>env.comp</code> 传递进去？</p>
 <p>配置流水线的参数化构建任务并验证参数化构建</p>
-<h6 id="library_10"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-robot-framework?id=library集成触发任务">library集成触发任务</a></h6>
+<h6 id="library_10"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/func-robot-framework?id=library集成触发任务">library集成触发任务</a><a class="headerlink" href="#library_10" title="Permanent link">&para;</a></h6>
 <p>由于多个项目均需要触发自动构建，因此可以在library中抽象方法，实现接收comp参数，并在library中实现对<code>robot-cases</code>项目的触发。</p>
 <p><img alt="img" src="../8%E5%9F%BA%E4%BA%8EsharedLibrary%E8%BF%9B%E8%A1%8CCICD%E6%B5%81%E7%A8%8B%E7%9A%84%E4%BC%98%E5%8C%96.assets/robot-trigger.png" /></p>
+<pre class="highlight"><code class="language-text">多个项目(均需要自动构建)
+        |
+        v
+ sharedLibrary 中抽象的方法(接收 comp 参数)
+        |
+        v
+ 触发 robot-cases 项目构建(robot-framework 自动化用例)</code></pre>
 <pre class="highlight"><code>devops.groovy
 /**
  * 
@@ -1656,12 +1659,18 @@ def acceptanceTest(comp) {
                 }
             }
         }</code></pre>
-<h1 id="cicd">多环境的CICD自动化实践</h1>
-<h6 id="library_11"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=library集成触发任务">library集成触发任务</a></h6>
-<h5 id="cicd_1"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=多环境的cicd自动化实现">多环境的CICD自动化实现</a></h5>
-<h6 id="_6"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=实现目标及效果">实现目标及效果</a></h6>
+<h1 id="cicd">多环境的CICD自动化实践<a class="headerlink" href="#cicd" title="Permanent link">&para;</a></h1>
+<h6 id="library_11"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=library集成触发任务">library集成触发任务</a><a class="headerlink" href="#library_11" title="Permanent link">&para;</a></h6>
+<h5 id="cicd_1"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=多环境的cicd自动化实现">多环境的CICD自动化实现</a><a class="headerlink" href="#cicd_1" title="Permanent link">&para;</a></h5>
+<h6 id="_6"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=实现目标及效果">实现目标及效果</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h6>
 <p>目前项目存在<code>develop</code>和<code>master</code>两个分支，Jenkinsfile中配置的都是构建部署到相同的环境，实际的场景中，代码仓库的项目往往不同的分支有不同的作用，我们可以抽象出一个工作流程：</p>
 <p><img alt="img" src="../8%E5%9F%BA%E4%BA%8EsharedLibrary%E8%BF%9B%E8%A1%8CCICD%E6%B5%81%E7%A8%8B%E7%9A%84%E4%BC%98%E5%8C%96.assets/multi-envs.jpg" /></p>
+<pre class="highlight"><code class="language-text">分支策略 -&gt; 环境映射:
+
+  develop 分支 --构建部署--&gt; 开发 / 测试环境
+  master  分支 --构建部署--&gt; 生产环境
+
+  (在 Jenkinsfile / 共享库中按分支名区分目标环境, 实现一套流水线多环境)</code></pre>
 <ul>
 <li>开发人员提交代码到develop分支</li>
 <li>Jenkins自动使用develop分支做单测、代码扫描、镜像构建（以commit id为镜像tag）、服务部署到开发环境</li>
@@ -1672,7 +1681,7 @@ def acceptanceTest(comp) {
 <li>测试人员进行手动测试</li>
 <li>上线</li>
 </ul>
-<h6 id="_7"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=实现思路">实现思路</a></h6>
+<h6 id="_7"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=实现思路">实现思路</a><a class="headerlink" href="#_7" title="Permanent link">&para;</a></h6>
 <p>以myblog项目为例，目前已经具备的是develop分支代码提交后，可以自动实现：</p>
 <ul>
 <li>单元测试、代码扫描</li>
@@ -1698,7 +1707,7 @@ def acceptanceTest(comp) {
 </ul>
 </li>
 </ol>
-<h6 id="jenkinsfile_3"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=jenkinsfile根据分支选择任务">Jenkinsfile根据分支选择任务</a></h6>
+<h6 id="jenkinsfile_3"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=jenkinsfile根据分支选择任务">Jenkinsfile根据分支选择任务</a><a class="headerlink" href="#jenkinsfile_3" title="Permanent link">&para;</a></h6>
 <p>使用when关键字，配合正则表达式，实现分支的过滤选择：</p>
 <pre class="highlight"><code class="language-bash">pipeline {
     agent any
@@ -1734,7 +1743,7 @@ def acceptanceTest(comp) {
             }
         }
 ...</code></pre>
-<h6 id="k8s"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=模板化k8s的资源清单">模板化k8s的资源清单</a></h6>
+<h6 id="k8s"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=模板化k8s的资源清单">模板化k8s的资源清单</a><a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h6>
 <p>因为需要使用同一套模板和Jenkinsfile来部署到不同的环境，因此势必要对资源清单进行模板化，前面的内容中只将<code>deployment.yaml</code>放到了项目的<code>manifests</code>清单目录，此处将部署myblog用到的资源清单均补充进去，包含：</p>
 <ul>
 <li>deployment.yaml</li>
@@ -1873,7 +1882,7 @@ spec:
         path: /
 status:
   loadBalancer: {}</code></pre>
-<h6 id="library_12"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=实现library配置替换逻辑">实现library配置替换逻辑</a></h6>
+<h6 id="library_12"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=实现library配置替换逻辑">实现library配置替换逻辑</a><a class="headerlink" href="#library_12" title="Permanent link">&para;</a></h6>
 <p>我们需要实现使用相同的模板，做到如下事情：</p>
 <ul>
 <li>根据代码分支来部署到不同的命名空间</li>
@@ -1979,7 +1988,7 @@ INGRESS_MYBLOG=blog-dev.luffy.com
         throw exc
     }
 }</code></pre>
-<h6 id="_8"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=准备多环境">准备多环境</a></h6>
+<h6 id="_8"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=准备多环境">准备多环境</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h6>
 <ol>
 <li>
 <p>创建开发和测试环境的命名空间</p>
@@ -2187,7 +2196,7 @@ pipeline {
 }</code></pre>
 </li>
 </ol>
-<h6 id="_9"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=验证多环境自动部署">验证多环境自动部署</a></h6>
+<h6 id="_9"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=验证多环境自动部署">验证多环境自动部署</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h6>
 <p>模拟如下流程：</p>
 <ol>
 <li>
@@ -2204,7 +2213,7 @@ pipeline {
 <p>在gitlab中创建tag，观察是否自动部署至test的命名空间中，且使用<code>myblog-test.luffy.com/blog/index/</code>可以访问到最新版本</p>
 </li>
 </ol>
-<h6 id="tag"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=实现打tag后自动部署">实现打tag后自动部署</a></h6>
+<h6 id="tag"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=实现打tag后自动部署">实现打tag后自动部署</a><a class="headerlink" href="#tag" title="Permanent link">&para;</a></h6>
 <p>我们发现，打了tag以后，多分支流水线中可以识别到该tag，但是并不会自动部署该tag的代码。因此，我们来使用一个新的插件：Basic Branch Build Strategies Plugin</p>
 <p>安装并配置多分支流水线，注意Build strategies 设置：</p>
 <ul>
@@ -2213,7 +2222,7 @@ pipeline {
 <li>Ignore tags newer than 可以不用设置，不然会默认不自动构建新打的tag</li>
 <li>Ignore tags older than</li>
 </ul>
-<h6 id="_10"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=优化镜像部署逻辑">优化镜像部署逻辑</a></h6>
+<h6 id="_10"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/cicd?id=优化镜像部署逻辑">优化镜像部署逻辑</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h6>
 <p>针对部署到测试环境的代码，由于已经打了tag了，因此，我们期望构建出来的镜像地址可以直接使用代码的tag作为镜像的tag。</p>
 <p>思路一：直接在Jenkinsfile调用<code>devops.docker</code>时传递tag名称</p>
 <p>思路二：在shared-library中，根据<code>env.TAG_NAME</code>来判断当前是否是tag分支的构建，若TAG_NAME不为空，则可以在构建镜像时使用TAG_NAME作为镜像的tag</p>
@@ -2233,7 +2242,7 @@ pipeline {
     return this
 }</code></pre>
 <p>提交代码，并进行测试，观察是否使用tag作为镜像标签进行部署。</p>
-<h1 id="_11"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/summary?id=小结">小结</a></h1>
+<h1 id="_11"><a href="http://49.7.203.222:2023/#/jenkins-shared-library/summary?id=小结">小结</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h1>
 <p>Jenkins-shared-library的代码地址： https://gitee.com/agagin/jenkins-shared-library</p>
 <p>目标：让devops流程更好用</p>
 <ul>
@@ -2288,6 +2297,8 @@ pipeline {
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {
