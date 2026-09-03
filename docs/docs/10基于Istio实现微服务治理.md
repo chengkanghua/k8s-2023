@@ -21,11 +21,27 @@
 
 ![img](10基于Istio实现微服务治理.assets/sidecar-pattern.jpg)
 
+```text
+边车模式(Sidecar):
+  两轮摩托车 + 旁边加一个边车
+  -> 扩展现有服务与功能, 不改造主体
+  (类比: 给每个服务"挂"一个辅助容器)
+```
+
+
 Sidecar 在软件系统架构中特指边车模式。这个模式的灵感来源于我们生活中的边三轮：即在两轮摩托车的旁边添加一个边车的方式扩展现有的服务和功能。
 
 这个模式的精髓在于实现了数据面（业务逻辑）和控制面的解耦：原来两轮摩托车的驾驶者集中注意力跑赛道，边车上的领航员专注周围信息和地图，专注导航。
 
 ![img](10基于Istio实现微服务治理.assets/service-mesh.png)
+
+```text
+Service Mesh 核心: 数据面 / 控制面 解耦
+  驾驶者(业务) 专注跑赛道
+  边车领航员(网格) 专注导航/治理
+  (治理逻辑从业务剥离到 Sidecar)
+```
+
 
 Service Mesh 这个服务网络专注于处理服务和服务间的通讯。其主要负责构造一个稳定可靠的服务通讯的基础设施，并让整个架构更为的先进和 Cloud Native。在工程中，Service Mesh 基本来说是一组轻量级的与应用逻辑服务部署在一起的服务代理，并且对于应用服务是透明的。
 
@@ -40,6 +56,14 @@ Linkerd 使用Scala编写，是业界第一个开源的service mesh方案。作�
 Istio 是 Google 和 IBM 两位巨人联合 Lyft 的合作开源项目。是当前最主流的service mesh方案，也是事实上的第二代 service mesh 标准。
 
 ![img](10基于Istio实现微服务治理.assets/istio-mesh-arch.png)
+
+```text
+Istio(第二代 Service Mesh):
+  Google + IBM + Lyft 开源
+  事实标准
+  架构: 数据面(Envoy sidecar) + 控制面(Istiod)
+```
+
 
 
 
@@ -134,6 +158,14 @@ $ istioctl manifest generate --set profile=demo | kubectl delete -f -
 
 ![img](10基于Istio实现微服务治理.assets/cj-1.jpg)
 
+```text
+Istio 入门示例模型:
+  front-tomcat -> bill-service
+  通过 VirtualService / DestinationRule 管理
+  (在网格内按规则路由)
+```
+
+
 ###### [资源清单](http://49.7.203.222:2023/#/istio/get-started?id=资源清单)
 
 ```
@@ -225,6 +257,14 @@ this is bill-service-v1
 
 ![img](10基于Istio实现微服务治理.assets/cj-2.jpg)
 
+```text
+示例模型(扩展):
+  增加版本 v1 / v2
+  通过 DestinationRule 定义子集
+  VirtualService 按权重/头部路由
+```
+
+
 ###### [资源清单](http://49.7.203.222:2023/#/istio/get-started?id=资源清单-1)
 
 新增`bill-service-dpl-v2.yaml`
@@ -264,6 +304,13 @@ $ kubectl -n istio-demo exec front-tomcat-v1-548b46d488-r7wv8 --  curl -s bill-s
 ```
 
 ![img](10基于Istio实现微服务治理.assets/cj-2-1.jpg)
+
+```text
+验证: 在 front-tomcat 中
+  curl bill-service:9999
+  请求经 sidecar 按 Istio 规则转发
+```
+
 
 ###### [使用Istio](http://49.7.203.222:2023/#/istio/get-started?id=使用istio)
 
@@ -348,6 +395,14 @@ nginx的配置中，可以提供类似如下的配置片段实现按照权重的
 
 ![img](10基于Istio实现微服务治理.assets/nginx-weight.png)
 
+```text
+Nginx 按权重转发(类比):
+  upstream 中 weight 配置
+  如 v1:5  v2:5
+  (Istio 的 VirtualService 同样表达权重路由)
+```
+
+
 因为nginx是代理层，可以转发请求，istio也实现了流量转发的效果，肯定也有代理层，并且识别了前面创建的虚拟服务中定义的规则。
 
 ```bash
@@ -358,9 +413,25 @@ $ istioctl kube-inject -f front-tomcat-dpl-v1.yaml
 
 ![img](10基于Istio实现微服务治理.assets/inject.jpg)
 
+```text
+Sidecar 注入:
+  istioctl inject 或 自动注入
+  Pod yaml 中新增:
+    istio-init(初始化容器, 配 iptables)
+    istio-proxy(Envoy sidecar)
+```
+
+
 pod被istio注入后，被纳入到服务网格中，每个pod都会添加一个名为istio-proxy的容器（常说的sidecar容器），istio-proxy容器中有两个进程，一个是`piolot-agent`，一个是`envoy`
 
 ![img](10基于Istio实现微服务治理.assets/ll-3.jpg)
+
+```text
+istio-proxy 容器(两个进程):
+  pilot-agent : 启动/管理 envoy, 对接 xDS
+  envoy       : 真正做流量代理(监听 15001/15006)
+```
+
 
 ```bash
 $ kubectl -n istio-demo exec -ti front-tomcat-v1-78cf497978-ppwwk -c istio-proxy bash
@@ -444,9 +515,25 @@ Envoy 接收到请求后，会先走 `FilterChain`，通过各种 L3/L4/L7 Filte
 
 ![img](10基于Istio实现微服务治理.assets/xds.webp)
 
+```text
+Envoy xDS 动态配置:
+  LDS 监听器 / RDS 路由
+  CDS 集群   / EDS 端点
+  (x 泛指各类 Discovery Service, 动态下发)
+```
+
+
 所以，envoy的架构大致的样子如下：
 
 ![img](10基于Istio实现微服务治理.assets/arct-envoy.png)
+
+```text
+Envoy 架构:
+  Downstream(入站) -> Listener -> Filter Chain
+     -> Router -> Cluster(Upstream) -> 出站
+  (Filter 实现路由/鉴权/遥测等)
+```
+
 
 **Downstream**
 
@@ -467,13 +554,37 @@ Envoy 接收到请求后，会先走 `FilterChain`，通过各种 L3/L4/L7 Filte
 
 ![img](10基于Istio实现微服务治理.assets/sidecar.png)
 
+```text
+Envoy 作为 Sidecar:
+  与业务服务同 Pod 部署
+  所有进出服务的流量都经过 Envoy
+  (平台无关地提供治理能力)
+```
+
+
 针对于k8s的pod来讲：
 
 ![img](10基于Istio实现微服务治理.assets/20200503110532.png)
 
+```text
+K8s Pod 中的 Envoy 位置:
+  Pod 内:
+    [业务容器] <-> [istio-proxy(Envoy)]
+  业务容器只与本地 Envoy 通信
+```
+
+
 在istio中，envoy的位置：
 
 ![img](10基于Istio实现微服务治理.assets/istio-mesh-arch-1669084037603361.png)
+
+```text
+Istio 中 Envoy 的位置:
+  Envoy 用 xDS 获取配置
+  xDS 服务端由 Istiod 的 Pilot 提供
+  (Pilot 把规则转成 Envoy 配置下发)
+```
+
 
 很明显，istio中，envoy进行流量治理，更多的使用的是XDS进行配置更新，而我们知道，XDS需要有服务端来提供接口，istiod中的pilot组件则提供了xDS服务端接口的实现 。
 
@@ -514,15 +625,39 @@ $ kubectl -n istio-demo exec -ti front-tomcat-v1-78cf497978-ppwwk -c front-tomca
 
 ![img](10基于Istio实现微服务治理.assets/cluster-ip-route.jpg)
 
+```text
+ClusterIP 路由:
+  curl bill-service:9999
+  请求按 ClusterIP 解析到后端 Pod
+  (传统 kube-proxy 维护的转发)
+```
+
+
 现在为什么流量分配由5：5 变成了9：1？流量经过envoy了的处理
 
 ![img](10基于Istio实现微服务治理.assets/9-1.jpg)
+
+```text
+流量分配变化:
+  未接管: 5:5
+  经 Envoy 处理后: 9:1
+  (Envoy 按 DestinationRule 权重分流)
+```
+
 
 envoy如何接管由front-tomcat容器发出的请求流量？（istio-init
 
 回顾iptables：
 
 ![img](10基于Istio实现微服务治理.assets/iptables.jpg)
+
+```text
+Istio 接管流量的关键: iptables
+  istio-init 初始化容器写入规则
+  将 Pod 入站/出站流量重定向到 Envoy(15001/15006)
+  (业务无感知)
+```
+
 
 Istio 给应用 Pod 注入的配置主要包括：
 
@@ -787,6 +922,14 @@ $ istioctl pc route front-tomcat-v1-78cf497978-ppwwk.istio-demo --name 9999 -ojs
 
 ![img](10基于Istio实现微服务治理.assets/9-1-1669084098868378.jpg)
 
+```text
+流量按预期转发验证:
+  访问 10.111.219.247:9999
+  匹配 VirtualService(bill-service...)
+  规则生效, 流量正确路由
+```
+
+
 我们看到，流量按照预期的配置进行了转发：
 
 ```bash
@@ -833,6 +976,13 @@ $ istioctl pc endpoint front-tomcat-v1-78cf497978-ppwwk.istio-demo  --cluster 'o
 目前为止，经过envoy的规则，流量从front-tomcat的pod中知道要发往`10.244.0.7:80` 这个pod地址。前面提到过，envoy不止接管出站流量，入站流量同样会接管。
 
 ![img](10基于Istio实现微服务治理.assets/20200503110532-1669084098868380.png)
+
+```text
+流量到达 bill-service-v1 Pod:
+  Envoy 不仅接管出站, 也接管入站
+  入站请求经 Envoy 处理后交给业务容器
+```
+
 
 下面看下流量到达bill-service-v1的pod后的处理：
 
@@ -963,6 +1113,15 @@ $ istioctl pc cluster bill-service-v1-6c95ccb747-vwt2d.istio-demo  --fqdn "inbou
 ###### [模型图](http://49.7.203.222:2023/#/istio/traffic-control?id=模型图)
 
 ![img](10基于Istio实现微服务治理.assets/cj-3.jpg)
+
+```text
+流量控制模型:
+  VirtualService(路由规则)
+    -> DestinationRule(子集/策略)
+    -> 实际 Pod 实例
+  (控制面下发, 数据面执行)
+```
+
 
 ###### [资源清单](http://49.7.203.222:2023/#/istio/traffic-control?id=资源清单)
 
@@ -1096,6 +1255,14 @@ virtualOutBound 15001 --> virtial listener 10.97.243.33_9000 --> route sonarqube
 
 ![img](10基于Istio实现微服务治理.assets/kubernetes-vs-service-mesh.png)
 
+```text
+Kubernetes vs Service Mesh:
+  K8s: kube-proxy 维护节点 iptables 做服务转发
+  Service Mesh: Envoy 直接接管, 不经 kube-proxy
+  (治理能力上移, 更细粒度)
+```
+
+
 验证一下：
 
 ```bash
@@ -1164,6 +1331,14 @@ Ingress：对接ingress controller，实现外部流量进入集群内部，只�
 ##### [ingressgateway访问网格服务](http://49.7.203.222:2023/#/istio/visit-mesh-svc?id=ingressgateway访问网格服务)
 
 ![img](10基于Istio实现微服务治理.assets/gateways.svg)
+
+```text
+IngressGateway:
+  为何不用 K8s Ingress API?
+  Ingress 表达不了 Istio 的复杂路由
+  -> 用 Istio Gateway + VirtualService 管理入口流量
+```
+
 
 对于入口流量管理，您可能会问： 为什么不直接使用 Kubernetes Ingress API ？ 原因是 Ingress API 无法表达 Istio 的路由需求。 Ingress 试图在不同的 HTTP 代理之间取一个公共的交集，因此只能支持最基本的 HTTP 路由，最终导致需要将代理的其他高级功能放入到注解（annotation）中，而注解的方式在多个代理之间是不兼容的，无法移植。
 
@@ -1239,6 +1414,14 @@ $ curl  -HHost:tomcat.istio-demo.com 172.21.51.67:30779/
 `172.21.51.143:30779`地址从何而来？
 
 ![img](10基于Istio实现微服务治理.assets/gateway.png)
+
+```text
+IngressGateway 访问:
+  浏览器 -> http://tomcat.istio-demo.com:30779/
+  172.21.51.143:30779 来自 Gateway 的 NodePort/LoadBalancer
+  (外部流量入口)
+```
+
 
 浏览器访问: `http://tomcat.istio-demo.com:30779/`
 
@@ -1375,6 +1558,15 @@ Bookinfo 应用分为四个单独的微服务：
 
 ![image-20221122103239809](10基于Istio实现微服务治理.assets/image-20221122103239809.png)
 
+```text
+Bookinfo 示例:
+  v1: 无星级
+  v2: 1~5 黑色星
+  v3: 1~5 红色星
+  (异构多语言微服务, 典型网格示例)
+```
+
+
 Bookinfo 是一个异构应用，几个微服务是由不同的语言编写的。这些服务对 Istio 并无依赖，但是构成了一个有代表性的服务网格的例子：它由多个服务、多个语言构成，并且 `reviews` 服务具有多个版本。
 
 使用ingress访问productpage服务：
@@ -1428,6 +1620,14 @@ $ kubectl -n bookinfo apply -f <(istioctl kube-inject -f samples/bookinfo/platfo
 
 
 ![image-20221122103211241](10基于Istio实现微服务治理.assets/image-20221122103211241.png)
+
+```text
+注入 Bookinfo:
+  给命名空间打 label istio-injection=enabled
+  或 istioctl kube-inject
+  各服务 Pod 带上 sidecar
+```
+
 
 
 
@@ -1498,6 +1698,13 @@ spec:
 ```
 
 ![image-20221122103444606](10基于Istio实现微服务治理.assets/image-20221122103444606.png)
+
+```text
+IngressGateway 访问 productpage:
+  配置 Gateway + VirtualService
+  外部请求经 Gateway 进入网格, 路由到 productpage
+```
+
 
 ###### [权重路由](http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=权重路由)
 
@@ -1584,6 +1791,14 @@ $ kubectl -n bookinfo scale deploy reviews-v2 --replicas=3
 实现效果如下：
 
 ![img](10基于Istio实现微服务治理.assets/ll-4.jpg)
+
+```text
+访问路径路由效果:
+  按 URL 路径匹配路由
+  如 /api/v2 -> 特定版本服务
+  (基于路径的流量分发)
+```
+
 
 ```bash
 # 修改外部流量进入网格后的规则
@@ -1762,6 +1977,14 @@ https://istio.io/latest/docs/reference/config/networking/virtual-service/#HTTPMa
 ###### [实践](http://49.7.203.222:2023/#/istio/demo-show/traffic-mirror?id=实践)
 
 ![img](10基于Istio实现微服务治理.assets/shadow-in-one-mesh.png)
+
+```text
+流量镜像(Traffic Mirror):
+  将生产流量复制一份到镜像服务
+  不影响主链路(影子流量)
+  (用于测试/验证新版本)
+```
+
 
 ```bash
 # 准备httpbin v1
@@ -2153,6 +2376,14 @@ $ kubectl apply -f prometheus-ingress.yaml
 
 ![img](10基于Istio实现微服务治理.assets/prometheus-targets.jpg)
 
+```text
+Prometheus 监控(Istio):
+  网格内每个服务作为一个 target
+  流量指标直接由 sidecar(Envoy) 提供
+  (核心: kubernetes-pods)
+```
+
+
 其中最核心的是`kubernetes-pods` 的监控，服务网格内的每个服务都作为一个target被监控，而且服务流量指标直接由sidecar容器来提供指标。
 
 ```bash
@@ -2262,6 +2493,13 @@ Kubernets已经成为了容器调度编排的事实标准，而容器正好可�
 
 ![img](10基于Istio实现微服务治理.assets/kubernetes与springcloud.jpg)
 
+```text
+K8s 与 SpringCloud 结合:
+  容器调度(K8s) + 微服务框架(SpringCloud)
+  两者结合但有适用性/生态差异需解决
+```
+
+
 但是这种结合又由于初始设计和生态，有很多适用性问题需要解决。
 
 Kubernetes则不同，它本身就是一个和开发语言无关的、通用的容器管理平台，它可以支持运行云原生和传统的容器化应用。并且它覆盖了微服务的Dev和Ops阶段，结合Service Mesh，它可以为用户提供完整端到端的微服务体验。
@@ -2269,6 +2507,15 @@ Kubernetes则不同，它本身就是一个和开发语言无关的、通用的�
 所以我认为，未来的微服务架构和技术栈可能是如下形式：
 
 ![img](10基于Istio实现微服务治理.assets/microservice-future.jpg)
+
+```text
+未来微服务技术栈:
+  多云(资源) -> 容器(K8s 编排)
+    -> Service Mesh(通信治理)
+    -> API Gateway(对外)
+  (围绕 K8s 展开的云原生体系)
+```
+
 
 多云平台为微服务提供了资源能力（计算、存储和网络等），容器作为最小工作单元被Kubernetes调度和编排，Service Mesh管理微服务的服务通信，最后通过API Gateway向外暴露微服务的业务接口。
 
@@ -2282,11 +2529,26 @@ Kubernetes则不同，它本身就是一个和开发语言无关的、通用的�
 
   ![img](10基于Istio实现微服务治理.assets/20200503110532-1669084762160404.png)
 
+```text
+小结: Sidecar 注入
+  istio 为每个业务 Pod 注入 sidecar 代理
+  (实现通用服务治理能力)
+```
+
+
 - 为了能够做到服务治理，需要接管pod内的出入流量，因此通过注入的时候引入初始化容器istio-init实现pod内防火墙规则的初始化，分别将出入站流量拦截到pod内的15001和15006端口
 
 - 同时，注入了istio-proxy容器，利用envoy代理，监听了15001和15006端口，对流量进行处理
 
   ![img](10基于Istio实现微服务治理.assets/envoy-config-init.png)
+
+```text
+小结: istio-proxy 端口
+  istio-proxy(Envoy) 监听
+    15001(出站) / 15006(入站)
+  istio-init 初始化防火墙规则做拦截
+```
+
 
 - istio在istio-system命名空间启动了istiod服务，用于监听用户写入etcd中的流量规则，转换成envoy可度的配置片段，通过envoy支持的xDS协议，同步到网格内的各envoy中
 
@@ -2297,6 +2559,14 @@ Kubernetes则不同，它本身就是一个和开发语言无关的、通用的�
 最后，通过分析bookinfo中，从 Productpage服务调用Reviews服务的 请求流程 来回顾istio重点：
 
 ![img](10基于Istio实现微服务治理.assets/envoy-traffic-route.png)
+
+```text
+小结: Bookinfo 请求流程
+  Productpage -> http://reviews:9080/reviews/0
+  -> 经 Envoy 按规则路由到 Reviews 服务
+  (回顾 Istio 全流程)
+```
+
 
 1. Productpage发起对Reviews服务的调用：`http://reviews:9080/reviews/0`
 

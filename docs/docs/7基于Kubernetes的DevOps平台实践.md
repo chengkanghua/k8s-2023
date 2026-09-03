@@ -24,11 +24,28 @@ Continuous Integration (*CI*) / Continuous Delivery (*CD*)
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/devops-roles.jpg)
 
+```text
+软件交付流程(各阶段):
+  规划 -> 编码 -> 构建 -> 测试 -> 发布 -> 部署 -> 维护
+  (角色: 开发 / 测试 / 运维 分工协作)
+```
+
+
 一个软件从零开始到最终交付，大概包括以下几个阶段：规划、编码、构建、测试、发布、部署和维护，基于这些阶段，我们的软件交付模型大致经历了几个阶段：
 
 ##### [瀑布式流程](http://49.7.203.222:2023/#/devops/introduction?id=瀑布式流程)
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/devops-waterfall.jpg)
+
+```text
+瀑布模型:
+  需求确立
+    -> 开发(数周/数月一次性开发完)
+    -> 交给 QA 测试
+    -> 交给 运维 部署
+  (阶段串行, 反馈慢)
+```
+
 
 前期需求确立之后，软件开发人员花费数周和数月编写代码，把所有需求一次性开发完，然后将代码交给QA（质量保障）团队进行测试，然后将最终的发布版交给运维团队去部署。瀑布模型，简单来说，就是等一个阶段所有工作完成之后，再进入下一个阶段。这种模式的问题也很明显，产品迭代周期长，灵活性差。一个周期动辄几周几个月，适应不了当下产品需要快速迭代的场景。
 
@@ -36,11 +53,27 @@ Continuous Integration (*CI*) / Continuous Delivery (*CD*)
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/devops-agile.jpg)
 
+```text
+敏捷开发:
+  任务由大拆小
+  开发 / 测试 协同(小步快跑)
+  注重 开发敏捷, 不重视 交付敏捷
+```
+
+
 任务由大拆小，开发、测试协同工作，注重开发敏捷，不重视交付敏捷
 
 ##### [DevOps](http://49.7.203.222:2023/#/devops/introduction?id=devops)
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/devops-compire.jpg)
+
+```text
+DevOps:
+  开发 / 测试 / 运维 协同工作
+  持续开发 + 持续交付 (CI/CD)
+  打破部门墙, 自动化流转
+```
+
 
 开发、测试、运维协同工作, 持续开发+持续交付。
 
@@ -57,6 +90,14 @@ Continuous Integration (*CI*) / Continuous Delivery (*CD*)
 DevOps工具链
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/devops-tools.jpg)
+
+```text
+DevOps 工具链(实现自动化, 降低协作成本):
+  代码: GitLab      构建/CI: Jenkins
+  制品: Harbor      部署: Kubernetes
+  监控: Prometheus / EFK   质量: SonarQube
+```
+
 
 靠这些工具和技术，才实现了自动化流程，进而解决了协作成本，使得devops具备了可落地性。因此我们可以大致给devops一个定义：
 
@@ -257,6 +298,14 @@ This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/jenkins_setup.jpg)
 
+```text
+Jenkins 初始化:
+  1. 配置 hosts: 172.16.1.226 jenkins.luffy.com
+  2. 浏览器域名访问, 首次需几分钟初始化
+  3. 用启动日志中的管理员密码解锁
+```
+
+
 使用jenkins启动日志中的密码，或者执行下面的命令获取解锁的管理员密码：
 
 ```bash
@@ -289,6 +338,14 @@ https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/jenkins-mainpage.jpg)
 
+```text
+Jenkins 主页面:
+  admin -> configure -> password 重设管理员密码
+  改完退出重新登录(admin / 新密码)
+  提示: 访问 /restart 重启使国内插件生效
+```
+
+
 > 注意: 此时访问 http://jenkins.luffy.com/restart   重启一次jenkins,使国内插件生效!
 
 ##### [安装汉化插件](http://49.7.203.222:2023/#/devops/install?id=安装汉化插件)
@@ -308,6 +365,14 @@ Localization: Chinese (Simplified)
 
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/jenkins-install-plugins.jpg)
+
+```text
+安装汉化插件:
+  Manage Jenkins -> Manage Plugins
+  安装 Locale / 中文社区插件
+  (实现 Jenkins 界面汉化)
+```
+
 
 
 
@@ -785,6 +850,18 @@ git push -u origin --all  #根据提示输入账号密码 root  Admin@123.com
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/jenkins-gitlab.png)
 
+```text
+Jenkins + GitLab 集成流程:
+  开发者 push 代码 -> GitLab
+        |
+        v  webhook 触发
+   Jenkins 拉取代码 -> 构建/测试
+        |
+        v
+   构建结果通知(钉钉 / GitLab 状态)
+```
+
+
 1. 安装gitlab plugin
 
    插件中心搜索并安装gitlab，直接安装即可
@@ -795,9 +872,27 @@ git push -u origin --all  #根据提示输入账号密码 root  Admin@123.com
 
    ![img](./7基于Kubernetes的DevOps平台实践.assets/gitlab-connection.jpg)
 
+```text
+Jenkins 连接 GitLab:
+  系统管理 -> 系统配置 -> GitLab
+  填入 API Token(来自 GitLab Personal Access Token)
+  Credentials: 添加该 Token
+  (Test Connection 验证)
+```
+
+
    Credentials: 添加
 
 ![image-20241026125356951](./7基于Kubernetes的DevOps平台实践.assets/image-20241026125356951.png)
+
+```text
+添加 Jenkins Credentials:
+  类型: GitLab API Token
+  Scope: 全局
+  API Token: <GitLab Personal Access Token>
+  (供 Jenkins 调用 GitLab API)
+```
+
 
 3. 获取AccessToken
 
@@ -806,6 +901,14 @@ git push -u origin --all  #根据提示输入账号密码 root  Admin@123.com
 http://gitlab.luffy.com/profile/personal_access_tokens
 
 ![image-20241026124824021](./7基于Kubernetes的DevOps平台实践.assets/image-20241026124824021.png)
+
+```text
+获取 GitLab AccessToken:
+  访问 .../profile/personal_access_tokens
+  勾选 api / read_user / write_repository 等 scope
+  生成 token 并复制到 Jenkins
+```
+
 
 
 
@@ -880,6 +983,14 @@ Collapse，勾选第一项即可。再次test push events，成功。
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/gitlab-webhook-success.jpg)
 
+```text
+GitLab Webhook 测试:
+  项目 -> Settings -> Webhooks
+  URL 指向 Jenkins 构建触发地址
+  Test -> Push events -> 返回 200 / Hook executed successfully
+```
+
+
 8. 配置free项目，增加构建步骤，执行shell，将发送钉钉消息的shell保存
 
 ```bash
@@ -924,6 +1035,15 @@ $ git push -u origin master
     - 启动方式选择通过java web启动代理，代理是运行jar包，通过JNLP（是一种允许客户端启动托管在远程Web服务器上的应用程序的协议 ）启动连接到master节点服务中
 
     ![img](./7基于Kubernetes的DevOps平台实践.assets/jenkins-new-node.jpg)
+
+```text
+新建 Jenkins 节点(Master-Slaves):
+  节点名: 如 172.16.1.228
+  标签: 任务选择节点的依据
+  启动方式: 通过 Java Web 启动代理(JNLP)
+  (agent 运行 jar 包连接 master)
+```
+
 
     保存之后根据提示操作
 
@@ -989,9 +1109,23 @@ $ git push -u origin master
 
     ![img](./7基于Kubernetes的DevOps平台实践.assets/slave-tunnel.jpg)
 
+```text
+从节点 Tunnel 配置:
+  配置从节点 -> 高级 -> Tunnel 连接位置
+  (指定 master 的 JNLP 端口隧道, 穿透网络)
+```
+
+
 3. 查看Jenkins节点列表，新节点已经处于可用状态
 
    ![img](./7基于Kubernetes的DevOps平台实践.assets/jenkins-node-lists.jpg)
+
+```text
+节点列表:
+  新节点已处于 可用(Online) 状态
+  (可在任务中通过标签指定该节点执行)
+```
+
 
 4. 测试使用新节点执行任务
 
@@ -1123,9 +1257,25 @@ $ kubectl create -f jenkins-all.yaml
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/pipeline-factory.jpeg)
 
+```text
+流水线(Pipeline):
+  Jenkinsfile 定义 构建->测试->部署 全流程
+  像工厂生产线: 源码 -> ... -> 发布线上
+  (代码即流水线, 可版本化)
+```
+
+
 [官方文档](https://jenkins.io/zh/doc/book/pipeline/getting-started/)
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/realworld-pipeline-flow.png)
+
+```text
+真实流水线流程:
+  SCM(代码) -> 构建(Build) -> 测试(Test)
+     -> 打包/镜像 -> 部署(Deploy) -> 线上环境
+  (pipeline 贯穿 源码 到 发布)
+```
+
 
 为什么叫做流水线，和工厂产品的生产线类似，pipeline是从源码到发布到线上环境。关于流水线，需要知道的几个点：
 
@@ -2241,9 +2391,24 @@ http://gitlab.luffy.com/eladmin/eladmin-api/-/pipelines/
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/gitlab-cicd.jpg)
 
+```text
+GitLab 构建状态通知:
+  Jenkins 构建完成后, 将状态回写 GitLab
+  在 GitLab pipeline 页面可见
+  (作为合并代码的依据之一)
+```
+
+
 提交merge request，也可以查看到相关的任务状态，可以作为项目owner合并代码的依据之一：
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/gitlab-merge-request.jpg)
+
+```text
+Merge Request 关联:
+  提交 MR 时可看到相关任务/构建状态
+  项目 owner 据此决定是否合并
+```
+
 
 ###### [本章小节](http://49.7.203.222:2023/#/devops/multi-branch-pipeline?id=本章小节)
 
@@ -2302,6 +2467,14 @@ http://gitlab.luffy.com/eladmin/eladmin-api/-/pipelines/
 
    - 工作空间卷：选择hostpath，设置/opt/jenkins,注意需要设置目录权限，否则Pod没有权限 ![img](./7基于Kubernetes的DevOps平台实践.assets/workspace-volume.png)
 
+```text
+Jenkins K8s Pod 模板 - 工作空间:
+  工作空间卷: hostPath, 路径 /opt/jenkins
+  需设置目录权限, 否则 Pod 无权限写入
+  (agent 改为 Pod 内容器, 非宿主机)
+```
+
+
      ```bash
      # 打了标签的节点上操作
      chown -R 1000:1000 /opt/jenkins
@@ -2333,6 +2506,13 @@ $ docker pull jenkins/inbound-agent:latest-jdk17
 保存jenkinsfile提交后，会出现报错，因为我们的agent已经不再是宿主机，而是Pod中的容器内，报错如下：
 
 ![image-20241028082420049](./7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241028082420049.png)
+
+```text
+现象: 切换 agent 为 Pod 内容器后报错
+  原因: 原命令依赖宿主机环境/工具, 容器内缺失
+  需把所需命令行工具集成进 Pod 的容器镜像
+```
+
 
 因此我们需要将用到的命令行工具集成到Pod的容器内，但是思考如下问题：
 
@@ -2428,6 +2608,14 @@ docker镜像: jenkins/inbound-agent:latest-jdk17  #版本和jenkins的jdk一致
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/pod-template-jnlp.png)
 
+```text
+Pod Template 配置:
+  第一个 container: jnlp(默认 agent 容器)
+  命令参数: 空
+  (作为 Jenkins agent 的基础容器)
+```
+
+
 **再添加第二个container Template**
 
 名称: tools
@@ -2481,6 +2669,13 @@ registry-172-16-1-226   kubernetes.io/dockerconfigjson   1      13s
 ​	挂载路径: /root/.kube/
 
 ![image-20241028090608549](./7基于Kubernetes的DevOps平台实践.assets/image-20241028090608549.png)
+
+```text
+tools 容器配置:
+  挂载路径: /root/.kube/
+  (将 kubeconfig 挂入, 使容器内 kubectl 能访问集群)
+```
+
 
 tools容器做好后，我们需要对Jenkinsfile做如下调整：
 
@@ -2631,6 +2826,14 @@ git push
 
 ![image-20241028105341608](./7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5.assets/image-20241028105341608.png)
 
+```text
+Jenkins 集成 SonarQube:
+  git push 触发流水线
+  流水线中调用 sonar-scanner 做代码扫描
+  (扫描结果回传 SonarQube 服务端)
+```
+
+
 # jenkins集成Sonarqube
 
 ##### [集成sonarQube实现代码扫描]
@@ -2648,6 +2851,16 @@ Sonar可以从以下七个维度检测代码质量，而作为开发人员至少
 ###### [sonarqube架构简介](http://49.7.203.222:2023/#/devops/jenkins-with-sonarqube?id=sonarqube架构简介)
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/sonarqube.webp)
+
+```text
+SonarQube 架构(CS 架构):
+  SonarQube Server(Web / API / 计算引擎)
+     |
+     v
+  SonarQube Database(元数据)
+  扫描端: sonar-scanner(客户端) 采集代码 -> 上报
+```
+
 
 1. CS架构
    - sonarqube scanner
@@ -3202,6 +3415,14 @@ git push
 
 若Jenkins执行任务过程中sonarqube端报类似下图的错： ![img](./7基于Kubernetes的DevOps平台实践.assets/sonar-scanner-err.png)
 
+```text
+SonarQube 报错(pending):
+  Jenkins 任务中 sonar-scanner 报 pending 类错误
+  原因: SonarQube 未收到 webhook 回调
+  需在 SonarQube 服务端配置 webhook
+```
+
+
 则需要在sonarqube服务端进行如下配置，添加一个webhook： 
 
 Name: jenkins
@@ -3209,6 +3430,14 @@ Name: jenkins
 URL: http://jenkins:8080/sonarqube-webhook/
 
 ![img](./7基于Kubernetes的DevOps平台实践.assets/fix-sonar-scanner-pending-err.png)
+
+```text
+修复: 添加 SonarQube Webhook
+  SonarQube 管理 -> 配置 -> Webhooks
+  URL: http://jenkins:8080/sonarqube-webhook/
+  (扫描完成后回调 Jenkins, 解除 pending)
+```
+
 
 
 

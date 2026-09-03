@@ -6,9 +6,15 @@
 
 需要一种轻量、高效的虚拟化能力
 
-![img](./1走进Docker的世界.assets/1666340642482.jpg)
-
-
+```text
++---------- 虚拟机 (Hypervisor) ----------+    +------------- 容器 (Docker) -------------+
+|  Guest OS (完整内核)                    |    |  App A            App B               |
+|    App A          App B                |    |     \              /                  |
+|       \              /                 |    |      \            /                   |
+|   共享硬件 + Hypervisor(完全隔离)      |    |  共享宿主机内核 + 容器引擎(轻量隔离)  |
++----------------------------------------+    +----------------------------------------+
+            较重 / 启动慢                              轻量 / 启动快
+```
 
 ![image-20221122115845209](./1走进Docker的世界.assets/image-20221122115845209.png)
 
@@ -39,6 +45,17 @@ Container Runtime：通过Linux内核虚拟化能力管理多个容器，多个�
 
 ![img](./1走进Docker的世界.assets/docker-engine.png)
 
+```text
++------------------+       REST API        +---------------------------+
+|  Docker Client   | <-------------------> |     Docker Daemon         |
+|  (docker CLI)    |                       |     (dockerd)              |
++------------------+                       +---------------------------+
+                                                  | 管理
+                          +-----------------------+-----------------------+
+                          v                       v                       v
+                      [镜像 Image]           [容器 Container]        [仓库 Registry]
+```
+
 ###### [版本管理](http://49.7.203.222:2023/#/docker/introduction?id=版本管理)
 
 - Docker 引擎主要有两个版本：企业版（EE）和社区版（CE）
@@ -65,6 +82,16 @@ OCI成立后，libcontainer 交给OCI组织来维护，但是libcontainer中只�
 Docker也做了架构调整。将容器运行时相关的程序从docker daemon剥离出来，形成了**containerd**。containerd向上为Docker Daemon提供了`gRPC接口`，使得Docker Daemon屏蔽下面的结构变化，确保原有接口向下兼容。向下通过`containerd-shim`结合`runC`，使得引擎可以独立升级，避免之前Docker Daemon升级会导致所有容器不可用的问题。
 
 ![img](./1走进Docker的世界.assets/containerd.png)
+
+```text
+Docker Daemon (dockerd)
+        |  gRPC 接口
+        v
+     containerd  (镜像管理 / 容器执行调用)
+        |  containerd-shim
+        v
+     runC (libcontainer)  -->  Linux 内核 (Namespace + Cgroup)
+```
 
 也就是说
 
@@ -202,6 +229,22 @@ systemctl start docker
 
 ![img](./1走进Docker的世界.assets/docker架构.png)
 
+```text
+        +-------------------+
+        |   镜像 Registry   |   (Docker Hub / 私有仓库 Harbor)
+        +-------------------+
+                 |  pull / push
+                 v
+        +-------------------+
+        |     镜像 Image     |   (静态包: 业务代码 + 运行环境)
+        +-------------------+
+                 |  run
+                 v
+        +-------------------+
+        |   容器 Container   |   (运行时, 可对外提供服务)
+        +-------------------+
+```
+
 三大核心要素：镜像(Image)、容器(Container)、仓库(Registry)
 
 ###### [镜像（Image）](http://49.7.203.222:2023/#/docker/common-operation?id=镜像（image）)
@@ -294,7 +337,7 @@ systemctl start docker
      ```
    
 - 构建本地镜像
-   
+  
      ```bash
      $ docker build . -t my-nginx:ubuntu -f Dockerfile
      ```
@@ -381,11 +424,11 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
     ```bash
     # 创建 Docker Registry 认证文件目录
     mkdir /var/lib/registry_auth
-   
+      
     # 使用 htpasswd 来创建加密文件
     yum install -y httpd-tools
     htpasswd -Bbn admin admin > /var/lib/registry_auth/htpasswd
-   
+      
     ## 使用docker镜像启动镜像仓库服务
     docker run -p 5000:5000 \
     --restart=always \
@@ -419,10 +462,10 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
     }
     systemctl restart docker
     docker push 172.16.1.226:5000/nginx:alpine
-   
+      
     # 会提示认证失败 ，no basic auth credentials,需要登录
     docker login 172.16.1.226:5000
-   
+      
     ## 查看仓库内元数据
     curl -u admin:admin -X GET http://172.16.1.226:5000/v2/_catalog
     curl -u admin:admin  -X GET http://172.16.1.226:5000/v2/nginx/tags/list
@@ -439,7 +482,7 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
     ```bash
     ## 查看运行状态的容器列表
     $ docker ps
-   
+      
     ## 查看全部状态的容器列表
     $ docker ps -a
     ```
@@ -449,10 +492,10 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
     ```bash
     ## 后台启动
     $ docker run --name nginx -d nginx:alpine
-   
+      
     ## 映射端口,把容器的端口映射到宿主机中,-p <host_port>:<container_port>
     $ docker run --name nginx -d -p 8080:80 nginx:alpine
-   
+      
     ## 资源限制,最大可用内存500M
     $ docker run --memory=500m nginx:alpine
     ```
@@ -490,10 +533,10 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
     ```bash
     ## 查看全部日志
     $ docker logs nginx
-   
+      
     ## 实时查看最新日志
     $ docker logs -f nginx
-   
+      
     ## 从最新的100条开始查看
     $ docker logs --tail=100 -f nginx
     ```
@@ -503,13 +546,13 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
     ```bash
     ## 停止运行中的容器
     $ docker stop nginx
-   
+      
     ## 启动退出容器
     $ docker start nginx
-   
+      
     ## 删除非运行中状态的容器
     $ docker rm nginx
-   
+      
     ## 删除运行中的容器
     $ docker rm -f nginx
     ```
@@ -519,7 +562,7 @@ nginx         alpine              377c0837328f        2 weeks ago         19.7MB
     ```bash
     ## 查看容器详细信息，包括容器IP地址等
     $ docker inspect nginx
-   
+      
     ## 查看镜像的明细信息
     $ docker inspect nginx:alpine
     ```
@@ -649,26 +692,43 @@ Dockerfile是一堆指令，在docker build的时候，按照该指令进行操�
 
     ![img](./1走进Docker的世界.assets/Dockerfile解释.png)
 
+```text
+Dockerfile 指令执行顺序 (每条指令 = 镜像的一层):
+
+  FROM    指定基础镜像(必须为第一条)
+    |
+  RUN     构建/安装命令, 生成中间层(可缓存)
+    |
+  COPY    拷贝本地文件到镜像
+    |
+  ENV     设置环境变量
+  EXPOSE  声明容器监听端口
+    |
+  CMD / ENTRYPOINT   容器启动时执行的入口
+    |
+  结果: 只读的 镜像 Image
+```
+
 - 基础环境镜像
 
     ```dockerfile
     FROM java:8-alpine
-  
+    
     RUN apk add --update ca-certificates && rm -rf /var/cache/apk/* && \
       find /usr/share/ca-certificates/mozilla/ -name "*.crt" -exec keytool -import -trustcacerts \
       -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -storepass changeit -noprompt \
       -file {} -alias {} \; && \
       keytool -list -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts --storepass changeit
-  
+    
     ENV MAVEN_VERSION 3.5.4
     ENV MAVEN_HOME /usr/lib/mvn
     ENV PATH $MAVEN_HOME/bin:$PATH
-  
+    
     RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && \
       tar -zxvf apache-maven-$MAVEN_VERSION-bin.tar.gz && \
       rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
       mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
-  
+    
     RUN mkdir -p /usr/src/app
     WORKDIR /usr/src/app
     ```
@@ -677,22 +737,22 @@ Dockerfile是一堆指令，在docker build的时候，按照该指令进行操�
 
     ```dockerfile
     FROM nginx:1.19.0-alpine
-  
+    
     LABEL maintainer="mritd <mritd@linux.com>"
-  
+    
     ARG TZ='Asia/Shanghai'
     ENV TZ ${TZ}
-  
+    
     RUN apk upgrade --update \
         && apk add bash tzdata curl wget ca-certificates \
         && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
         && echo ${TZ} > /etc/timezone \
         && rm -rf /usr/share/nginx/html /var/cache/apk/*
-  
+    
     COPY dist /usr/share/nginx/html
-  
+    
     EXPOSE 80 443
-  
+    
     CMD ["nginx", "-g", "daemon off;"]
     ```
 
@@ -700,19 +760,19 @@ Dockerfile是一堆指令，在docker build的时候，按照该指令进行操�
 
     ```dockerfile
     FROM java:8u111
-  
+    
     ENV JAVA_OPTS "\
     -Xmx4096m \
     -XX:MetaspaceSize=256m \
     -XX:MaxMetaspaceSize=256m"
     ENV JAVA_HOME /usr/java/jdk
     ENV PATH ${PATH}:${JAVA_HOME}/bin
-  
+    
     COPY target/myapp.jar myapp.jar
-  
+    
     RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     RUN echo 'Asia/Shanghai' >/etc/timezone
-  
+    
     EXPOSE 9000
     CMD java ${JAVA_OPTS} -jar myapp.jar
     ```
@@ -880,8 +940,9 @@ $ docker build . -t href-counter:v2 -f Dockerfile.multi
     npm config set registry https://registry.npmmirror.com
     npm install
     npm run build:prod
-  
-  
+    ```
+
+
     ------------------------阿里最新npm地址
     https://developer.aliyun.com/mirror/NPM
     ```
@@ -950,8 +1011,9 @@ ERROR: failed to solve: failed to compute cache key: failed to calculate checksu
     docker run --rm -ti aerialist7/maven-git sh
     # git clone --depth=1 https://gitee.com/agagin/eladmin.git
     # mvn clean package
-  
-  
+    ```
+
+
     ```
 
 得到的`Dockerfile`:
@@ -1314,6 +1376,20 @@ lrwxrwxrwx 1 root root 0 Jun 24 12:51 uts -> uts:[4026534844]
 
 ![img](./1走进Docker的世界.assets/cgroup.png)
 
+```text
+Docker Daemon
+     |
+     v
+  CGroup (按资源划分的进程组, 限制容器资源使用)
+   |-- cpu        CPU 配额/权重
+   |-- memory     内存上限(如 30M)
+   |-- blkio      磁盘 IO 限制
+   |-- pids       进程数限制
+     |
+     v
+  容器进程 (受内核资源子系统约束)
+```
+
 Control Groups（简称 CGroups）
 
 > cgroups是Linux内核提供的一种机制，这种机制可以根据需求吧一系列系统任务及其子任务整合(或分隔)到按资源划分等级的不同组中，从而为系统资源管理提供一个统一的框架。
@@ -1329,9 +1405,9 @@ CGroups能够隔离宿主机器上的物理资源，例如 CPU、内存、磁盘
     #include <stdlib.h>
     #include <string.h>
     #include <unistd.h>
-  
+    
     #define MB (1024 * 1024)
-  
+    
     int main(int argc, char *argv[])
     {
         char *p;
@@ -1342,7 +1418,7 @@ CGroups能够隔离宿主机器上的物理资源，例如 CPU、内存、磁盘
             printf("%dM memory allocated\n", ++i);
             sleep(1);
         }
-  
+    
         return 0;
     }
     ```
@@ -1368,7 +1444,7 @@ CGroups能够隔离宿主机器上的物理资源，例如 CPU、内存、磁盘
     ```bash
     # 启动程序
     ./cgroup-test.sh
-  
+    
     # 查看程序进程
     ps aux|grep cgroup-test
     echo 16079 > /sys/fs/cgroup/memory/luffy/cgroup.procs
@@ -1399,6 +1475,18 @@ CMD python /app/app.py
 
 ![img](./1走进Docker的世界.assets/container-layers.jpg)
 
+```text
++---------------------------+
+|   可写容器层            |  <-- 运行容器时新增(读写)
++---------------------------+
+|   RUN make /app          |  镜像层(只读)
++---------------------------+
+|   COPY . /app            |  镜像层(只读)
++---------------------------+
+|   FROM ubuntu:15.04      |  基础层(只读)
++---------------------------+
+```
+
 镜像就是由这些层一层一层堆叠起来的，镜像中的这些层都是只读的，当我们运行容器的时候，就可以在这些基础层至上添加新的可写层，也就是我们通常说的`容器层`，对于运行中的容器所做的所有更改（比如写入新文件、修改现有文件、删除文件）都将写入这个容器层。
 
 对容器层的操作，主要利用了写时复制（CoW）技术。CoW就是copy-on-write，表示只在需要写时才去复制，这个是针对已有文件的修改场景。 CoW技术可以让所有的容器共享image的文件系统，所有数据都从image中读取，只有当要对文件进行写操作时，才从image里把要写的文件复制到自己的文件系统进行修改。所以无论有多少个容器共享同一个image，所做的写操作都是对从image中复制到自己的文件系统中的复本上进行，并不会修改image的源文件，且多个容器操作同一个文件，会在每个容器的文件系统里生成一个复本，每个容器修改的都是自己的复本，相互隔离，相互不影响。使用CoW可以有效的提高磁盘的利用率。
@@ -1410,6 +1498,12 @@ CMD python /app/app.py
 UnionFS 其实是一种为 Linux 操作系统设计的用于把多个文件系统联合到同一个挂载点的文件系统服务。 它能够将不同文件夹中的层联合（Union）到了同一个文件夹中，整个联合的过程被称为联合挂载（Union Mount）。
 
 ![img](./1走进Docker的世界.assets/aufs.png)
+
+```text
+多个镜像层(只读分支)  ─┐
+                            ├─>  [ AUFS 联合挂载 ]  ─>  /统一挂载点  ─>  容器看到单一文件系统
+可写层(读写分支)       ─┘
+```
 
 上图是AUFS的实现，AUFS是作为Docker存储驱动的一种实现，Docker 还支持了不同的存储驱动，包括 aufs、devicemapper、overlay2、zfs 和 Btrfs 等等，在最新的 Docker 中，overlay2 取代了 aufs 成为了推荐的存储驱动，但是在没有 overlay2 驱动的机器上仍然会使用 aufs 作为 Docker 的默认驱动。
 
@@ -1458,6 +1552,16 @@ docker容器是一块具有隔离性的虚拟系统，容器内可以有自己�
 网桥模式示意图
 
 ![img](./1走进Docker的世界.assets/docker-bridge.jpeg)
+
+```text
+      容器 test1                 容器 test2
+        eth0                      eth0
+          |  veth pair              |  veth pair
+          |                          |
+      [==== docker0 网桥 (虚拟二层交换机) ====]
+                        |
+                    宿主机 eth0  -->  外部网络
+```
 
 Linux 中，能够起到**虚拟交换机作用**的网络设备，是网桥（Bridge）。它是一个工作在**数据链路层**（Data Link）的设备，主要功能是**根据 MAC 地址将数据包转发到网桥的不同端口上**。 网桥在哪，查看网桥
 
@@ -1655,6 +1759,13 @@ $ scp root@172.21.51.143:/root/*.cap /d/packages
 
 ![img](./1走进Docker的世界.assets/docker-dnat.jpeg)
 
+```text
+外部用户                宿主机                     容器
+   |                     |                          |
+访问 :8088  ──>  iptables DNAT  ──>  docker0 网桥  ──>  172.17.0.2:80
+             8088 -> 172.17.0.2:80    按 MAC 转发
+```
+
 ![img](./1走进Docker的世界.assets/docker-snat.jpeg)
 
 进到容器内的包做DNAT，出去的包做SNAT，这样对外面来讲，根本就不知道机器内部是谁提供服务，其实这就和一个内网多个机器公用一个外网IP地址上网的效果是一样的，那这也属于NAT功能的一个常见的应用场景。
@@ -1674,6 +1785,15 @@ $ docker run --net host -d --name mysql -e MYSQL_ROOT_PASSWORD=123456 mysql:5.7
 这个模式指定新创建的容器和已经存在的一个容器共享一个 Network Namespace，而不是和宿主机共享。新创建的容器不会创建自己的网卡，配置自己的 IP，而是和一个指定的容器共享 IP、端口范围等。同样，两个容器除了网络方面，其他的如文件系统、进程列表等还是隔离的。两个容器的进程可以通过 lo 网卡设备通信。
 
 ![img](./1走进Docker的世界.assets/docker-network-container.jpeg)
+
+```text
+容器 B (基础设施容器)
+   |-- 网络命名空间 (IP / 端口范围 / lo)
+         ^
+         |  --net=container:B
+容器 A 共享 B 的网络命名空间
+(文件系统、进程仍隔离, 仅网络共享, 经 lo 互通)
+```
 
 ```bash
 ## 启动测试容器，共享mysql的网络空间
@@ -1744,6 +1864,19 @@ Kubelet 通过 CRI 和容器运行时进行通信，使得容器运行时能够�
 
 ![img](./1走进Docker的世界.assets/oci+cri.webp)
 
+```text
+Kubernetes
+    |  CRI (容器运行时接口)
+    v
+  Kubelet
+    |  OCI (开放容器标准)
+    v
+  容器运行时 (runC / containerd)
+    |  OCI 规范
+    v
+  镜像规范(Image Spec) + 运行时规范(Runtime Spec)
+```
+
 ![image-20230211175325544](./1走进Docker的世界.assets/image-20230211175325544.png)
 
 OCI（OpenContainerInitiative，开放容器计划）定义了创建容器的格式和运行时的开源行业标准，包括镜像规范（ImageSpecification）和运行时规范(RuntimeSpecification)。
@@ -1759,6 +1892,16 @@ OCI（OpenContainerInitiative，开放容器计划）定义了创建容器的格
 如图 3 所示，我们总结了 docker,containerd 以及 cri-o 的详细调用层级。Docker 的多层封装和调用，导致其在可维护性上略逊一筹，增加了线上问题的定位难度（貌似除了重启 docker，我们就毫无他法了）。Containerd 和 cri-o 的方案比起 docker 简洁很多。因此我们更偏向于选用更加简单和纯粹的 containerd 和 cri-o 作为我们的容器运行时。
 
  ![img](./1走进Docker的世界.assets/kubelet-cri.webp)
+
+```text
+旧方案(复杂):
+  Kubelet --CRI--> Dockershim --> Docker Daemon --> containerd --> runC
+
+新方案(简洁):
+  Kubelet --CRI------------------------------> containerd --> runC
+
+弃用 dockershim: 调用层级更短, 可维护性更好
+```
 
 ![image-20230211154055811](./1走进Docker的世界.assets/image-20230211154055811.png)
 
@@ -1795,6 +1938,8 @@ https://blog.csdn.net/Michaelwubo/article/details/122745348 https://www.cnblogs.
 #### [本章小结](http://49.7.203.222:2023/#/docker/summary?id=本章小结)
 
 ![img](./1走进Docker的世界.assets/Docker.png)
+
+
 
 1. 为了解决软件交付过程中的环境依赖，同时提供一种更加轻量的虚拟化技术，Docker出现了。
 2. 2013年诞生，15年开始迅速发展，从17.03月开始，使用时间日期管理版本，稳定版以每季度为准。

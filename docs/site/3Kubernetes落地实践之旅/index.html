@@ -124,10 +124,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="k8s">认识K8S</h1>
+                <h1 id="k8s">认识K8S<a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h1>
 <p>本章学习kubernetes的架构及工作流程，重点介绍如何使用Workload管理业务应用的生命周期，实现服务不中断的滚动更新，通过服务发现和集群内负载均衡来实现集群内部的服务间访问，并通过ingress实现外部使用域名访问集群内部的服务。</p>
 <p>学习过程中会逐步对容器项目做k8s改造，从零开始编写所需的资源文件。通过本章的学习，学员会掌握高可用k8s集群的搭建，同时容器项目已经可以利用k8s的控制器、服务发现、负载均衡、配置管理等特性来实现生命周期的管理。</p>
-<h4 id="_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=纯容器模式的问题">纯容器模式的问题</a></h4>
+<h4 id="_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=纯容器模式的问题">纯容器模式的问题</a><a class="headerlink" href="#_1" title="Permanent link">&para;</a></h4>
 <ol>
 <li>业务容器数量庞大，哪些容器部署在哪些节点，使用了哪些端口，如何记录、管理，需要登录到每台机器去管理？</li>
 <li>跨主机通信，多个机器中的容器之间相互调用如何做，iptables规则手动维护？</li>
@@ -137,7 +137,7 @@
 <li>如何实现滚动升级保证业务的连续性？</li>
 <li>......</li>
 </ol>
-<h4 id="_2"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=容器调度管理平台">容器调度管理平台</a></h4>
+<h4 id="_2"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=容器调度管理平台">容器调度管理平台</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Docker Swarm</li>
 <li>Mesos</li>
@@ -145,7 +145,7 @@
 </ul>
 <p>2017年开始Kubernetes凭借强大的容器集群管理功能, 逐步占据市场,目前在容器编排领域一枝独秀</p>
 <p>https://kubernetes.io/</p>
-<h4 id="_3"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=架构图">架构图</a></h4>
+<h4 id="_3"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=架构图">架构图</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
 <p>如何设计一个容器管理平台？</p>
 <ul>
 <li>集群架构，管理节点分发容器到数据节点</li>
@@ -156,7 +156,15 @@
 </ul>
 <p>分布式系统，两类角色：管理节点和工作节点</p>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/architecture.png" /></p>
-<h4 id="_4"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=核心组件">核心组件</a></h4>
+<pre class="highlight"><code class="language-text">Kubernetes 集群 = 管理节点(Master) + 工作节点(Worker)
++--------------------------------+      +-----------------------------+
+|  Master / Control Plane        |      |  Worker Node                |
+|  - API Server                  |&lt;----&gt;|  - kubelet                  |
+|  - Scheduler                   |      |  - kube-proxy               |
+|  - Controller Manager          |      |  - 容器运行时(containerd)    |
+|  - etcd                        |      |  - Pod / 容器               |
++--------------------------------+      +-----------------------------+</code></pre>
+<h4 id="_4"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=核心组件">核心组件</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h4>
 <ul>
 <li>ETCD：分布式高性能键值数据库,存储整个集群的所有元数据</li>
 <li>ApiServer: API服务器,集群资源访问控制入口,提供restAPI及安全访问控制</li>
@@ -183,7 +191,7 @@ $ kubectl -n kube-system get po</code></pre>
 <p>systemd服务方式：</p>
 <pre class="highlight"><code class="language-bash">$ systemctl status kubelet</code></pre>
 <p>kubectl：二进制命令行工具</p>
-<h3 id="_5"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=理解集群资源">理解集群资源</a></h3>
+<h3 id="_5"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=理解集群资源">理解集群资源</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
 <p>组件是为了支撑k8s平台的运行，安装好的软件。</p>
 <p>资源是如何去使用k8s的能力的定义。比如，k8s可以使用Pod来管理业务应用，那么Pod就是k8s集群中的一类资源，集群中的所有资源可以提供如下方式查看：</p>
 <pre class="highlight"><code class="language-bash">$ kubectl api-resources</code></pre>
@@ -202,17 +210,23 @@ kubernetes-dashboard   Active   71m</code></pre>
 <li>不同namespace下的同类资源可以重名</li>
 <li>通常在项目使用的时候，我们会创建带有业务含义的namespace来做逻辑上的整合</li>
 </ul>
-<h3 id="kubectl"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=kubectl的使用">kubectl的使用</a></h3>
+<h3 id="kubectl"><a href="http://49.7.203.222:2023/#/kubernetes-base/introduction?id=kubectl的使用">kubectl的使用</a><a class="headerlink" href="#kubectl" title="Permanent link">&para;</a></h3>
 <p>类似于docker，kubectl是命令行工具，用于与APIServer交互，内置了丰富的子命令，功能极其强大。 https://kubernetes.io/docs/reference/kubectl/overview/</p>
 <pre class="highlight"><code class="language-bash">$ kubectl -h
 $ kubectl get -h
 $ kubectl create -h
 $ kubectl create namespace -h</code></pre>
-<h1 id="pod">改造Pod</h1>
-<h5 id="pod_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=最小调度单元-pod">最小调度单元 Pod</a></h5>
+<h1 id="pod">改造Pod<a class="headerlink" href="#pod" title="Permanent link">&para;</a></h1>
+<h5 id="pod_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=最小调度单元-pod">最小调度单元 Pod</a><a class="headerlink" href="#pod_1" title="Permanent link">&para;</a></h5>
 <p>docker调度的是容器，在k8s集群中，最小的调度单元是Pod（豆荚）</p>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/pod-demo.png" /></p>
-<h6 id="pod_2"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=为什么引入pod">为什么引入Pod</a></h6>
+<pre class="highlight"><code class="language-text">Docker: 调度单位 = 容器(Container)
+K8s  : 最小调度单位 = Pod(可包含 1..n 个紧密关联的容器)
+        +----------- Pod -----------+
+        |  container A (sidecar?)  |
+        |  container B (主容器)     |
+        +--------------------------+</code></pre>
+<h6 id="pod_2"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=为什么引入pod">为什么引入Pod</a><a class="headerlink" href="#pod_2" title="Permanent link">&para;</a></h6>
 <ul>
 <li>与容器引擎解耦</li>
 </ul>
@@ -220,9 +234,15 @@ $ kubectl create namespace -h</code></pre>
 <ul>
 <li>多容器共享网络|存储|进程 空间, 支持的业务场景更加灵活</li>
 </ul>
-<h6 id="pod_3"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=pod在集群中的形态">Pod在集群中的形态</a></h6>
+<h6 id="pod_3"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=pod在集群中的形态">Pod在集群中的形态</a><a class="headerlink" href="#pod_3" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/k8s-pods.jpg" /></p>
-<h6 id="yamlpod"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=使用yaml格式定义pod">使用yaml格式定义Pod</a></h6>
+<pre class="highlight"><code class="language-text">        +----------- Node1 -----------+   +----------- Node2 -----------+
+        |  Pod A    Pod B             |   |  Pod C    Pod D             |
+        +-----------------------------+   +-----------------------------+
+                  ^                                 ^
+                  |            k8s 集群调度            |
+            每个 Pod 被分配给某个 Node 运行</code></pre>
+<h6 id="yamlpod"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=使用yaml格式定义pod">使用yaml格式定义Pod</a><a class="headerlink" href="#yamlpod" title="Permanent link">&para;</a></h6>
 <p><em>pod-eladmin-api.yaml</em></p>
 <pre class="highlight"><code class="language-yaml">#准备数据库
 git clone https://gitee.com/chengkanghua/eladmin.git
@@ -319,7 +339,7 @@ redis-7957d49f44-qp66c   1/1     Running   0          113m   10.244.2.28   k8s-s
 <p>快速获得资源和版本</p>
 <pre class="highlight"><code class="language-bash">$ kubectl explain pod
 $ kubectl explain Pod.apiVersion</code></pre>
-<h6 id="pod_4"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=创建和访问pod">创建和访问Pod</a></h6>
+<h6 id="pod_4"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=创建和访问pod">创建和访问Pod</a><a class="headerlink" href="#pod_4" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">## 创建namespace, namespace是逻辑上的资源池
 kubectl create namespace luffy
 
@@ -365,7 +385,7 @@ $ curl 10.244.1.15:8000/auth/code
 ## 进入容器,执行初始化, 不必到对应的主机执行docker exec
 $ kubectl -n luffy exec -ti eladmin-api bash
 / # env</code></pre>
-<h6 id="infra"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=infra容器">Infra容器</a></h6>
+<h6 id="infra"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=infra容器">Infra容器</a><a class="headerlink" href="#infra" title="Permanent link">&para;</a></h6>
 <p>登录<code>k8s-slave1</code>节点</p>
 <pre class="highlight"><code class="language-bash">https://gitee.com/chengkanghua/script/raw/master/k8s/nerdctl-0.23.0-linux-amd64.tar.gz
 tar xvf nerdctl-0.23.0-linux-amd64.tar.gz
@@ -381,28 +401,28 @@ $ crictl  -r "unix:///var/run/containerd/containerd.sock" pull 172.16.1.226:5000
 $ crictl  -r "unix:///var/run/containerd/containerd.sock" rmi xxxxx
 $ nerdctl pull 172.16.1.226:5000/eladmin/eladmin-api:v1
 $ crictl -r "unix:///var/run/containerd/containerd.sock" logs -f 5627a65b98416</code></pre>
-<h6 id="pod_5"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=查看pod详细信息">查看pod详细信息</a></h6>
+<h6 id="pod_5"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=查看pod详细信息">查看pod详细信息</a><a class="headerlink" href="#pod_5" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">## 查看pod调度节点及pod_ip
 $ kubectl -n luffy get pods -o wide
 ## 查看完整的yaml
 $ kubectl -n luffy get po eladmin-api -o yaml
 ## 查看pod的明细信息及事件
 $ kubectl -n luffy describe pod eladmin-api</code></pre>
-<h6 id="troubleshooting-and-debugging"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=troubleshooting-and-debugging">Troubleshooting and Debugging</a></h6>
+<h6 id="troubleshooting-and-debugging"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=troubleshooting-and-debugging">Troubleshooting and Debugging</a><a class="headerlink" href="#troubleshooting-and-debugging" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">#进入Pod内的容器
 $ kubectl -n &lt;namespace&gt; exec &lt;pod_name&gt; -c &lt;container_name&gt; -ti /bin/sh
 
 #查看Pod内容器日志,显示标准或者错误输出日志
 $ kubectl -n &lt;namespace&gt; logs -f &lt;pod_name&gt; -c &lt;container_name&gt;</code></pre>
-<h6 id="_6"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=更新服务版本">更新服务版本</a></h6>
+<h6 id="_6"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=更新服务版本">更新服务版本</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">$ kubectl apply -f pod-eladmin-api.yaml</code></pre>
-<h6 id="pod_6"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=删除pod服务">删除Pod服务</a></h6>
+<h6 id="pod_6"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=删除pod服务">删除Pod服务</a><a class="headerlink" href="#pod_6" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">#根据文件删除
 $ kubectl delete -f pod-eladmin-api.yaml
 
 #根据pod_name删除
 $ kubectl -n &lt;namespace&gt; delete pod &lt;pod_name&gt;</code></pre>
-<h6 id="pod_7"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=pod多容器">Pod多容器</a></h6>
+<h6 id="pod_7"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=pod多容器">Pod多容器</a><a class="headerlink" href="#pod_7" title="Permanent link">&para;</a></h6>
 <p><em>pod-eladmin.yaml</em></p>
 <pre class="highlight"><code class="language-yaml">cat &gt;pod-eladmin.yaml &lt;&lt;EOF
 apiVersion: v1
@@ -436,8 +456,21 @@ spec:
     ports:
     - containerPort: 80
 EOF</code></pre>
-<h1 id="_7"><a href="http://49.7.203.222:2023/#/kubernetes-base/workflow?id=工作流程">工作流程</a></h1>
+<h1 id="_7"><a href="http://49.7.203.222:2023/#/kubernetes-base/workflow?id=工作流程">工作流程</a><a class="headerlink" href="#_7" title="Permanent link">&para;</a></h1>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/process.png" /></p>
+<pre class="highlight"><code class="language-text">用户 --资源文件(yaml)--&gt; API Server
+                            |
+                            v
+                        Scheduler (选节点)
+                            |
+                            v
+                  Controller Manager (维持期望状态)
+                            |
+                            v
+                  kubelet (在目标 Node 创建/管理 Pod)
+                            |
+                            v
+                        Pod 运行 / 业务提供服务</code></pre>
 <ol>
 <li>用户准备一个资源文件（记录了业务应用的名称、镜像地址等信息），通过调用APIServer执行创建Pod</li>
 <li>APIServer收到用户的Pod创建请求，将Pod信息写入到etcd中</li>
@@ -446,16 +479,16 @@ EOF</code></pre>
 <li>kubelet同样通过list-watch方式，发现有新的pod调度到本机的节点了，因此调用容器运行时，去根据pod的描述信息，拉取镜像，启动容器，同时生成事件信息</li>
 <li>同时，把容器的信息、事件及状态也通过APIServer写入到etcd中</li>
 </ol>
-<h4 id="_8"><a href="http://49.7.203.222:2023/#/kubernetes-base/workflow?id=架构设计的几点思考">架构设计的几点思考</a></h4>
+<h4 id="_8"><a href="http://49.7.203.222:2023/#/kubernetes-base/workflow?id=架构设计的几点思考">架构设计的几点思考</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
 <ol>
 <li>系统各个组件分工明确(APIServer是所有请求入口，CM是控制中枢，Scheduler主管调度，而Kubelet负责运行)，配合流畅，整个运行机制一气呵成。</li>
 <li>除了配置管理和持久化组件ETCD，其他组件并不保存数据。意味<code>除ETCD外</code>其他组件都是无状态的。因此从架构设计上对kubernetes系统高可用部署提供了支撑。</li>
 <li>同时因为组件无状态，组件的升级，重启，故障等并不影响集群最终状态，只要组件恢复后就可以从中断处继续运行。</li>
 <li>各个组件和kube-apiserver之间的数据推送都是通过list-watch机制来实现。</li>
 </ol>
-<h1 id="_9">中间件改造</h1>
-<h5 id="redispod"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base-middleware?id=数据库和redis改造pod启动">数据库和Redis改造Pod启动</a></h5>
-<h6 id="redispod_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base-middleware?id=redis容器改造pod">Redis容器改造Pod</a></h6>
+<h1 id="_9">中间件改造<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h1>
+<h5 id="redispod"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base-middleware?id=数据库和redis改造pod启动">数据库和Redis改造Pod启动</a><a class="headerlink" href="#redispod" title="Permanent link">&para;</a></h5>
+<h6 id="redispod_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base-middleware?id=redis容器改造pod">Redis容器改造Pod</a><a class="headerlink" href="#redispod_1" title="Permanent link">&para;</a></h6>
 <p><em>redis.yaml</em></p>
 <pre class="highlight"><code class="language-yaml">cat &lt;&lt;EOF &gt; redis.yaml
 apiVersion: v1
@@ -545,7 +578,7 @@ TargetPort:        6379/TCP
 Endpoints:         10.244.2.5:6379
 Session Affinity:  None
 Events:            &lt;none&gt;</code></pre>
-<h6 id="mysqlpod"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base-middleware?id=mysql容器改造pod">Mysql容器改造Pod</a></h6>
+<h6 id="mysqlpod"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-base-middleware?id=mysql容器改造pod">Mysql容器改造Pod</a><a class="headerlink" href="#mysqlpod" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">docker run -d -p 3306:3306 --name mysql  -v /opt/mysql:/var/lib/mysql -e MYSQL_DATABASE=myblog -e MYSQL_ROOT_PASSWORD=123456 mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 -p 端口映射
@@ -672,10 +705,10 @@ kubectl -n luffy  |get|logs|exec|describe |   pod
 <li>glusterfs</li>
 <li>nfs</li>
 </ul>
-<h1 id="pod_8">Pod常用设置</h1>
-<h6 id="pod_9"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=pod数据持久化">Pod数据持久化</a></h6>
+<h1 id="pod_8">Pod常用设置<a class="headerlink" href="#pod_8" title="Permanent link">&para;</a></h1>
+<h6 id="pod_9"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=pod数据持久化">Pod数据持久化</a><a class="headerlink" href="#pod_9" title="Permanent link">&para;</a></h6>
 <p>通过挂载卷的方式，参考mysql的pod</p>
-<h6 id="_10"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=服务健康检查">服务健康检查</a></h6>
+<h6 id="_10"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=服务健康检查">服务健康检查</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h6>
 <p>检测容器服务是否健康的手段，若不健康，会根据设置的重启策略（<code>restartPolicy</code>）进行操作，两种检测机制可以分别单独设置，若不设置，默认认为Pod是健康的。</p>
 <p>两种机制：</p>
 <ul>
@@ -704,6 +737,12 @@ failureThreshold：探测成功后，最少连续探测失败多少次
 K8S将在Pod开始启动20s(initialDelaySeconds)后探测Pod内的8000端口是否可以建立TCP连接，并且每15秒钟探测一次，如果连续3次探测失败，则kubelet重启该容器</code></pre>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/livenessprobe.webp" /></p>
 </li>
+</ul>
+<pre class="highlight"><code class="language-text">LivenessProbe (存活探测):
+  容器启动 initialDelaySeconds=20s 后开始
+  每 periodSeconds=15s 探测一次 :8000 TCP 连接
+  连续 failureThreshold=3 次失败 -&gt; 杀死并重启容器</code></pre>
+<ul>
 <li>
 <p>ReadinessProbe探针 可用性探测：用于判断容器是否正常提供服务，即容器的Ready是否为True，是否可以接收请求，如果<code>ReadinessProbe</code>探测失败，则容器的Ready将为False，<code>Endpoint Controller</code>控制器将此Pod的Endpoint从对应的service的Endpoint列表中移除，不再将任何请求调度此Pod上，直到下次探测成功。（剔除此pod不参与接收请求不会将流量转发给此Pod）。</p>
 <pre class="highlight"><code class="language-yaml">...
@@ -793,7 +832,7 @@ spec:
 <blockquote>
 <p>Readiness 决定了Service是否将流量导入到该Pod，Liveness决定了容器是否需要被重启</p>
 </blockquote>
-<h6 id="_11"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=重启策略">重启策略</a></h6>
+<h6 id="_11"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=重启策略">重启策略</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h6>
 <p>Pod的重启策略（<code>RestartPolicy</code>）应用于Pod内的所有容器，并且仅在Pod所处的Node上由kubelet进行判断和重启操作。当某个容器异常退出或者健康检查失败时，kubelet将根据<code>RestartPolicy</code>的设置来进行相应的操作。 Pod的重启策略包括<code>Always</code>、<code>OnFailure</code>和<code>Never</code>，默认值为<code>Always</code>。</p>
 <ul>
 <li>Always：当容器进程退出后，由<code>kubelet</code>自动重启该容器；</li>
@@ -820,7 +859,7 @@ spec:
 </li>
 </ol>
 <p>可以看出，若容器正常退出，Pod的状态会是<code>Completed</code>，非正常退出，状态为<code>Error</code>或者<code>CrashLoopBackOff</code></p>
-<h6 id="_12"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=镜像拉取策略">镜像拉取策略</a></h6>
+<h6 id="_12"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=镜像拉取策略">镜像拉取策略</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-yaml">spec:
   containers:
   - name: eladmin-api
@@ -832,7 +871,7 @@ spec:
 <li>IfNotPresent ，本地有则使用本地镜像，本地没有则去仓库拉取</li>
 <li>Never，只使用本地镜像，本地没有则报错</li>
 </ul>
-<h6 id="pod_10"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=pod资源限制">Pod资源限制</a></h6>
+<h6 id="pod_10"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=pod资源限制">Pod资源限制</a><a class="headerlink" href="#pod_10" title="Permanent link">&para;</a></h6>
 <p>为了保证充分利用集群资源，且确保重要容器在运行周期内能够分配到足够的资源稳定运行，因此平台需要具备</p>
 <p>Pod的资源限制的能力。 对于一个pod来说，资源最基础的2个的指标就是：CPU和内存。</p>
 <p>Kubernetes提供了个采用requests和limits 两种类型参数对资源进行预分配和使用限制。</p>
@@ -906,7 +945,7 @@ spec:
 <blockquote>
 <p>注意：若内存使用超出限制，会引发系统的OOM机制，因CPU是可压缩资源，不会引发Pod退出或重建</p>
 </blockquote>
-<h6 id="yaml"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=改造后yaml">改造后yaml</a></h6>
+<h6 id="yaml"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-setting?id=改造后yaml">改造后yaml</a><a class="headerlink" href="#yaml" title="Permanent link">&para;</a></h6>
 <p><em>redis.yaml</em></p>
 <pre class="highlight"><code class="language-yaml">cat &lt;&lt;EOF &gt; redis.yaml
 apiVersion: v1
@@ -1046,8 +1085,8 @@ spec:
         memory: 1Gi
         cpu: 1
 EOF</code></pre>
-<h1 id="_13">配置优化</h1>
-<h6 id="yaml_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/config-optimization?id=yaml优化">yaml优化</a></h6>
+<h1 id="_13">配置优化<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h1>
+<h6 id="yaml_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/config-optimization?id=yaml优化">yaml优化</a><a class="headerlink" href="#yaml_1" title="Permanent link">&para;</a></h6>
 <p><em>思考：为什么要优化</em></p>
 <p><code>yaml</code>的环境变量中存在敏感信息（账号、密码），存在安全隐患</p>
 <p>为什么要统一管理环境变量</p>
@@ -1055,9 +1094,16 @@ EOF</code></pre>
 <li>环境变量中有很多敏感的信息，比如账号密码，直接暴漏在yaml文件中存在安全性问题</li>
 <li>对于开发、测试、生产环境，由于配置均不同，每套环境部署的时候都要修改yaml，带来额外的开销</li>
 </ul>
-<h6 id="configmapsecret"><a href="http://49.7.203.222:2023/#/kubernetes-base/config-optimization?id=configmap和secret">ConfigMap和Secret</a></h6>
+<h6 id="configmapsecret"><a href="http://49.7.203.222:2023/#/kubernetes-base/config-optimization?id=configmap和secret">ConfigMap和Secret</a><a class="headerlink" href="#configmapsecret" title="Permanent link">&para;</a></h6>
 <p>k8s提供两类资源，<code>configMap</code>和<code>Secret</code>，可以用来实现业务配置的统一管理， 允许将配置文件与镜像文件分离，以使容器化的应用程序具有可移植性 。</p>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/configmap.png" /></p>
+<pre class="highlight"><code class="language-text">传统: 配置写死在镜像内 (难移植)
+K8s : 配置外置
+   ConfigMap  -&gt; 配置文件 / 环境变量(非敏感)
+   Secret     -&gt; 密码 / token(敏感, base64)
+        |
+        v  挂载或注入
+    Pod 内的容器 (镜像保持纯净, 可移植)</code></pre>
 <ul>
 <li>
 <p><code>configMap</code>，通常用来管理应用的配置文件或者环境变量</p>
@@ -1124,7 +1170,7 @@ kubectl -n luffy create -f secret.yaml
 kubectl -n luffy get secret</code></pre>
 </li>
 </ul>
-<h6 id="_14"><a href="http://49.7.203.222:2023/#/kubernetes-base/config-optimization?id=从配置中引用环境变量">从配置中引用环境变量</a></h6>
+<h6 id="_14"><a href="http://49.7.203.222:2023/#/kubernetes-base/config-optimization?id=从配置中引用环境变量">从配置中引用环境变量</a><a class="headerlink" href="#_14" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-yaml"># mysql的pod
 ...
   containers:
@@ -1177,8 +1223,8 @@ kubectl -n luffy get secret</code></pre>
     - containerPort: 8000
 ...</code></pre>
 <p>在部署不同的环境时，pod的yaml无须再变化，只需要在每套环境中维护一套<code>ConfigMap和Secret</code>即可。但是注意<code>configmap</code>和<code>secret</code>不能跨<code>namespace</code>使用，且更新后，pod内的env不会自动更新，重建后方可更新。</p>
-<h1 id="pod_11">Pod生命周期</h1>
-<h6 id="yaml_2"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-lifecycle?id=如何编写资源yaml">如何编写资源yaml</a></h6>
+<h1 id="pod_11">Pod生命周期<a class="headerlink" href="#pod_11" title="Permanent link">&para;</a></h1>
+<h6 id="yaml_2"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-lifecycle?id=如何编写资源yaml">如何编写资源yaml</a><a class="headerlink" href="#yaml_2" title="Permanent link">&para;</a></h6>
 <ol>
 <li>
 <p>拿来主义，从机器中已有的资源中拿</p>
@@ -1194,7 +1240,7 @@ kubectl -n luffy get secret</code></pre>
 <p>kubectl explain 查看具体字段含义</p>
 </li>
 </ol>
-<h6 id="pod_12"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-lifecycle?id=pod状态与生命周期">pod状态与生命周期</a></h6>
+<h6 id="pod_12"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-lifecycle?id=pod状态与生命周期">pod状态与生命周期</a><a class="headerlink" href="#pod_12" title="Permanent link">&para;</a></h6>
 <p>Pod的状态如下表所示：</p>
 <table>
 <thead>
@@ -1236,6 +1282,16 @@ kubectl -n luffy get secret</code></pre>
 </table>
 <p>启动和关闭示意：</p>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/AOQgQj.jpg" /></p>
+<pre class="highlight"><code class="language-text">Pod 生命周期:
+  [ Pending ] --调度成功--&gt; [ ContainerCreating ]
+        |
+  运行 Init Container(初始化容器, 按顺序)
+        |
+  运行主容器 (PostStart hook)
+        |
+  [ Running ] &lt;--&gt; 探针维护
+        |
+  收到删除 -&gt; (PreStop hook) -&gt; [ Terminating ] -&gt; [ Succeeded / Failed ]</code></pre>
 <p>初始化容器：</p>
 <ul>
 <li>验证业务应用依赖的组件是否均已启动</li>
@@ -1319,8 +1375,8 @@ $ cat /tmp/loap/timing
 <blockquote>
 <p>须主动杀掉 Pod 才会触发 <code>pre-stop hook</code>，如果是 Pod 自己 Down 掉，则不会执行 <code>pre-stop hook</code> ,且杀掉Pod进程前，进程必须是正常运行状态，否则不会执行pre-stop钩子</p>
 </blockquote>
-<h1 id="pod_13">Pod操作小结</h1>
-<h6 id="_15"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-summary?id=小结">小结</a></h6>
+<h1 id="pod_13">Pod操作小结<a class="headerlink" href="#pod_13" title="Permanent link">&para;</a></h1>
+<h6 id="_15"><a href="http://49.7.203.222:2023/#/kubernetes-base/pod-summary?id=小结">小结</a><a class="headerlink" href="#_15" title="Permanent link">&para;</a></h6>
 <ol>
 <li>实现k8s平台与特定的容器运行时解耦，提供更加灵活的业务部署方式，引入了Pod概念，作为k8s平台中业务服务运行时的最小调度单元</li>
 <li>k8s使用yaml格式定义资源文件，yaml比json更加简洁</li>
@@ -1347,11 +1403,18 @@ $ cat /tmp/loap/timing
 <li>运行业务Pod的某个节点挂了，可以自动帮我把Pod转移到集群中的可用节点启动起来</li>
 <li>我的业务应用功能是收集节点监控数据,需要把Pod运行在k8集群的各个节点上</li>
 </ol>
-<h1 id="_16">工作负载</h1>
-<h5 id="pod_14"><a href="http://49.7.203.222:2023/#/kubernetes-base/workload?id=pod控制器">Pod控制器</a></h5>
-<h6 id="workload"><a href="http://49.7.203.222:2023/#/kubernetes-base/workload?id=workload-工作负载">Workload (工作负载)</a></h6>
+<h1 id="_16">工作负载<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h1>
+<h5 id="pod_14"><a href="http://49.7.203.222:2023/#/kubernetes-base/workload?id=pod控制器">Pod控制器</a><a class="headerlink" href="#pod_14" title="Permanent link">&para;</a></h5>
+<h6 id="workload"><a href="http://49.7.203.222:2023/#/kubernetes-base/workload?id=workload-工作负载">Workload (工作负载)</a><a class="headerlink" href="#workload" title="Permanent link">&para;</a></h6>
 <p>控制器又称工作负载是用于实现管理pod的中间层，确保pod资源符合预期的状态，pod的资源出现故障时，会尝试 进行重启，当根据重启策略无效，则会重新新建pod的资源。</p>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/workload.png" /></p>
+<pre class="highlight"><code class="language-text">Workload (控制器) 管理 Pod, 维持期望状态:
+  - ReplicaSet   : 维持指定副本数, 支持扩缩容
+  - Deployment   : 管理 ReplicaSet, 支持滚动更新/回滚
+  - StatefulSet  : 有状态应用(稳定网络标识/存储)
+  - DaemonSet    : 每个 Node 跑一个 Pod
+  - Job/CronJob  : 一次性 / 定时任务
+  故障时重启; 重启无效则重建 Pod</code></pre>
 <ul>
 <li>ReplicaSet: 用户创建指定数量的pod副本数量，确保pod副本数量符合预期状态，并且支持滚动式自动扩容和缩容功能</li>
 <li>Deployment：工作在ReplicaSet之上，用于管理无状态应用，目前来说最好的控制器。支持滚动更新和回滚功能，提供声明式配置</li>
@@ -1360,7 +1423,7 @@ $ cat /tmp/loap/timing
 <li>Cronjob：周期性任务控制，不需要持续后台运行</li>
 <li>StatefulSet：管理有状态应用</li>
 </ul>
-<h1 id="deployment"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=deployment">Deployment改造</a></h1>
+<h1 id="deployment"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=deployment">Deployment改造</a><a class="headerlink" href="#deployment" title="Permanent link">&para;</a></h1>
 <p><em>deployment-mysql.yaml</em></p>
 <pre class="highlight"><code class="language-yaml">cat &lt;&lt;EOF &gt;deployment-mysql.yaml
 apiVersion: apps/v1
@@ -1595,11 +1658,11 @@ kubectl -n luffy delete pod eladmin-api-6b54756dd7-hrd9h
 
 
 </code></pre>
-<h6 id="deployment_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=创建deployment">创建Deployment</a></h6>
+<h6 id="deployment_1"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=创建deployment">创建Deployment</a><a class="headerlink" href="#deployment_1" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">kubectl create -f deployment-redis.yaml
 kubectl create -f deployment-mysql.yaml
 kubectl create -f deploy-eladmin-api.yaml</code></pre>
-<h6 id="deployment_2"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=查看deployment">查看Deployment</a></h6>
+<h6 id="deployment_2"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=查看deployment">查看Deployment</a><a class="headerlink" href="#deployment_2" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash"># kubectl api-resources
 $ kubectl -n luffy get deploy
 NAME          READY   UP-TO-DATE   AVAILABLE   AGE
@@ -1618,7 +1681,7 @@ kubectl -n luffy get po -owide
 
 # 查看replicaSet
 kubectl -n luffy get rs</code></pre>
-<h6 id="_17"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=副本保障机制">副本保障机制</a></h6>
+<h6 id="_17"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=副本保障机制">副本保障机制</a><a class="headerlink" href="#_17" title="Permanent link">&para;</a></h6>
 <p>controller实时检测pod状态，并保障副本数一直处于期望的值。</p>
 <pre class="highlight"><code class="language-bash">## 删除pod，观察pod状态变化
 $ kubectl -n luffy delete pod eladmin-api-5bff94959d-hxz2r
@@ -1633,7 +1696,7 @@ kubectl -n luffy scale deploy eladmin-api --replicas=2
 
 # 观察pod
 kubectl -n luffy get pod -w</code></pre>
-<h6 id="_18"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=服务更新">服务更新</a></h6>
+<h6 id="_18"><a href="http://49.7.203.222:2023/#/kubernetes-base/practice-deployment?id=服务更新">服务更新</a><a class="headerlink" href="#_18" title="Permanent link">&para;</a></h6>
 <p>修改服务，重新打tag模拟服务更新。</p>
 <p>更新方式：</p>
 <pre class="highlight"><code class="language-bash"># 1. 修改yaml文件，然后apply更新应用
@@ -1647,10 +1710,21 @@ kubectl -n luffy set image deploy eladmin-api eladmin-api=172.16.1.226:5000/elad
 <p>修改文件测试：</p>
 <pre class="highlight"><code class="language-bash">$ docker build . -t 172.16.1.226:5000/eladmin/eladmin-api:v2 -f Dockerfile
 $ docker push 172.16.1.226:5000/eladmin/eladmin-api:v2</code></pre>
-<h1 id="deployment_3"><a href="http://49.7.203.222:2023/#/kubernetes-base/workflow-deployment?id=工作流程">Deployment工作流程</a></h1>
+<h1 id="deployment_3"><a href="http://49.7.203.222:2023/#/kubernetes-base/workflow-deployment?id=工作流程">Deployment工作流程</a><a class="headerlink" href="#deployment_3" title="Permanent link">&para;</a></h1>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/deployment-workflow.jpg" /></p>
-<h1 id="_19">滚动更新</h1>
-<h6 id="_20"><a href="http://49.7.203.222:2023/#/kubernetes-base/rolling-update-rollback?id=更新策略">更新策略</a></h6>
+<pre class="highlight"><code class="language-text">Deployment
+   | 创建/管理
+   v
+ ReplicaSet (指定 replicas)
+   | 维持副本
+   v
+ Pod x N
+   | 新版本发布
+   v
+ 滚动更新: 新 RS 逐步扩容, 旧 RS 逐步缩容 (不中断服务)
+ 回滚: 切回旧 ReplicaSet</code></pre>
+<h1 id="_19">滚动更新<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h1>
+<h6 id="_20"><a href="http://49.7.203.222:2023/#/kubernetes-base/rolling-update-rollback?id=更新策略">更新策略</a><a class="headerlink" href="#_20" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-yaml">...
 spec:
   replicas: 2    #指定Pod副本数
@@ -1746,6 +1820,11 @@ EOF
 kubectl apply -f deploy-eladmin-api.yaml
 </code></pre>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/update.png" /></p>
+<pre class="highlight"><code class="language-text">更新策略:
+  RollingUpdate (默认): maxSurge / maxUnavailable 控制滚动节奏
+     新版本 Pod 逐个上线, 旧版本逐个下线
+  Recreate: 先删全部旧 Pod, 再建新 Pod (有中断)
+  Rollback: kubectl rollout undo -&gt; 回到上一 Revision</code></pre>
 <p>策略控制：</p>
 <ul>
 <li>maxSurge：最大激增数, 指更新过程中, 最多可以比replicas预先设定值多出的pod数量, 可以为固定值或百分比,默认为desired Pods数的25%。计算时向上取整(比如0.5，取1)，更新过程中最多会有replicas + maxSurge个pod</li>
@@ -1855,7 +1934,7 @@ EOF
 
  kubectl apply -f deployment-mysql.yaml
 </code></pre>
-<h6 id="_21"><a href="http://49.7.203.222:2023/#/kubernetes-base/rolling-update-rollback?id=服务回滚">服务回滚</a></h6>
+<h6 id="_21"><a href="http://49.7.203.222:2023/#/kubernetes-base/rolling-update-rollback?id=服务回滚">服务回滚</a><a class="headerlink" href="#_21" title="Permanent link">&para;</a></h6>
 <p>通过滚动升级的策略可以平滑的升级Deployment，若升级出现问题，需要最快且最好的方式回退到上一次能够提供正常工作的版本。为此K8S提供了回滚机制。</p>
 <p><strong>revision</strong>：更新应用时，K8S都会记录当前的版本号，即为revision，当升级出现问题时，可通过回滚到某个特定的revision，默认配置下，K8S只会保留最近的几个revision，可以通过Deployment配置文件中的spec.revisionHistoryLimit属性增加revision数量，默认是10。</p>
 <p>查看当前：</p>
@@ -1889,14 +1968,14 @@ deployment.apps/eladmin-api rolled back
 <pre class="highlight"><code>deployment,image ==&gt; config,configmap,secret
 #这里回滚是 deployment到image，  config和cofnigmap，secret都不管
 </code></pre>
-<h1 id="service">Service基础</h1>
-<h5 id="kubernetesservice"><a href="http://49.7.203.222:2023/#/kubernetes-base/service-clusterip?id=kubernetes服务访问之service">Kubernetes服务访问之Service</a></h5>
+<h1 id="service">Service基础<a class="headerlink" href="#service" title="Permanent link">&para;</a></h1>
+<h5 id="kubernetesservice"><a href="http://49.7.203.222:2023/#/kubernetes-base/service-clusterip?id=kubernetes服务访问之service">Kubernetes服务访问之Service</a><a class="headerlink" href="#kubernetesservice" title="Permanent link">&para;</a></h5>
 <p>通过以前的学习，我们已经能够通过Deployment来创建一组Pod来提供具有高可用性的服务。虽然每个Pod都会分配一个单独的Pod IP，然而却存在如下两个问题：</p>
 <ul>
 <li>Pod IP仅仅是集群内可见的虚拟IP，外部无法访问。</li>
 <li>Pod IP会随着Pod的销毁而消失，当ReplicaSet对Pod进行动态伸缩时，Pod IP可能随时随地都会变化，这样对于我们访问这个服务带来了难度。</li>
 </ul>
-<h6 id="service-cluster-ip"><a href="http://49.7.203.222:2023/#/kubernetes-base/service-clusterip?id=service-负载均衡之cluster-ip">Service 负载均衡之Cluster IP</a></h6>
+<h6 id="service-cluster-ip"><a href="http://49.7.203.222:2023/#/kubernetes-base/service-clusterip?id=service-负载均衡之cluster-ip">Service 负载均衡之Cluster IP</a><a class="headerlink" href="#service-cluster-ip" title="Permanent link">&para;</a></h6>
 <p>service是一组pod的服务抽象，相当于一组pod的LB，负责将请求分发给对应的pod。service会为这个LB提供一个IP，一般称为cluster IP 。使用Service对象，通过selector进行标签选择，找到对应的Pod:</p>
 <pre class="highlight"><code>cat &lt;&lt;EOF &gt;service-eladmin-api.yaml
 apiVersion: v1
@@ -1976,7 +2055,7 @@ $ curl 10.99.182.32:8000/auth/code
 kubectl -n kube-system get pod -o wide
 kubectl -n kube-system logs -f kube-proxy-gmmlv  #改成当前主机的kube-proxy 容器名
 #日志里显示是 using iptables proxier</code></pre>
-<h1 id="kube-proxy"><a href="http://49.7.203.222:2023/#/kubernetes-base/kube-proxy?id=kube-proxy">kube-proxy</a></h1>
+<h1 id="kube-proxy"><a href="http://49.7.203.222:2023/#/kubernetes-base/kube-proxy?id=kube-proxy">kube-proxy</a><a class="headerlink" href="#kube-proxy" title="Permanent link">&para;</a></h1>
 <p>运行在每个节点上，监听 API Server 中服务对象的变化，再通过创建流量路由规则来实现网络的转发。</p>
 <p><a href="https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies">参照</a></p>
 <p>有三种模式：</p>
@@ -1993,6 +2072,14 @@ kubectl -n kube-system logs -f kube-proxy-gmmlv  #改成当前主机的kube-prox
 </ul>
 <p>IPtables模式示意图：</p>
 <p><img alt="image-20221121220104089" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/image-20221121220104089.png" /></p>
+<pre class="highlight"><code class="language-text">kube-proxy (iptables 模式):
+  Service ClusterIP:10.96.x.x:80
+        |
+        v  iptables 规则 (DNAT)
+  Pod1:192.168.1.10:80  \
+  Pod2:192.168.1.11:80   &gt; 随机/轮询转发
+  Pod3:192.168.1.12:80  /
+  (每个 Node 上 kube-proxy 维护相同规则)</code></pre>
 <pre class="highlight"><code class="language-bash">$ kubectl -n luffy get service eladmin-api
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
 eladmin-api   ClusterIP   10.99.182.32   &lt;none&gt;        8000/TCP   94m
@@ -2073,7 +2160,7 @@ $ iptables -F
 # 查看规则生效
 $ ipvsadm -ln
 </code></pre>
-<h1 id="_22"><a href="http://49.7.203.222:2023/#/kubernetes-base/coredns?id=服务发现">服务发现</a></h1>
+<h1 id="_22"><a href="http://49.7.203.222:2023/#/kubernetes-base/coredns?id=服务发现">服务发现</a><a class="headerlink" href="#_22" title="Permanent link">&para;</a></h1>
 <p>在k8s集群中，组件之间可以通过定义的Service名称实现通信。</p>
 <p>演示服务发现：</p>
 <pre class="highlight"><code class="language-bash">## 演示思路：在eladmin-api的容器中直接通过service名称访问mysql服务，观察是否可以访问通
@@ -2157,8 +2244,8 @@ kubernetes   ClusterIP   10.96.0.1    &lt;none&gt;        443/TCP   26h
 
 # kubectl -n kube-system get deployment
 </code></pre>
-<h1 id="nodeport">NodePort</h1>
-<h6 id="servicenodeport"><a href="http://49.7.203.222:2023/#/kubernetes-base/service-nodeport?id=service负载均衡之nodeport">Service负载均衡之NodePort</a></h6>
+<h1 id="nodeport">NodePort<a class="headerlink" href="#nodeport" title="Permanent link">&para;</a></h1>
+<h6 id="servicenodeport"><a href="http://49.7.203.222:2023/#/kubernetes-base/service-nodeport?id=service负载均衡之nodeport">Service负载均衡之NodePort</a><a class="headerlink" href="#servicenodeport" title="Permanent link">&para;</a></h6>
 <p>cluster-ip为虚拟地址，只能在k8s集群内部进行访问，集群外部如果访问内部服务，实现方式之一为使用NodePort方式。NodePort会默认在 30000-32767 ，不指定的会随机使用其中一个。</p>
 <pre class="highlight"><code class="language-bash">cat &lt;&lt;EOF &gt; service-eladmin-api-nodeport.yaml
 apiVersion: v1
@@ -2191,8 +2278,8 @@ eladmin-api-nodeport   NodePort    10.103.117.186   &lt;none&gt;        8000:302
 # nodeprot 和clusterip 都是 kube-proxy组件实现的转发</code></pre>
 <p><em>思考：推荐的集群外访问服务的方式是什么</em></p>
 <p>Ingress </p>
-<h1 id="ingress">ingress</h1>
-<h5 id="kubernetesingress"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=kubernetes服务访问之ingress">Kubernetes服务访问之Ingress</a></h5>
+<h1 id="ingress">ingress<a class="headerlink" href="#ingress" title="Permanent link">&para;</a></h1>
+<h5 id="kubernetesingress"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=kubernetes服务访问之ingress">Kubernetes服务访问之Ingress</a><a class="headerlink" href="#kubernetesingress" title="Permanent link">&para;</a></h5>
 <p>对于Kubernetes的Service，无论是Cluster-Ip和NodePort均是四层的负载，集群内的服务如何实现七层的负载均衡，这就需要借助于Ingress，Ingress控制器的实现方式有很多，比如nginx, Contour, Haproxy, trafik, Istio。几种常用的ingress功能对比和选型可以参考<a href="https://www.kubernetes.org.cn/5948.html">这里</a></p>
 <p>Ingress-nginx是7层的负载均衡器 ，负责统一管理外部对k8s cluster中Service的请求。主要包含：</p>
 <ul>
@@ -2230,14 +2317,22 @@ spec:
               number: 80</code></pre>
 </li>
 </ul>
-<h6 id="_23"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=示意图：">示意图：</a></h6>
+<h6 id="_23"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=示意图：">示意图：</a><a class="headerlink" href="#_23" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/ingress.webp" /></p>
-<h6 id="_24"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=实现逻辑">实现逻辑</a></h6>
+<pre class="highlight"><code class="language-text">外部用户 --域名--&gt; Ingress Controller
+                        |
+                        v  按规则( host / path )路由
+                   Service (ClusterIP)
+                        |
+                        v
+                    Pod (后端服务)
+  (Ingress 提供 7层 路由, 弥补 Service 仅 4层 的不足)</code></pre>
+<h6 id="_24"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=实现逻辑">实现逻辑</a><a class="headerlink" href="#_24" title="Permanent link">&para;</a></h6>
 <p>1）ingress controller通过和kubernetes api交互，动态的去感知集群中ingress规则变化 </p>
 <p>2）然后读取ingress规则(规则就是写明了哪个域名对应哪个service)，按照自定义的规则，生成一段nginx配置 </p>
 <p>3）再写到nginx-ingress-controller的pod里，这个Ingress controller的pod里运行着一个Nginx服务，控制器把生成的nginx配置写入/etc/nginx/nginx.conf文件中 </p>
 <p>4）然后reload一下使配置生效。以此达到域名分别配置和动态更新的问题。</p>
-<h6 id="_25"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=安装">安装</a></h6>
+<h6 id="_25"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=安装">安装</a><a class="headerlink" href="#_25" title="Permanent link">&para;</a></h6>
 <p><a href="https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md">官方文档</a></p>
 <pre class="highlight"><code class="language-bash">$ wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.4.0/deploy/static/provider/cloud/deploy.yaml
 # https://gitee.com/chengkanghua/script/raw/master/k8s/deploy.yaml  #备用地址
@@ -2272,7 +2367,7 @@ ingress-nginx-controller-9ccddfb4f-m4trc   1/1     Running     0          3m33s
 kubectl -n ingress-nginx describe pod ingress-nginx-controller-9ccddfb4f-m4trc
 kubectl get node --show-labels |grep ingress
 kubectl -n ingress-nginx get pod -owide</code></pre>
-<h6 id="_26"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=使用示例：">使用示例：</a></h6>
+<h6 id="_26"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=使用示例：">使用示例：</a><a class="headerlink" href="#_26" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-yaml">cat &lt;&lt;EOF &gt; ingress-eladmin-api.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -2364,7 +2459,7 @@ echo '172.16.1.226 eladmin-api.luffy.com' &gt;&gt; /etc/hosts
 [root@k8s-master ~]# curl  http://eladmin-api.luffy.com/auth/code  #返回正常code信息
 </code></pre>
 <p>然后，访问 http://eladmin-api.luffy.com/auth/code</p>
-<h6 id="ingresseladmin-web"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=使用ingress访问eladmin-web服务">使用ingress访问eladmin-web服务</a></h6>
+<h6 id="ingresseladmin-web"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=使用ingress访问eladmin-web服务">使用ingress访问eladmin-web服务</a><a class="headerlink" href="#ingresseladmin-web" title="Permanent link">&para;</a></h6>
 <p>综合来看下，如何使用ingress来实现eladmin-web项目的访问，总结了三种方式：</p>
 <ul>
 <li>
@@ -2750,7 +2845,7 @@ kubectl delete -f ingress-eladmin-web.yaml
 <p>然后，访问 <a href="http://eladmin.luffy.com/">http://eladmin.luffy.com</a></p>
 </li>
 <li>
-<h6 id="_27"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=方式三：">方式三：</a></h6>
+<h6 id="_27"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=方式三：">方式三：</a><a class="headerlink" href="#_27" title="Permanent link">&para;</a></h6>
 <p>规划使用如下地址访问：</p>
 <table>
 <thead>
@@ -2952,7 +3047,7 @@ kubectl -n luffy get po -owide
 <p>然后，访问 <a href="http://eladmin.luffy.com/">http://eladmin.luffy.com</a></p>
 </li>
 </ul>
-<h6 id="https"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=https访问：">HTTPS访问：</a></h6>
+<h6 id="https"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=https访问：">HTTPS访问：</a><a class="headerlink" href="#https" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">#自签名证书
 openssl req -x509 -nodes -days 2920 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=*.luffy.com/O=ingress-nginx"
 
@@ -3030,7 +3125,7 @@ kubectl apply -f ingress-eladmin-web.yaml
 
 #浏览器访问 http://eladmin.luffy.com/ 会自动跳转到https
 </code></pre>
-<h6 id="_28"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=常用注解说明">常用注解说明</a></h6>
+<h6 id="_28"><a href="http://49.7.203.222:2023/#/kubernetes-base/ingress?id=常用注解说明">常用注解说明</a><a class="headerlink" href="#_28" title="Permanent link">&para;</a></h6>
 <p>nginx端存在很多可配置的参数，通常这些参数在ingress的定义中被放在annotations中实现，如下为常用的一些：</p>
 <pre class="highlight"><code class="language-yaml">cat &lt;&lt;EOF &gt;ingress-eladmin-web.yaml
 apiVersion: networking.k8s.io/v1
@@ -3064,8 +3159,13 @@ EOF
 
 
 </code></pre>
-<h1 id="_29"><a href="http://49.7.203.222:2023/#/kubernetes-base/summary?id=小结">小结</a></h1>
+<h1 id="_29"><a href="http://49.7.203.222:2023/#/kubernetes-base/summary?id=小结">小结</a><a class="headerlink" href="#_29" title="Permanent link">&para;</a></h1>
 <p><img alt="img" src="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85.assets/summary.jpg" /></p>
+<pre class="highlight"><code class="language-text">K8s 落地核心:
+  集群(管理/工作节点)
+    -&gt; 资源对象(Pod/Deployment/Service/Ingress/ConfigMap...)
+    -&gt; 通过 声明式 yaml 描述期望状态
+    -&gt; 各组件协同把实际状态逼近期望状态</code></pre>
 <p>后端快速部署记录</p>
 <pre class="highlight"><code class="language-bash">mkdir ~/eladmin-api;cd ~/eladmin-api
 
@@ -3373,9 +3473,15 @@ kubectl create -f ingress-eladmin-api.yaml
 
 # curl eladmin-api.luffy.com/auth/code  #返回数据正常
 </code></pre>
-<h1 id="_30">面试题:</h1>
-<h3 id="pod_15">Pod 的几种状态及其含义</h3>
+<h1 id="_30">面试题:<a class="headerlink" href="#_30" title="Permanent link">&para;</a></h1>
+<h3 id="pod_15">Pod 的几种状态及其含义<a class="headerlink" href="#pod_15" title="Permanent link">&para;</a></h3>
 <p><img alt="在这里插入图片描述" src="../assets/32eca7524a9b4c1195d6a7e05c072336.png" /></p>
+<pre class="highlight"><code class="language-text">Pod 状态:
+  Pending     : 已接受, 但容器未全部就绪(调度/拉镜像中)
+  Running     : 绑定到节点, 至少1容器运行中
+  Succeeded   : 所有容器正常退出, 不再重启
+  Failed      : 至少1容器非正常退出
+  Unknown     : 无法获取状态(节点通信异常)</code></pre>
 <ol>
 <li>
 <p>Pending
@@ -3518,6 +3624,8 @@ Pod 被标记为 NodeLost，但在 API 服务器中仍然存在。</p>
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {

@@ -8,6 +8,17 @@
 
 ![img](9SpringCloud微服务项目交付.assets/single.jpg)
 
+```text
+单体应用架构(传统打车软件):
+  +---------------------------+
+  |    单一应用(ALL IN ONE)     |
+  |  用户 / 订单 / 支付 / 调度   |
+  +---------------------------+
+  适合小项目; 优点: 开发/部署简单
+  缺点: 耦合高, 难以扩展
+```
+
+
 这种单体应用比较适合于小项目，优点是：
 
 - 开发简单直接，集中式管理
@@ -29,6 +40,16 @@
 比如，前面描述的系统可被分解为：
 
 ![img](9SpringCloud微服务项目交付.assets/micro-svcs.jpg)
+
+```text
+微服务应用架构:
+  业务逻辑拆分为多个微服务:
+    [用户服务] [订单服务] [支付服务] [调度服务]
+        |  REST API 通信
+  客户端 -> 通常经 API Gateway 访问后台微服务
+  (各自独立开发/部署/扩展)
+```
+
 
 每个业务逻辑都被分解为一个微服务，微服务之间通过REST API通信。一些微服务也会向终端用户或客户端开发API接口。但通常情况下，这些客户端并不能直接访问后台微服务，而是通过API Gateway来传递请求。API Gateway一般负责服务路由、负载均衡、缓存、访问控制和鉴权等任务。
 
@@ -77,6 +98,14 @@
 
 ![img](9SpringCloud微服务项目交付.assets/81805411.jpg)
 
+```text
+微服务框架(服务网格选项):
+  - Conduit
+  - Istio
+  (以及 Spring Cloud Netflix 等生态组件)
+```
+
+
 #### [了解Spring Cloud](http://49.7.203.222:2023/#/spring-cloud/introduction?id=了解spring-cloud)
 
 [https://spring.io](https://spring.io/)
@@ -121,15 +150,38 @@ https://spring.io/projects
 
 ![img](9SpringCloud微服务项目交付.assets/new-springboot-1.jpg)
 
+```text
+创建 Spring Boot 项目:
+  File -> New -> Project
+  选择 Spring Initializr (在线初始化脚手架)
+```
+
+
 配置Project Metadata：
 
 ![img](9SpringCloud微服务项目交付.assets/new-springboot-2.jpg)
+
+```text
+配置 Project Metadata:
+  Group / Artifact / Type: Maven
+  Language: Java, Packaging: Jar
+  (生成基础工程结构)
+```
+
 
 配置Dependencies依赖包：
 
 选择：Web分类中的Spring web和Template Engines中的Thymeleaf
 
 ![img](9SpringCloud微服务项目交付.assets/new-springboot-3.jpg)
+
+```text
+选择 Dependencies:
+  Web 分类 -> Spring Web
+  Template Engines -> Thymeleaf
+  (勾选后自动加入依赖)
+```
+
 
 配置maven settings.xml：
 
@@ -175,7 +227,23 @@ https://spring.io/projects
 
 ![img](9SpringCloud微服务项目交付.assets/new-springboot-4.png)
 
+```text
+配置 maven settings.xml:
+  设置 本地仓库 / 镜像(如阿里私服)
+  使依赖下载走内网镜像, 加速构建
+```
+
+
 ![img](9SpringCloud微服务项目交付.assets/new-springboot-5.jpg)
+
+```text
+生成的项目结构:
+  src/main/java (代码)
+  src/main/resources (配置)
+  pom.xml (依赖管理)
+  (即可运行/打包的 Spring Boot 工程)
+```
+
 
 > springboot版本为2.3.6.RELEASE
 
@@ -343,6 +411,15 @@ public class HelloController {
 当我们执行 Maven 构建命令时，Maven 开始按照以下顺序查找依赖的库：
 
 ![img](9SpringCloud微服务项目交付.assets/maven-repo.png)
+
+```text
+Maven 依赖查找顺序:
+  1. 本地仓库(~/.m2/repository)
+  2. 私服(Nexus/镜像)
+  3. 中央仓库(Maven Central)
+  (逐级回源, 命中即止)
+```
+
 
 本地仓库：
 
@@ -811,6 +888,15 @@ data:
 
 ![img](9SpringCloud微服务项目交付.assets/maven-repo-vols.jpg)
 
+```text
+Maven 数据目录挂载:
+  镜像内 /opt/maven-repo
+  slave-pod 任务结束后会销毁
+  -> 需将 maven 目录挂载出来(PVC/宿主机)
+  否则每次构建重新拉取全部依赖
+```
+
+
 配置Jenkins流水线：
 
 ##### [添加单元测试覆盖率](http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=添加单元测试覆盖率)
@@ -939,6 +1025,14 @@ public class HelloControllerTests {
 
 ![img](9SpringCloud微服务项目交付.assets/sonar-coverage.jpg)
 
+```text
+单元测试覆盖率(SonarQube):
+  提交代码 -> 流水线跑单测 + 覆盖率
+  SonarQube 展示 行覆盖/分支覆盖 等指标
+  (保障代码质量)
+```
+
+
 
 
 # 服务注册中心
@@ -972,7 +1066,24 @@ https://spring.io/projects/spring-cloud#overview
 
 ![img](9SpringCloud微服务项目交付.assets/demo-project.png)
 
+```text
+微服务场景示例:
+  业务: 注册 / 登录 / 账单查询
+  对应服务: 用户服务 / 账单管理服务
+  (服务间通过注册中心发现与调用)
+```
+
+
 ![img](9SpringCloud微服务项目交付.assets/arch.png)
+
+```text
+微服务整体架构:
+  [网关 / API] -> [用户服务] [账单服务] ...
+        | 服务注册与发现
+   [Eureka 注册中心]
+  (各服务注册到注册中心, 互相发现)
+```
+
 
 #### [Eureka服务注册中心](http://49.7.203.222:2023/#/spring-cloud/register-center?id=eureka服务注册中心)
 
@@ -983,6 +1094,14 @@ https://docs.spring.io/spring-cloud-netflix/docs/3.0.3/reference/html/
 ##### [新建项目](http://49.7.203.222:2023/#/spring-cloud/register-center?id=新建项目)
 
 ![img](9SpringCloud微服务项目交付.assets/new-eureka.jpg)
+
+```text
+新建 Eureka 项目:
+  Spring Initializr 选择 Eureka Server
+  pom 引入 spring-cloud 依赖
+  (作为服务注册中心)
+```
+
 
 pom中引入spring-cloud的依赖：
 
@@ -1178,6 +1297,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 ![image-20200915211607173](9SpringCloud微服务项目交付.assets/image-20200915211607173.png)
 
+```text
+服务注册到 Eureka:
+  启动后服务注册成功
+  但注册地址显示为 主机名/内网IP
+  (需在 application.yaml 修正 prefer-ip-address 等)
+```
+
+
 application.yaml
 
 ```yaml
@@ -1225,6 +1352,14 @@ Eurake有一个配置参数eureka.server.renewalPercentThreshold，定义了rene
 - 各个eureka的spring.application.name相同
 
 ![img](9SpringCloud微服务项目交付.assets/eureka-cluster.jpg)
+
+```text
+Eureka 高可用:
+  eureka.instance.hostname 与 defaultZone 地址一致
+  各 eureka 的 spring.application.name 相同
+  两两相互注册(peer1 <-> peer2) 形成集群
+```
+
 
 拷贝`eureka`服务，分别命名`eureka-ha-peer1`和`eureka-ha-peer2`
 
@@ -1278,9 +1413,24 @@ spring:
 
   ![img](9SpringCloud微服务项目交付.assets/eureka-ha-deploy.jpg)
 
+```text
+Eureka K8s 交付 方案一:
+  创建 三个 Deployment + 三个 Service
+  每个 Pod 一个 Eureka 实例
+  (通过 Service 互相发现)
+```
+
+
 - 方案二：使用statefulset管理
 
   ![img](9SpringCloud微服务项目交付.assets/eureka-sts.jpg)
+
+```text
+Eureka K8s 交付 方案二:
+  使用 StatefulSet 管理
+  (稳定网络标识/有序部署, 适合有状态注册中心)
+```
+
 
 ```
 eureka-statefulset.yaml
@@ -2258,9 +2408,32 @@ public class UserController {
 
 ![img](9SpringCloud微服务项目交付.assets/ribbon-lb.jpg)
 
+```text
+Ribbon 负载均衡:
+  eureka-client 已含 ribbon 包(无需单独引入)
+  在客户端侧对服务实例做负载均衡选择
+```
+
+
 ![img](9SpringCloud微服务项目交付.assets/lb-cli.jpg)
 
+```text
+客户端负载均衡(Client Side):
+  调用方(Ribbon)从注册中心拿到实例列表
+  在客户端选择一个实例发起请求
+  (与 Nginx 服务端 LB 相对)
+```
+
+
 ![img](9SpringCloud微服务项目交付.assets/lb-server.jpg)
+
+```text
+服务端负载均衡(Server Side):
+  请求先到 负载均衡器(Nginx/LB)
+  由 LB 转发到后端某个实例
+  (客户端无感知)
+```
+
 
 如何修改调用策略？
 
@@ -2308,6 +2481,14 @@ public class BillServiceApplication {
 ```
 
 ![img](9SpringCloud微服务项目交付.assets/ribbon-rules.jpg)
+
+```text
+Ribbon 负载均衡策略:
+  代码或配置文件指定 IRule
+  如 RoundRobinRule / RandomRule / WeightedResponseTimeRule
+  (控制"如何选实例")
+```
+
 
 配置文件方式： https://docs.spring.io/spring-cloud-netflix/docs/2.2.5.RELEASE/reference/html/#customizing-the-ribbon-client-by-setting-properties
 
@@ -2527,6 +2708,15 @@ data:
 
 ![img](9SpringCloud微服务项目交付.assets/hystrix.jpg)
 
+```text
+为什么需要断路器(雪崩):
+  A(服务) -> B(消费A) -> C,D(消费B)
+  A 不可用 -> B 不可用 -> 放大到 C,D
+  形成雪崩效应
+  (需断路器隔离故障)
+```
+
+
 A作为服务提供者，B为A的服务消费者，C和D是B的服务消费者。A不可用引起了B的不可用，并将不可用像滚雪球一样放大到C和D时，雪崩效应就形成了。
 
 因此，需要实现一种机制，可以做到自动监控服务状态并根据调用情况进行自动处理。
@@ -2536,6 +2726,14 @@ A作为服务提供者，B为A的服务消费者，C和D是B的服务消费者�
 - 提供fallback机制
 
 ![img](9SpringCloud微服务项目交付.assets/netflix-hystrix.jpg)
+
+```text
+Hystrix 断路器:
+  维护 打开 / 关闭 / 半开 三种状态
+  提供 fallback 降级机制
+  (故障隔离, 快速失败, 保护调用链)
+```
+
 
 修改bill-service项目：
 
@@ -2868,6 +3066,13 @@ hystrix:
 
   ![img](9SpringCloud微服务项目交付.assets/hystric-dashboard.jpg)
 
+```text
+Hystrix Dashboard:
+  可视化 请求量 / 成功率 / 线程池 等指标
+  (监控断路器健康状态)
+```
+
+
 
 
 
@@ -2880,6 +3085,14 @@ hystrix:
 
 ![img](9SpringCloud微服务项目交付.assets/before-gateway.png)
 
+```text
+为什么需要网关(改造前):
+  外部系统直连 各微服务(api地址各异)
+  内部靠注册中心感知, 外部不行
+  (痛点: 地址多 / 无统一鉴权限流)
+```
+
+
 ###### [网关的功能](http://49.7.203.222:2023/#/spring-cloud/gateway?id=网关的功能)
 
 - 减少api请求次数
@@ -2891,6 +3104,14 @@ hystrix:
 - ...
 
 ![img](9SpringCloud微服务项目交付.assets/gateway-zuul.png)
+
+```text
+网关功能(Zuul):
+  统一入口 / 路由转发
+  支持混合通信协议(前端只和网关通信)
+  鉴权 / 限流 / 日志 等横切能力
+```
+
 
 ###### [Zuul实践](http://49.7.203.222:2023/#/spring-cloud/gateway?id=zuul实践)
 
@@ -3092,6 +3313,14 @@ management:
 服务追踪的追踪单元是从客户发起请求（request）抵达被追踪系统的边界开始，到被追踪系统向客户返回响应（response）为止的过程，称为一个 trace。每个 trace 中会调用若干个服务，为了记录调用了哪些服务，以及每次调用的消耗时间等信息，在每次调用服务时，埋入一个调用记录，称为一个 span。这样，若干个有序的 span 就组成了一个 trace。在系统向外界提供服务的过程中，会不断地有请求和响应发生，也就会不断生成 trace，把这些带有 span 的 trace 记录下来，就可以描绘出一幅系统的服务拓扑图。附带上 span 中的响应时间，以及请求成功与否等信息，就可以在发生问题的时候，找到异常的服务；根据历史数据，还可以从系统整体层面分析出哪里性能差，定位性能优化的目标。
 
 ![img](9SpringCloud微服务项目交付.assets/640.jpg)
+
+```text
+服务追踪(Sleuth + Zipkin):
+  一次请求 (trace) 从入口到返回的完整链路
+  链路拆分为多个 span(每个服务一跳)
+  (定位跨服务调用耗时与故障)
+```
+
 
 Spring Cloud Sleuth 为服务之间调用提供链路追踪。通过 Sleuth 可以很清楚的了解到一个服务请求经过了哪些服务，每个服务处理花费了多长。从而让我们可以很方便的理清各微服务间的调用关系。此外 Sleuth 可以帮助我们：
 
@@ -3341,6 +3570,15 @@ public class SpringbootAdminApplication {
 5. SpringBoot是微服务的开发框架，通过maven与Spring Cloud生态中的组件集成，极大方便了java应用程序的交付
 
 ![img](9SpringCloud微服务项目交付.assets/arch-1669083777635340.png)
+
+```text
+Spring Cloud 体系小结:
+  Netflix 套件: eureka / ribbon / feign
+                 / hystrix / zuul
+  链路追踪: sleuth + zipkin
+  SpringBoot + Maven 集成, 便利 Java 交付
+```
+
 
 问题：
 

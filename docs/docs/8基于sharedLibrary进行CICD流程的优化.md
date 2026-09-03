@@ -128,13 +128,13 @@ Groovy及SpringBoot、SpringCloud
     ```groovy
     // Defining a variable in lowercase  
     int x = 5;
-  
+    
     // Defining a variable in uppercase  
     int X = 6; 
-  
+    
     // Defining a variable with the underscore in it's name 
     def _Name = "Joe"; 
-  
+    
     println(x); 
     println(X); 
     println(_Name); 
@@ -222,8 +222,9 @@ Groovy及SpringBoot、SpringCloud
 
     ```groovy
     import groovy.time.TimeCategory
-  
-  
+    ```
+
+
     use( TimeCategory ) {
         def endTime = TimeCategory.plus(new Date(), TimeCategory.getSeconds(15))
         def counter = 0
@@ -242,7 +243,7 @@ Groovy及SpringBoot、SpringCloud
 
     ```bash
     import org.yaml.snakeyaml.Yaml
-  
+    
     def readYaml(){
         def content = new File('myblog.yaml').text
         Yaml parser = new Yaml()
@@ -599,7 +600,7 @@ pipeline {
                 // throw exception，aborted pipeline
                 error errMsg
             }
-   
+      
             return this
         }
     }
@@ -613,7 +614,7 @@ pipeline {
 
     ```bash
     package com.luffy.devops
-   
+      
     def updateBuildMessage(String source, String add) {
         if(!source){
             source = ""
@@ -631,10 +632,11 @@ pipeline {
         this.msg = new BuildMessage()
         return this
     }
-   
-   
+    ```
+
+
     ...
-   
+       
     def build() {
     ...
             // check if build success
@@ -648,7 +650,7 @@ pipeline {
                 // throw exception，aborted pipeline
                 error errMsg
             }
-   
+       
             return this
         }
     }
@@ -969,7 +971,7 @@ def push() {
     ```bash
     # 或者可以直接进行提取状态
     $ kubectl -n luffy get po -l app=myblog -ojsonpath='{.items[0].status.phase}'
-   
+      
     # 以json数组的形式存储
     $ kubectl -n luffy get po -l app=myblog -o json
     ```
@@ -979,7 +981,7 @@ def push() {
     ```bash
     # 以json数组的形式存储
     $ kubectl -n luffy get po -l app=myblog -o json
-   
+      
     # 遍历数组，检测每一个pod查看是否均正常（terminating和evicted除外）
     ```
 
@@ -1691,6 +1693,17 @@ pipeline {
 
 ![img](8基于sharedLibrary进行CICD流程的优化.assets/robot-trigger.png)
 
+```text
+多个项目(均需要自动构建)
+        |
+        v
+ sharedLibrary 中抽象的方法(接收 comp 参数)
+        |
+        v
+ 触发 robot-cases 项目构建(robot-framework 自动化用例)
+```
+
+
 ```
 devops.groovy
 /**
@@ -1765,6 +1778,16 @@ def acceptanceTest(comp) {
 目前项目存在`develop`和`master`两个分支，Jenkinsfile中配置的都是构建部署到相同的环境，实际的场景中，代码仓库的项目往往不同的分支有不同的作用，我们可以抽象出一个工作流程：
 
 ![img](8基于sharedLibrary进行CICD流程的优化.assets/multi-envs.jpg)
+
+```text
+分支策略 -> 环境映射:
+
+  develop 分支 --构建部署--> 开发 / 测试环境
+  master  分支 --构建部署--> 生产环境
+
+  (在 Jenkinsfile / 共享库中按分支名区分目标环境, 实现一套流水线多环境)
+```
+
 
 - 开发人员提交代码到develop分支
 - Jenkins自动使用develop分支做单测、代码扫描、镜像构建（以commit id为镜像tag）、服务部署到开发环境
@@ -2199,7 +2222,7 @@ def tplHandler(){
              
     # 创建开发环境的数据库
     $ kubectl create -f mysql-all.yaml
-   
+      
     # 替换dev命名空间，创建测试环境的数据库
     $ sed -i 's/namespace: dev/namespace: test/g' mysql-all.yaml
     $ kubectl create -f mysql-all.yaml
@@ -2218,14 +2241,14 @@ def tplHandler(){
     $ cat devops-config-dev.txt
     NAMESPACE=dev
     INGRESS_MYBLOG=blog-dev.luffy.com
-   
+      
     $ kubectl -n dev create configmap devops-config --from-env-file=devops-config-dev.txt
-   
+      
     # 测试环境
     $ cat devops-config-test.txt
     NAMESPACE=test
     INGRESS_MYBLOG=blog-test.luffy.com
-   
+      
     $ kubectl -n test create configmap devops-config --from-env-file=devops-config-test.txt
     ```
 
@@ -2235,7 +2258,7 @@ def tplHandler(){
 
     ```groovy
     @Library('luffy-devops') _
-   
+      
     pipeline {
         agent { label 'jnlp-slave'}
         options {

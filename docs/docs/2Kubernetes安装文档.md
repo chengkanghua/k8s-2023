@@ -795,7 +795,33 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6Ik1rb2xHWHMwbWFPMjJaRzhleGRqaExnVi1BLVNRc2txaEhETmVp
 
 ![img](2Kubernetes安装文档.assets/dashboard.png)
 
+```text
++-------------------------------+
+|     Kubernetes Dashboard 登录   |
+|  ( ) Kubeconfig                |
+|  (*) Token   <-- 选择此项       |
+|  [ token 输入框            ]   |
+|  [      登录 SIGN IN       ]   |
++-------------------------------+
+        |
+        v  粘贴下方生成的 token
++-------------------------------+
+|  eyJhbGciOiJSUzI1NiIs...      |
+|  (serviceaccount 的 JWT token) |
++-------------------------------+
+```
+
+
 ![img](2Kubernetes安装文档.assets/dashboard-content.jpg)
+
+```text
+Dashboard 中显示的 token 内容(示例):
++------------------------------------------------------+
+|  eyJhbGciOiJSUzI1NiIsImtpZCI6I... (长串 JWT 字符串)   |
++------------------------------------------------------+
+将其完整复制, 粘贴到登录框的 Token 输入框即可进入控制台
+```
+
 
 
 
@@ -1755,7 +1781,33 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6Ik1rb2xHWHMwbWFPMjJaRzhleGRqaExnVi1BLVNRc2txaEhETmVp
 
 ![img](2Kubernetes安装文档.assets/dashboard-166903877809361.png)
 
+```text
++-------------------------------+
+|     Kubernetes Dashboard 登录   |
+|  ( ) Kubeconfig                |
+|  (*) Token   <-- 选择此项       |
+|  [ token 输入框            ]   |
+|  [      登录 SIGN IN       ]   |
++-------------------------------+
+        |
+        v  粘贴下方生成的 token
++-------------------------------+
+|  eyJhbGciOiJSUzI1NiIs...      |
+|  (serviceaccount 的 JWT token) |
++-------------------------------+
+```
+
+
 ![img](2Kubernetes安装文档.assets/dashboard-content-166903877809362.jpg)
+
+```text
+Dashboard 中显示的 token 内容(示例):
++------------------------------------------------------+
+|  eyJhbGciOiJSUzI1NiIsImtpZCI6I... (长串 JWT 字符串)   |
++------------------------------------------------------+
+将其完整复制, 粘贴到登录框的 Token 输入框即可进入控制台
+```
+
 
 
 

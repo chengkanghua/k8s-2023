@@ -126,7 +126,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">服务网格</h1>
+                <h1 id="_1">服务网格<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>微服务架构可谓是当前软件开发领域的技术热点，它在各种博客、社交媒体和会议演讲上的出镜率非常之高，无论是做基础架构还是做业务系统的工程师，对微服务都相当关注，而这个现象与热度到目前为止，已经持续了近 5 年之久。</p>
 <p>尤其是近些年来，微服务架构逐渐发展成熟，从最初的星星之火到现在的大规模的落地与实践，几乎已经成为分布式环境下的首选架构。微服务成为时下技术热点，大量互联网公司都在做微服务架构的落地和推广。同时，也有很多传统企业基于微服务和容器，在做互联网技术转型。</p>
 <p>而在这个技术转型中，国内有一个趋势，以 Spring Cloud 与 Dubbo 为代表的微服务开发框架非常普及和受欢迎。然而软件开发没有银弹，基于这些传统微服务框架构建的应用系统在享受其优势的同时，痛点也越加明显。这些痛点包括但不限于以下几点：</p>
@@ -138,23 +138,35 @@
 <li><strong>内容多、门槛高</strong>。Spring Cloud 被称为微服务治理的全家桶，包含大大小小几十个组件，内容相当之多，往往需要几年时间去熟悉其中的关键组件。而要想使用 Spring Cloud 作为完整的治理框架，则需要深入了解其中原理与实现，否则遇到问题还是很难定位。</li>
 <li><strong>治理功能不全</strong>。不同于 RPC 框架，Spring Cloud 作为治理全家桶的典型，也不是万能的，诸如协议转换支持、多重授权机制、动态请求路由、故障注入、灰度发布等高级功能并没有覆盖到。而这些功能往往是企业大规模落地不可获缺的功能，因此公司往往还需要投入其它人力进行相关功能的自研或者调研其它组件作为补充。</li>
 </ul>
-<h4 id="service-mesh"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=service-mesh-服务网格">Service Mesh 服务网格</a></h4>
-<h5 id="_2"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=架构和概念">架构和概念</a></h5>
+<h4 id="service-mesh"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=service-mesh-服务网格">Service Mesh 服务网格</a><a class="headerlink" href="#service-mesh" title="Permanent link">&para;</a></h4>
+<h5 id="_2"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=架构和概念">架构和概念</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h5>
 <p>目的是解决系统架构微服务化后的服务间通信和治理问题。设计初衷是提供一种通用的服务治理方案。</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/sidecar-pattern.jpg" /></p>
+<pre class="highlight"><code class="language-text">边车模式(Sidecar):
+  两轮摩托车 + 旁边加一个边车
+  -&gt; 扩展现有服务与功能, 不改造主体
+  (类比: 给每个服务"挂"一个辅助容器)</code></pre>
 <p>Sidecar 在软件系统架构中特指边车模式。这个模式的灵感来源于我们生活中的边三轮：即在两轮摩托车的旁边添加一个边车的方式扩展现有的服务和功能。</p>
 <p>这个模式的精髓在于实现了数据面（业务逻辑）和控制面的解耦：原来两轮摩托车的驾驶者集中注意力跑赛道，边车上的领航员专注周围信息和地图，专注导航。</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/service-mesh.png" /></p>
+<pre class="highlight"><code class="language-text">Service Mesh 核心: 数据面 / 控制面 解耦
+  驾驶者(业务) 专注跑赛道
+  边车领航员(网格) 专注导航/治理
+  (治理逻辑从业务剥离到 Sidecar)</code></pre>
 <p>Service Mesh 这个服务网络专注于处理服务和服务间的通讯。其主要负责构造一个稳定可靠的服务通讯的基础设施，并让整个架构更为的先进和 Cloud Native。在工程中，Service Mesh 基本来说是一组轻量级的与应用逻辑服务部署在一起的服务代理，并且对于应用服务是透明的。</p>
-<h5 id="_3"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=开源实现">开源实现</a></h5>
-<h6 id="linkerdenvoy"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=第一代服务网格-linkerd和envoy">第一代服务网格 Linkerd和Envoy</a></h6>
+<h5 id="_3"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=开源实现">开源实现</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h5>
+<h6 id="linkerdenvoy"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=第一代服务网格-linkerd和envoy">第一代服务网格 Linkerd和Envoy</a><a class="headerlink" href="#linkerdenvoy" title="Permanent link">&para;</a></h6>
 <p>Linkerd 使用Scala编写，是业界第一个开源的service mesh方案。作者 William Morgan 是 service mesh 的布道师和践行者。Envoy 基于C++ 11编写，无论是理论上还是实际上，后者性能都比 Linkderd 更好。这两个开源实现都是以 sidecar 为核心，绝大部分关注点都是如何做好proxy，并完成一些通用控制面的功能。 但是，当你在容器中大量部署 sidecar 以后，如何管理和控制这些 sidecar 本身就是一个不小的挑战。于是，第二代 Service Mesh 应运而生。</p>
-<h6 id="istio"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=第二代服务网格-istio">第二代服务网格 Istio</a></h6>
+<h6 id="istio"><a href="http://49.7.203.222:2023/#/istio/service-mesh?id=第二代服务网格-istio">第二代服务网格 Istio</a><a class="headerlink" href="#istio" title="Permanent link">&para;</a></h6>
 <p>Istio 是 Google 和 IBM 两位巨人联合 Lyft 的合作开源项目。是当前最主流的service mesh方案，也是事实上的第二代 service mesh 标准。</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/istio-mesh-arch.png" /></p>
-<h1 id="istio_1"><a href="http://49.7.203.222:2023/#/istio/install?id=安装istio">安装Istio</a></h1>
+<pre class="highlight"><code class="language-text">Istio(第二代 Service Mesh):
+  Google + IBM + Lyft 开源
+  事实标准
+  架构: 数据面(Envoy sidecar) + 控制面(Istiod)</code></pre>
+<h1 id="istio_1"><a href="http://49.7.203.222:2023/#/istio/install?id=安装istio">安装Istio</a><a class="headerlink" href="#istio_1" title="Permanent link">&para;</a></h1>
 <p>https://istio.io/latest/docs/setup/getting-started/</p>
-<h6 id="istio_2"><a href="http://49.7.203.222:2023/#/istio/install?id=下载-istio">下载 Istio</a></h6>
+<h6 id="istio_2"><a href="http://49.7.203.222:2023/#/istio/install?id=下载-istio">下载 Istio</a><a class="headerlink" href="#istio_2" title="Permanent link">&para;</a></h6>
 <p>下载内容将包含：安装文件、示例和 <a href="https://istio.io/latest/zh/docs/reference/commands/istioctl/">istioctl</a> 命令行工具。</p>
 <ol>
 <li>
@@ -184,7 +196,7 @@ drwxr-xr-x  3 root root    57 Jul 15 13:32 tools</code></pre>
 $ source ~/istioctl.bash</code></pre>
 </li>
 </ol>
-<h6 id="istio_3"><a href="http://49.7.203.222:2023/#/istio/install?id=安装istio组件">安装istio组件</a></h6>
+<h6 id="istio_3"><a href="http://49.7.203.222:2023/#/istio/install?id=安装istio组件">安装istio组件</a><a class="headerlink" href="#istio_3" title="Permanent link">&para;</a></h6>
 <p>https://istio.io/latest/zh/docs/setup/install/istioctl/#display-the-configuration-of-a-profile</p>
 <p>使用istioctl直接安装：</p>
 <pre class="highlight"><code class="language-bash">$ istioctl install --set profile=demo
@@ -205,14 +217,18 @@ $ istioctl profile list
 
 # 获取kubernetes的yaml：
 $ istioctl manifest generate --set profile=demo &gt; istio-kubernetes-manifest.yaml</code></pre>
-<h6 id="_4"><a href="http://49.7.203.222:2023/#/istio/install?id=卸载">卸载</a></h6>
+<h6 id="_4"><a href="http://49.7.203.222:2023/#/istio/install?id=卸载">卸载</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">$ istioctl manifest generate --set profile=demo | kubectl delete -f -
 </code></pre>
-<h1 id="_5"><a href="http://49.7.203.222:2023/#/istio/get-started?id=快速入门">快速入门</a></h1>
-<h5 id="_6"><a href="http://49.7.203.222:2023/#/istio/get-started?id=场景一">场景一</a></h5>
-<h6 id="_7"><a href="http://49.7.203.222:2023/#/istio/get-started?id=模型图">模型图</a></h6>
+<h1 id="_5"><a href="http://49.7.203.222:2023/#/istio/get-started?id=快速入门">快速入门</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h1>
+<h5 id="_6"><a href="http://49.7.203.222:2023/#/istio/get-started?id=场景一">场景一</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h5>
+<h6 id="_7"><a href="http://49.7.203.222:2023/#/istio/get-started?id=模型图">模型图</a><a class="headerlink" href="#_7" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/cj-1.jpg" /></p>
-<h6 id="_8"><a href="http://49.7.203.222:2023/#/istio/get-started?id=资源清单">资源清单</a></h6>
+<pre class="highlight"><code class="language-text">Istio 入门示例模型:
+  front-tomcat -&gt; bill-service
+  通过 VirtualService / DestinationRule 管理
+  (在网格内按规则路由)</code></pre>
+<h6 id="_8"><a href="http://49.7.203.222:2023/#/istio/get-started?id=资源清单">资源清单</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code>front-tomcat-dpl-v1.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -279,7 +295,7 @@ spec:
   selector:
     service: bill-service
   type: ClusterIP</code></pre>
-<h6 id="_9"><a href="http://49.7.203.222:2023/#/istio/get-started?id=操作">操作</a></h6>
+<h6 id="_9"><a href="http://49.7.203.222:2023/#/istio/get-started?id=操作">操作</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">$ kubectl create namespace istio-demo
 $ kubectl apply -f front-tomcat-dpl-v1.yaml
 $ kubectl apply -f bill-service-dpl-v1.yaml
@@ -287,11 +303,15 @@ $ kubectl apply -f bill-service-svc.yaml
 
 $ kubectl -n istio-demo exec front-tomcat-v1-548b46d488-r7wv8 -- curl -s bill-service:9999
 this is bill-service-v1</code></pre>
-<h5 id="_10"><a href="http://49.7.203.222:2023/#/istio/get-started?id=场景二">场景二</a></h5>
+<h5 id="_10"><a href="http://49.7.203.222:2023/#/istio/get-started?id=场景二">场景二</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h5>
 <p>后台账单服务更新v2版本，前期规划90%的流量访问v1版本，导入10%的流量到v2版本</p>
-<h6 id="_11"><a href="http://49.7.203.222:2023/#/istio/get-started?id=模型图-1">模型图</a></h6>
+<h6 id="_11"><a href="http://49.7.203.222:2023/#/istio/get-started?id=模型图-1">模型图</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/cj-2.jpg" /></p>
-<h6 id="_12"><a href="http://49.7.203.222:2023/#/istio/get-started?id=资源清单-1">资源清单</a></h6>
+<pre class="highlight"><code class="language-text">示例模型(扩展):
+  增加版本 v1 / v2
+  通过 DestinationRule 定义子集
+  VirtualService 按权重/头部路由</code></pre>
+<h6 id="_12"><a href="http://49.7.203.222:2023/#/istio/get-started?id=资源清单-1">资源清单</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h6>
 <p>新增<code>bill-service-dpl-v2.yaml</code></p>
 <pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
 kind: Deployment
@@ -321,7 +341,10 @@ spec:
 <pre class="highlight"><code class="language-bash">$ kubectl apply -f bill-service-dpl-v2.yaml
 $ kubectl -n istio-demo exec front-tomcat-v1-548b46d488-r7wv8 --  curl -s bill-service:9999</code></pre>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/cj-2-1.jpg" /></p>
-<h6 id="istio_4"><a href="http://49.7.203.222:2023/#/istio/get-started?id=使用istio">使用Istio</a></h6>
+<pre class="highlight"><code class="language-text">验证: 在 front-tomcat 中
+  curl bill-service:9999
+  请求经 sidecar 按 Istio 规则转发</code></pre>
+<h6 id="istio_4"><a href="http://49.7.203.222:2023/#/istio/get-started?id=使用istio">使用Istio</a><a class="headerlink" href="#istio_4" title="Permanent link">&para;</a></h6>
 <p>注入：</p>
 <pre class="highlight"><code class="language-bash">$ istioctl kube-inject -f bill-service-dpl-v1.yaml|kubectl apply -f -
 $ istioctl kube-inject -f bill-service-dpl-v2.yaml|kubectl apply -f -
@@ -372,23 +395,35 @@ spec:
 $ kubectl apply -f bill-service-destnation-rule.yaml
 $ kubectl -n istio-demo exec front-tomcat-v1-78cf497978-ltxpf -c front-tomcat -- curl -s bill-service:9999
 </code></pre>
-<h1 id="_13">服务网格细节剖析</h1>
-<h2 id="_14">宏观分析</h2>
+<h1 id="_13">服务网格细节剖析<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h1>
+<h2 id="_14">宏观分析<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
 <p>执行的操作：</p>
 <ul>
 <li>使用istioctl为pod注入了sidecar</li>
 <li>创建了virtualservice和destinationrule</li>
 </ul>
 <p>如何最终影响到了pod的访问行为？</p>
-<h6 id="_15"><a href="http://49.7.203.222:2023/#/istio/how-works/macroanalysis?id=宏观角度">宏观角度</a></h6>
+<h6 id="_15"><a href="http://49.7.203.222:2023/#/istio/how-works/macroanalysis?id=宏观角度">宏观角度</a><a class="headerlink" href="#_15" title="Permanent link">&para;</a></h6>
 <p>nginx的配置中，可以提供类似如下的配置片段实现按照权重的转发：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/nginx-weight.png" /></p>
+<pre class="highlight"><code class="language-text">Nginx 按权重转发(类比):
+  upstream 中 weight 配置
+  如 v1:5  v2:5
+  (Istio 的 VirtualService 同样表达权重路由)</code></pre>
 <p>因为nginx是代理层，可以转发请求，istio也实现了流量转发的效果，肯定也有代理层，并且识别了前面创建的虚拟服务中定义的规则。</p>
 <pre class="highlight"><code class="language-bash">$ istioctl kube-inject -f front-tomcat-dpl-v1.yaml</code></pre>
 <p>可以看到注入后yaml中增加了很多内容：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/inject.jpg" /></p>
+<pre class="highlight"><code class="language-text">Sidecar 注入:
+  istioctl inject 或 自动注入
+  Pod yaml 中新增:
+    istio-init(初始化容器, 配 iptables)
+    istio-proxy(Envoy sidecar)</code></pre>
 <p>pod被istio注入后，被纳入到服务网格中，每个pod都会添加一个名为istio-proxy的容器（常说的sidecar容器），istio-proxy容器中有两个进程，一个是<code>piolot-agent</code>，一个是<code>envoy</code></p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/ll-3.jpg" /></p>
+<pre class="highlight"><code class="language-text">istio-proxy 容器(两个进程):
+  pilot-agent : 启动/管理 envoy, 对接 xDS
+  envoy       : 真正做流量代理(监听 15001/15006)</code></pre>
 <pre class="highlight"><code class="language-bash">$ kubectl -n istio-demo exec -ti front-tomcat-v1-78cf497978-ppwwk -c istio-proxy bash
 # ps aux</code></pre>
 <p>目前已知：</p>
@@ -401,7 +436,7 @@ $ kubectl -n istio-demo exec front-tomcat-v1-78cf497978-ltxpf -c front-tomcat --
 <li>istio-init初始化容器作用是什么？</li>
 <li>istio-proxy如何接管业务服务的出入口流量？</li>
 </ul>
-<h2 id="envoy"><a href="http://49.7.203.222:2023/#/istio/how-works/envoy?id=认识envoy">认识envoy</a></h2>
+<h2 id="envoy"><a href="http://49.7.203.222:2023/#/istio/how-works/envoy?id=认识envoy">认识envoy</a><a class="headerlink" href="#envoy" title="Permanent link">&para;</a></h2>
 <p><code>Envoy</code> 是为云原生应用设计的代理。</p>
 <p>可以和nginx做类比： https://fuckcloudnative.io/posts/migrating-from-nginx-to-envoy/</p>
 <pre class="highlight"><code class="language-bash">$ docker run -d --name envoy -v `pwd`/envoy.yaml:/etc/envoy/envoy.yaml -p 10000:10000 envoyproxy/envoy-alpine:v1.15.2
@@ -447,7 +482,7 @@ static_resources:
 <li><code>route_config</code> : 路由规则配置。即将请求路由到后端的哪个集群。</li>
 <li><code>cluster</code> : 服务提供方集群。Envoy 通过服务发现定位集群成员并获取服务，具体路由到哪个集群成员由负载均衡策略决定。</li>
 </ul>
-<h6 id="envoyxds"><a href="http://49.7.203.222:2023/#/istio/how-works/envoy?id=envoy的xds">envoy的xDS</a></h6>
+<h6 id="envoyxds"><a href="http://49.7.203.222:2023/#/istio/how-works/envoy?id=envoy的xds">envoy的xDS</a><a class="headerlink" href="#envoyxds" title="Permanent link">&para;</a></h6>
 <p>Envoy的启动配置文件分为两种方式：静态配置和动态配置。</p>
 <ul>
 <li>静态配置是将所有信息都放在配置文件中，启动的时候直接加载。</li>
@@ -456,8 +491,16 @@ static_resources:
 <p>Envoy 接收到请求后，会先走 <code>FilterChain</code>，通过各种 L3/L4/L7 Filter 对请求进行微处理，然后再路由到指定的集群，并通过负载均衡获取一个目标地址，最后再转发出去。</p>
 <p>其中每一个环节可以静态配置，也可以动态服务发现，也就是所谓的 <code>xDS</code>。这里的 <code>x</code> 是一个代词，类似云计算里的 <code>XaaS</code> 可以指代 IaaS、PaaS、SaaS 等。</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/xds.webp" /></p>
+<pre class="highlight"><code class="language-text">Envoy xDS 动态配置:
+  LDS 监听器 / RDS 路由
+  CDS 集群   / EDS 端点
+  (x 泛指各类 Discovery Service, 动态下发)</code></pre>
 <p>所以，envoy的架构大致的样子如下：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/arct-envoy.png" /></p>
+<pre class="highlight"><code class="language-text">Envoy 架构:
+  Downstream(入站) -&gt; Listener -&gt; Filter Chain
+     -&gt; Router -&gt; Cluster(Upstream) -&gt; 出站
+  (Filter 实现路由/鉴权/遥测等)</code></pre>
 <p><strong>Downstream</strong></p>
 <p>下游（downstream）主机连接到 Envoy，发送请求并或获得响应。</p>
 <p><strong>Upstream</strong></p>
@@ -467,15 +510,27 @@ static_resources:
 <li>除了过滤器链之外，还有一种过滤器叫<strong>监听器过滤器</strong>（Listener filters），它会在过滤器链之前执行，用于操纵连接的<strong>元数据</strong>。这样做的目的是，无需更改 Envoy 的核心代码就可以方便地集成更多功能。</li>
 <li>每个监听器都可以配置多个过<a href="https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/listener/v3/listener_components.proto#envoy-v3-api-msg-config-listener-v3-filterchain">滤器链（Filter Chains）</a>，监听器会根据 <code>filter_chain_match</code> 中的<a href="https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/listener/v3/listener_components.proto#envoy-v3-api-msg-config-listener-v3-filterchainmatch">匹配条件</a>将流量转交到对应的过滤器链，其中每一个过滤器链都由一个或多个<strong>网络过滤器</strong>（<code>Network filters</code>）组成。这些过滤器用于执行不同的代理任务，如速率限制，<code>TLS</code> 客户端认证，<code>HTTP</code> 连接管理，<code>MongoDB</code> 嗅探，原始 TCP 代理等。</li>
 </ul>
-<h6 id="envoy_1"><a href="http://49.7.203.222:2023/#/istio/how-works/envoy?id=envoy在微服务治理中的工作环境">envoy在微服务治理中的工作环境</a></h6>
+<h6 id="envoy_1"><a href="http://49.7.203.222:2023/#/istio/how-works/envoy?id=envoy在微服务治理中的工作环境">envoy在微服务治理中的工作环境</a><a class="headerlink" href="#envoy_1" title="Permanent link">&para;</a></h6>
 <p>可以在服务旁运行，以平台无关的方式提供必要的特性，所有到服务的流量都通过 <code>Envoy</code> 代理，这里 <code>Envoy</code> 扮演的就是 <code>Sidecar</code> 的角色。</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/sidecar.png" /></p>
+<pre class="highlight"><code class="language-text">Envoy 作为 Sidecar:
+  与业务服务同 Pod 部署
+  所有进出服务的流量都经过 Envoy
+  (平台无关地提供治理能力)</code></pre>
 <p>针对于k8s的pod来讲：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/20200503110532.png" /></p>
+<pre class="highlight"><code class="language-text">K8s Pod 中的 Envoy 位置:
+  Pod 内:
+    [业务容器] &lt;-&gt; [istio-proxy(Envoy)]
+  业务容器只与本地 Envoy 通信</code></pre>
 <p>在istio中，envoy的位置：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/istio-mesh-arch-1669084037603361.png" /></p>
+<pre class="highlight"><code class="language-text">Istio 中 Envoy 的位置:
+  Envoy 用 xDS 获取配置
+  xDS 服务端由 Istiod 的 Pilot 提供
+  (Pilot 把规则转成 Envoy 配置下发)</code></pre>
 <p>很明显，istio中，envoy进行流量治理，更多的使用的是XDS进行配置更新，而我们知道，XDS需要有服务端来提供接口，istiod中的pilot组件则提供了xDS服务端接口的实现 。</p>
-<h2 id="_16"><a href="http://49.7.203.222:2023/#/istio/how-works/principle?id=工作原理">工作原理</a></h2>
+<h2 id="_16"><a href="http://49.7.203.222:2023/#/istio/how-works/principle?id=工作原理">工作原理</a><a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
 <p>目前为止，我们可以知道大致的工作流程：</p>
 <ul>
 <li>用户端，通过创建服务治理的规则（VirtualService、DestinationRule等资源类型），存储到ETCD中</li>
@@ -498,11 +553,23 @@ static_resources:
 # curl bill-service:9999</code></pre>
 <p>按照之前的认知，</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/cluster-ip-route.jpg" /></p>
+<pre class="highlight"><code class="language-text">ClusterIP 路由:
+  curl bill-service:9999
+  请求按 ClusterIP 解析到后端 Pod
+  (传统 kube-proxy 维护的转发)</code></pre>
 <p>现在为什么流量分配由5：5 变成了9：1？流量经过envoy了的处理</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/9-1.jpg" /></p>
+<pre class="highlight"><code class="language-text">流量分配变化:
+  未接管: 5:5
+  经 Envoy 处理后: 9:1
+  (Envoy 按 DestinationRule 权重分流)</code></pre>
 <p>envoy如何接管由front-tomcat容器发出的请求流量？（istio-init</p>
 <p>回顾iptables：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/iptables.jpg" /></p>
+<pre class="highlight"><code class="language-text">Istio 接管流量的关键: iptables
+  istio-init 初始化容器写入规则
+  将 Pod 入站/出站流量重定向到 Envoy(15001/15006)
+  (业务无感知)</code></pre>
 <p>Istio 给应用 Pod 注入的配置主要包括：</p>
 <ul>
 <li>
@@ -613,7 +680,7 @@ tcp        0      0 0.0.0.0:15090           0.0.0.0:*               LISTEN      
 tcp6       0      0 :::15020                :::*                    LISTEN      1/pilot-agent</code></pre>
 <p>说明pod内的出站流量请求被监听在15001端口的envoy的进程接收到，进而就走到了envoy的Listener -&gt; route -&gt; cluster -&gt; endpoint 转发流程。</p>
 <p>问题就转变为：如何查看envoy的配置，跟踪转发的过程？</p>
-<h2 id="envoy_2"><a href="http://49.7.203.222:2023/#/istio/how-works/debug-istio?id=调试envoy">调试envoy</a></h2>
+<h2 id="envoy_2"><a href="http://49.7.203.222:2023/#/istio/how-works/debug-istio?id=调试envoy">调试envoy</a><a class="headerlink" href="#envoy_2" title="Permanent link">&para;</a></h2>
 <p>我们知道，envoy的配置非常复杂，直接在config_dump里去跟踪xDS的过程非常繁琐。因此istio提供了调试命令，方便查看envoy的流量处理流程。</p>
 <pre class="highlight"><code class="language-bash">$ istioctl proxy-config -h</code></pre>
 <p>比如，通过如下命令可以查看envoy的监听器：</p>
@@ -730,6 +797,10 @@ $ istioctl pc route front-tomcat-v1-78cf497978-ppwwk.istio-demo --name 9999 -ojs
 ...</code></pre>
 <p>满足访问domains列表的会优先匹配到，我们访问的是<code>10.111.219.247:9999</code>，因此匹配<code>bill-service.istio-demo.svc.cluster.local:9999</code>这组虚拟hosts，进而使用到基于weight的集群配置。</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/9-1-1669084098868378.jpg" /></p>
+<pre class="highlight"><code class="language-text">流量按预期转发验证:
+  访问 10.111.219.247:9999
+  匹配 VirtualService(bill-service...)
+  规则生效, 流量正确路由</code></pre>
 <p>我们看到，流量按照预期的配置进行了转发：</p>
 <pre class="highlight"><code class="language-bash">90% -&gt; outbound|9999|v1|bill-service.istio-demo.svc.cluster.local
 10% -&gt; outbound|9999|v2|bill-service.istio-demo.svc.cluster.local</code></pre>
@@ -763,6 +834,9 @@ $ istioctl pc route front-tomcat-v1-78cf497978-ppwwk.istio-demo --name 9999 -ojs
 ...</code></pre>
 <p>目前为止，经过envoy的规则，流量从front-tomcat的pod中知道要发往<code>10.244.0.7:80</code> 这个pod地址。前面提到过，envoy不止接管出站流量，入站流量同样会接管。</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/20200503110532-1669084098868380.png" /></p>
+<pre class="highlight"><code class="language-text">流量到达 bill-service-v1 Pod:
+  Envoy 不仅接管出站, 也接管入站
+  入站请求经 Envoy 处理后交给业务容器</code></pre>
 <p>下面看下流量到达bill-service-v1的pod后的处理：</p>
 <p>先回顾前面的iptables规则，除特殊情况以外，所有的出站流量被监听在15001端口的envoy进程拦截处理，同样的，分析bill-service-v1的iptables规则可以发现，监听在15006端口的envoy进程通过在PREROUTING链上添加规则，同样将进入pod的入站流量做了拦截。</p>
 <pre class="highlight"><code class="language-bash"># PREROUTING 链：用于目标地址转换（DNAT），将所有入站 TCP 流量跳转到 ISTIO_INBOUND 链上。
@@ -867,11 +941,16 @@ $ istioctl pc cluster bill-service-v1-6c95ccb747-vwt2d.istio-demo  --fqdn "inbou
         }
     }
 ]</code></pre>
-<h1 id="istio_5">istio流量分发控制</h1>
-<h5 id="_17"><a href="http://49.7.203.222:2023/#/istio/traffic-control?id=场景三">场景三</a></h5>
-<h6 id="_18"><a href="http://49.7.203.222:2023/#/istio/traffic-control?id=模型图">模型图</a></h6>
+<h1 id="istio_5">istio流量分发控制<a class="headerlink" href="#istio_5" title="Permanent link">&para;</a></h1>
+<h5 id="_17"><a href="http://49.7.203.222:2023/#/istio/traffic-control?id=场景三">场景三</a><a class="headerlink" href="#_17" title="Permanent link">&para;</a></h5>
+<h6 id="_18"><a href="http://49.7.203.222:2023/#/istio/traffic-control?id=模型图">模型图</a><a class="headerlink" href="#_18" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/cj-3.jpg" /></p>
-<h6 id="_19"><a href="http://49.7.203.222:2023/#/istio/traffic-control?id=资源清单">资源清单</a></h6>
+<pre class="highlight"><code class="language-text">流量控制模型:
+  VirtualService(路由规则)
+    -&gt; DestinationRule(子集/策略)
+    -&gt; 实际 Pod 实例
+  (控制面下发, 数据面执行)</code></pre>
+<h6 id="_19"><a href="http://49.7.203.222:2023/#/istio/traffic-control?id=资源清单">资源清单</a><a class="headerlink" href="#_19" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code>front-tomcat-service.yaml
 apiVersion: v1
 kind: Service
@@ -952,7 +1031,7 @@ spec:
 <pre class="highlight"><code>$ kubectl apply -f front-tomcat-service.yaml
 $ kubectl apply -f &lt;(istioctl kube-inject -f front-tomcat-v2-dpl.yaml)
 $ kubectl apply -f front-tomcat-virtualservice.yaml</code></pre>
-<h1 id="istio_6">istio小知识</h1>
+<h1 id="istio_6">istio小知识<a class="headerlink" href="#istio_6" title="Permanent link">&para;</a></h1>
 <p><strong>同一个Pod，不同的表现</strong></p>
 <pre class="highlight"><code class="language-bash">$ kubectl -n istio-demo exec -ti front-tomcat-v1-78cf497978-ppwwk -c front-tomcat bash
 # curl bill-service:9999
@@ -979,6 +1058,10 @@ $ istioctl pc ep front-tomcat-v1-78cf497978-ppwwk.istio-demo --cluster 'outbound
 <p><strong>istio服务网格内，流量请求完全绕过了kube-proxy组件</strong></p>
 <p>通过上述流程调试，我们可以得知，front-tomcat中访问bill-service:9999，流量是没有用到kube-proxy维护的宿主机中的iptables规则的。</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/kubernetes-vs-service-mesh.png" /></p>
+<pre class="highlight"><code class="language-text">Kubernetes vs Service Mesh:
+  K8s: kube-proxy 维护节点 iptables 做服务转发
+  Service Mesh: Envoy 直接接管, 不经 kube-proxy
+  (治理能力上移, 更细粒度)</code></pre>
 <p>验证一下：</p>
 <pre class="highlight"><code class="language-bash"># 停掉kube-proxy
 $ kubectl -n kube-system edit daemonset kube-proxy
@@ -1007,8 +1090,8 @@ $ kubectl -n istio-demo exec -ti front-tomcat-v1-78cf497978-ppwwk -c front-tomca
 
 $ kubectl -n istio-demo exec -ti front-tomcat-v1-78cf497978-ppwwk -c istio-proxy bash
 # curl curl 10.111.219.247:9999 </code></pre>
-<h1 id="_20">访问网格内服务</h1>
-<h5 id="ingress"><a href="http://49.7.203.222:2023/#/istio/visit-mesh-svc?id=使用ingress来访问网格服务">使用ingress来访问网格服务</a></h5>
+<h1 id="_20">访问网格内服务<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h1>
+<h5 id="ingress"><a href="http://49.7.203.222:2023/#/istio/visit-mesh-svc?id=使用ingress来访问网格服务">使用ingress来访问网格服务</a><a class="headerlink" href="#ingress" title="Permanent link">&para;</a></h5>
 <pre class="highlight"><code>front-tomcat-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -1030,8 +1113,12 @@ spec:
 <p>使用浏览器访问查看效果。</p>
 <p>只有网格内部访问会遵从<code>virtualservice</code>的规则，在宿主机中直接访问Service的ClusterIP还是按照默认的规则转发。</p>
 <p>Ingress：对接ingress controller，实现外部流量进入集群内部，只适用于 HTTP 流量，使用方式也很简单，只能对 service、port、HTTP 路径等有限字段匹配来路由流量，这导致它无法路由如 MySQL、Redis 和各种私有 RPC 等 TCP 流量。要想直接路由南北向的流量，只能使用 Service 的 LoadBalancer 或 NodePort，前者需要云厂商支持，后者需要进行额外的端口管理。有些 Ingress controller 支持暴露 TCP 和 UDP 服务，但是只能使用 Service 来暴露，Ingress 本身是不支持的，例如 nginx ingress controller，服务暴露的端口是通过创建 ConfigMap 的方式来配置的。</p>
-<h5 id="ingressgateway"><a href="http://49.7.203.222:2023/#/istio/visit-mesh-svc?id=ingressgateway访问网格服务">ingressgateway访问网格服务</a></h5>
+<h5 id="ingressgateway"><a href="http://49.7.203.222:2023/#/istio/visit-mesh-svc?id=ingressgateway访问网格服务">ingressgateway访问网格服务</a><a class="headerlink" href="#ingressgateway" title="Permanent link">&para;</a></h5>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/gateways.svg" /></p>
+<pre class="highlight"><code class="language-text">IngressGateway:
+  为何不用 K8s Ingress API?
+  Ingress 表达不了 Istio 的复杂路由
+  -&gt; 用 Istio Gateway + VirtualService 管理入口流量</code></pre>
 <p>对于入口流量管理，您可能会问： 为什么不直接使用 Kubernetes Ingress API ？ 原因是 Ingress API 无法表达 Istio 的路由需求。 Ingress 试图在不同的 HTTP 代理之间取一个公共的交集，因此只能支持最基本的 HTTP 路由，最终导致需要将代理的其他高级功能放入到注解（annotation）中，而注解的方式在多个代理之间是不兼容的，无法移植。</p>
 <p>Istio <code>Gateway</code> 通过将 L4-L6 配置与 L7 配置分离的方式克服了 <code>Ingress</code> 的这些缺点。 <code>Gateway</code> 只用于配置 L4-L6 功能（例如，对外公开的端口，TLS 配置），所有主流的L7代理均以统一的方式实现了这些功能。 然后，通过在 <code>Gateway</code> 上绑定 <code>VirtualService</code> 的方式，可以使用标准的 Istio 规则来控制进入 <code>Gateway</code> 的 HTTP 和 TCP 流量。</p>
 <pre class="highlight"><code>front-tomcat-gateway.yaml
@@ -1087,6 +1174,10 @@ $ kubectl apply -f front-tomcat-gateway.yaml</code></pre>
 $ curl  -HHost:tomcat.istio-demo.com 172.21.51.67:30779/</code></pre>
 <p><code>172.21.51.143:30779</code>地址从何而来？</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/gateway.png" /></p>
+<pre class="highlight"><code class="language-text">IngressGateway 访问:
+  浏览器 -&gt; http://tomcat.istio-demo.com:30779/
+  172.21.51.143:30779 来自 Gateway 的 NodePort/LoadBalancer
+  (外部流量入口)</code></pre>
 <p>浏览器访问: <code>http://tomcat.istio-demo.com:30779/</code></p>
 <p>如何实现不加端口访问网格内服务？</p>
 <pre class="highlight"><code class="language-bash"># 在一台80端口未被占用的机器中，如k8s-slave1,ip为172.21.51.67
@@ -1172,9 +1263,9 @@ $ nginx -s reload</code></pre>
 <p>本地配置hosts</p>
 <pre class="highlight"><code class="language-bash">172.21.51.55 tomcat.istio-demo.com</code></pre>
 <p>直接访问<code>http://tomcat.istio-demo.com</code> 即可实现外部域名访问到网格内部服务</p>
-<h1 id="_21">实例演示</h1>
-<h2 id="sidecar">注入sidecar</h2>
-<h5 id="_22"><a href="http://49.7.203.222:2023/#/istio/demo-show/inject?id=实例介绍">实例介绍</a></h5>
+<h1 id="_21">实例演示<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h1>
+<h2 id="sidecar">注入sidecar<a class="headerlink" href="#sidecar" title="Permanent link">&para;</a></h2>
+<h5 id="_22"><a href="http://49.7.203.222:2023/#/istio/demo-show/inject?id=实例介绍">实例介绍</a><a class="headerlink" href="#_22" title="Permanent link">&para;</a></h5>
 <p>创建bookinfo实例：</p>
 <pre class="highlight"><code class="language-bash">$ kubectl create namespace bookinfo
 $ kubectl -n bookinfo create -f samples/bookinfo/platform/kube/bookinfo.yaml 
@@ -1201,6 +1292,11 @@ reviews-v3-cc56b578-kppcx             1/1     Running   0          34s</code></p
 <li>v3 版本会调用 <code>ratings</code> 服务，并使用 1 到 5 个红色星形图标来显示评分信息。</li>
 </ul>
 <p><img alt="image-20221122103239809" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/image-20221122103239809.png" /></p>
+<pre class="highlight"><code class="language-text">Bookinfo 示例:
+  v1: 无星级
+  v2: 1~5 黑色星
+  v3: 1~5 红色星
+  (异构多语言微服务, 典型网格示例)</code></pre>
 <p>Bookinfo 是一个异构应用，几个微服务是由不同的语言编写的。这些服务对 Istio 并无依赖，但是构成了一个有代表性的服务网格的例子：它由多个服务、多个语言构成，并且 <code>reviews</code> 服务具有多个版本。</p>
 <p>使用ingress访问productpage服务：</p>
 <pre class="highlight"><code>ingress-productpage.yaml
@@ -1222,8 +1318,8 @@ spec:
             port:
               number: 9080</code></pre>
 <p>如何实现更细粒度的流量管控？</p>
-<h5 id="sidecar_1"><a href="http://49.7.203.222:2023/#/istio/demo-show/inject?id=注入sidecar容器">注入sidecar容器</a></h5>
-<h6 id="sidecar_2"><a href="http://49.7.203.222:2023/#/istio/demo-show/inject?id=如何注入sidecar容器">如何注入sidecar容器</a></h6>
+<h5 id="sidecar_1"><a href="http://49.7.203.222:2023/#/istio/demo-show/inject?id=注入sidecar容器">注入sidecar容器</a><a class="headerlink" href="#sidecar_1" title="Permanent link">&para;</a></h5>
+<h6 id="sidecar_2"><a href="http://49.7.203.222:2023/#/istio/demo-show/inject?id=如何注入sidecar容器">如何注入sidecar容器</a><a class="headerlink" href="#sidecar_2" title="Permanent link">&para;</a></h6>
 <ol>
 <li>
 <p>使用<code>istioctl kube-inject</code></p>
@@ -1235,12 +1331,16 @@ spec:
 $ kubectl label namespace dafault istio-injection=enabled</code></pre>
 </li>
 </ol>
-<h6 id="bookinfo"><a href="http://49.7.203.222:2023/#/istio/demo-show/inject?id=注入bookinfo">注入bookinfo</a></h6>
+<h6 id="bookinfo"><a href="http://49.7.203.222:2023/#/istio/demo-show/inject?id=注入bookinfo">注入bookinfo</a><a class="headerlink" href="#bookinfo" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">$ kubectl -n bookinfo apply -f &lt;(istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml) </code></pre>
 <p><img alt="image-20221122103211241" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/image-20221122103211241.png" /></p>
-<h2 id="_23"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=流量路由">流量路由</a></h2>
+<pre class="highlight"><code class="language-text">注入 Bookinfo:
+  给命名空间打 label istio-injection=enabled
+  或 istioctl kube-inject
+  各服务 Pod 带上 sidecar</code></pre>
+<h2 id="_23"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=流量路由">流量路由</a><a class="headerlink" href="#_23" title="Permanent link">&para;</a></h2>
 <p>实现ingress解决不了的按照比例分配流量</p>
-<h6 id="ingress-gatewayproductpage"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=ingress-gateway访问productpage">ingress-gateway访问productpage</a></h6>
+<h6 id="ingress-gatewayproductpage"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=ingress-gateway访问productpage">ingress-gateway访问productpage</a><a class="headerlink" href="#ingress-gatewayproductpage" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code>productpage-gateway.yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -1293,7 +1393,10 @@ spec:
         }
     }</code></pre>
 <p><img alt="image-20221122103444606" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/image-20221122103444606.png" /></p>
-<h6 id="_24"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=权重路由">权重路由</a></h6>
+<pre class="highlight"><code class="language-text">IngressGateway 访问 productpage:
+  配置 Gateway + VirtualService
+  外部请求经 Gateway 进入网格, 路由到 productpage</code></pre>
+<h6 id="_24"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=权重路由">权重路由</a><a class="headerlink" href="#_24" title="Permanent link">&para;</a></h6>
 <p>只想访问<code>reviews-v3</code></p>
 <pre class="highlight"><code class="language-bash">$ cat virtual-service-reviews-v3.yaml
 apiVersion: networking.istio.io/v1alpha3
@@ -1364,9 +1467,13 @@ $ kubectl apply -f virtual-service-reviews-90-10.yaml
 # 假如v2版本的副本数扩容为3，v2版本的流量会如何分配？  会不会变成30%？
 $ kubectl -n bookinfo scale deploy reviews-v2 --replicas=3
 #  istioctl pc route productpage-v1-667f4495b5-kb5qv.bookinfo --name 9080 -ojson</code></pre>
-<h6 id="_25"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=访问路径路由">访问路径路由</a></h6>
+<h6 id="_25"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=访问路径路由">访问路径路由</a><a class="headerlink" href="#_25" title="Permanent link">&para;</a></h6>
 <p>实现效果如下：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/ll-4.jpg" /></p>
+<pre class="highlight"><code class="language-text">访问路径路由效果:
+  按 URL 路径匹配路由
+  如 /api/v2 -&gt; 特定版本服务
+  (基于路径的流量分发)</code></pre>
 <pre class="highlight"><code class="language-bash"># 修改外部流量进入网格后的规则
 
 $ cat virtualservice-bookinfo-with-uri-path.yaml
@@ -1418,7 +1525,7 @@ www.bookinfo.com/reviews  -&gt;  reviews:9080/reviews</code></pre>
 <blockquote>
 <p>注意，若service中只有一个端口，则不用显式指定端口号，会自动转发到该端口中</p>
 </blockquote>
-<h6 id="_26"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=路径重写">路径重写</a></h6>
+<h6 id="_26"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=路径重写">路径重写</a><a class="headerlink" href="#_26" title="Permanent link">&para;</a></h6>
 <p>如果想实现rewrite的功能，</p>
 <pre class="highlight"><code class="language-bash">www.bookinfo.com/rate  -&gt; ratings:8090/ratings
 ...
@@ -1432,7 +1539,7 @@ www.bookinfo.com/reviews  -&gt;  reviews:9080/reviews</code></pre>
     - destination:
         host: ratings
 ...</code></pre>
-<h6 id="destinationrule"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=destinationrule-转发策略">DestinationRule 转发策略</a></h6>
+<h6 id="destinationrule"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=destinationrule-转发策略">DestinationRule 转发策略</a><a class="headerlink" href="#destinationrule" title="Permanent link">&para;</a></h6>
 <p>默认会使用轮询策略，此外也支持如下负载均衡模型，可以在 <code>DestinationRule</code> 中使用这些模型，将请求分发到特定的服务或服务子集。</p>
 <table>
 <thead>
@@ -1485,11 +1592,11 @@ spec:
 <blockquote>
 <p>https://preliminary.istio.io/latest/zh/docs/reference/config/networking/destination-rule/#DestinationRule</p>
 </blockquote>
-<h6 id="https"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=使用https">使用https</a></h6>
+<h6 id="https"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=使用https">使用https</a><a class="headerlink" href="#https" title="Permanent link">&para;</a></h6>
 <p>方式一：把证书绑定在外部的nginx中， nginx 443端口监听外网域名并转发请求到Istio Ingress网关IP+http端口 ，如果使用公有云lb的话（如slb，clb），可以在lb层绑定证书</p>
 <p>方式二：在istio侧使用证书</p>
 <p>https://istio.io/latest/docs/tasks/traffic-management/ingress/secure-ingress/</p>
-<h6 id="header"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=header头路由">header头路由</a></h6>
+<h6 id="header"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-control?id=header头路由">header头路由</a><a class="headerlink" href="#header" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">$ cat virtual-service-reviews-header.yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -1518,12 +1625,16 @@ $ kubectl apply -f virtual-service-reviews-header.yaml
 # 刷新观察http://bookinfo.com/productpage</code></pre>
 <p>更多支持的匹配类型可以在此处查看。</p>
 <p>https://istio.io/latest/docs/reference/config/networking/virtual-service/#HTTPMatchRequest</p>
-<h5 id="_27"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-mirror?id=流量镜像">流量镜像</a></h5>
-<h6 id="_28"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-mirror?id=介绍">介绍</a></h6>
+<h5 id="_27"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-mirror?id=流量镜像">流量镜像</a><a class="headerlink" href="#_27" title="Permanent link">&para;</a></h5>
+<h6 id="_28"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-mirror?id=介绍">介绍</a><a class="headerlink" href="#_28" title="Permanent link">&para;</a></h6>
 <p>很多情况下，当我们对服务做了重构，或者我们对项目做了重大优化时，怎么样保证服务是健壮的呢？在传统的服务里，我们只能通过大量的测试，模拟在各种情况下服务的响应情况。虽然也有手工测试、自动化测试、压力测试等一系列手段去检测它，但是测试本身就是一个样本化的行为，即使测试人员再完善它的测试样例，无法全面的表现出线上服务的一个真实流量形态 。</p>
 <p>流量镜像的设计，让这类问题得到了最大限度的解决。流量镜像讲究的不再是使用少量样本去评估一个服务的健壮性，而是在不影响线上坏境的前提下将线上流量持续的镜像到我们的预发布坏境中去，让重构后的服务在上线之前就结结实实地接受一波真实流量的冲击与考验，让所有的风险全部暴露在上线前夕，通过不断的暴露问题，解决问题让服务在上线前夕就拥有跟线上服务一样的健壮性。由于测试坏境使用的是真实流量，所以不管从流量的多样性，真实性，还是复杂性上都将能够得以展现，同时预发布服务也将表现出其最真实的处理能力和对异常的处理能力。</p>
-<h6 id="_29"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-mirror?id=实践">实践</a></h6>
+<h6 id="_29"><a href="http://49.7.203.222:2023/#/istio/demo-show/traffic-mirror?id=实践">实践</a><a class="headerlink" href="#_29" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/shadow-in-one-mesh.png" /></p>
+<pre class="highlight"><code class="language-text">流量镜像(Traffic Mirror):
+  将生产流量复制一份到镜像服务
+  不影响主链路(影子流量)
+  (用于测试/验证新版本)</code></pre>
 <pre class="highlight"><code class="language-bash"># 准备httpbin v1
 $ cat httpbin-v1.yaml
 apiVersion: apps/v1
@@ -1667,10 +1778,10 @@ $ kubectl -n bookinfo edit vs bookinfo
       subset: v2
     mirror_percent: 100
 ...</code></pre>
-<h2 id="_30">重试与熔断</h2>
-<h5 id="_31"><a href="http://49.7.203.222:2023/#/istio/demo-show/circuit-breaker?id=重试">重试</a></h5>
+<h2 id="_30">重试与熔断<a class="headerlink" href="#_30" title="Permanent link">&para;</a></h2>
+<h5 id="_31"><a href="http://49.7.203.222:2023/#/istio/demo-show/circuit-breaker?id=重试">重试</a><a class="headerlink" href="#_31" title="Permanent link">&para;</a></h5>
 <p>在网络环境不稳定的情况下，会出现暂时的网络不可达现象，这时需要重试机制，通过多次尝试来获取正确的返回信息。 istio 可以通过简单的配置来实现重试功能，让开发人员无需关注重试部分的代码实现，专心实现业务代码。</p>
-<h6 id="_32"><a href="http://49.7.203.222:2023/#/istio/demo-show/circuit-breaker?id=实践">实践</a></h6>
+<h6 id="_32"><a href="http://49.7.203.222:2023/#/istio/demo-show/circuit-breaker?id=实践">实践</a><a class="headerlink" href="#_32" title="Permanent link">&para;</a></h6>
 <p>浏览器访问<code>http://www.bookinfo.com/httpbin/status/502</code></p>
 <pre class="highlight"><code class="language-bash"># 此时查看httpbin-v1的日志，显示一条状态码为502的日志
 $ kubectl -n bookinfo logs -f httpbin-v1-5967569c54-sp874 -c istio-proxy
@@ -1699,15 +1810,15 @@ $ kubectl -n bookinfo logs -f httpbin-v1-5967569c54-sp874 -c istio-proxy
 ...
 
 # 再次查看httpbin-v1的日志，显示四条状态码为502的日志</code></pre>
-<h2 id="_33">故障注入</h2>
-<h5 id="_34"><a href="http://49.7.203.222:2023/#/istio/demo-show/fault-injection?id=故障注入与超时机制">故障注入与超时机制</a></h5>
+<h2 id="_33">故障注入<a class="headerlink" href="#_33" title="Permanent link">&para;</a></h2>
+<h5 id="_34"><a href="http://49.7.203.222:2023/#/istio/demo-show/fault-injection?id=故障注入与超时机制">故障注入与超时机制</a><a class="headerlink" href="#_34" title="Permanent link">&para;</a></h5>
 <p>在一个微服务架构的系统中，为了让系统达到较高的健壮性要求，通常需要对系统做定向错误测试。比如电商中的订单系统、支付系统等若出现故障那将是非常严重的生产事故，因此必须在系统设计前期就需要考虑多样性的异常故障并对每一种异常设计完善的恢复策略或优雅的回退策略，尽全力规避类似事故的发生，使得当系统发生故障时依然可以正常运作。而在这个过程中，服务故障模拟一直以来是一个非常繁杂的工作。</p>
 <p>istio提供了无侵入式的故障注入机制，让开发测试人员在不用调整服务程序的前提下，通过配置即可完成对服务的异常模拟。目前，包含两类：</p>
 <ul>
 <li><strong>abort</strong>：非必配项，配置一个 Abort 类型的对象。用来注入请求异常类故障。简单的说，就是用来模拟上游服务对请求返回指定异常码时，当前的服务是否具备处理能力。</li>
 <li><strong>delay</strong>：非必配项，配置一个 Delay 类型的对象。用来注入延时类故障。通俗一点讲，就是人为模拟上游服务的响应时间，测试在高延迟的情况下，当前的服务是否具备容错容灾的能力。</li>
 </ul>
-<h6 id="_35"><a href="http://49.7.203.222:2023/#/istio/demo-show/fault-injection?id=延迟与超时">延迟与超时</a></h6>
+<h6 id="_35"><a href="http://49.7.203.222:2023/#/istio/demo-show/fault-injection?id=延迟与超时">延迟与超时</a><a class="headerlink" href="#_35" title="Permanent link">&para;</a></h6>
 <p>目前针对非luffy登录用户，访问服务的示意为：</p>
 <pre class="highlight"><code class="language-bash">productpage --&gt; reviews v2 --&gt; ratings
                \
@@ -1767,7 +1878,7 @@ $ kubectl apply -f virtualservice-ratings-2s-delay.yaml
 <p>此时，如果使用非luffy用户，则会出现只延迟，不会失败的情况。</p>
 <p>删除延迟：</p>
 <pre class="highlight"><code class="language-bash">$ kubectl -n bookinfo delete vs ratings</code></pre>
-<h6 id="_36"><a href="http://49.7.203.222:2023/#/istio/demo-show/fault-injection?id=状态码">状态码</a></h6>
+<h6 id="_36"><a href="http://49.7.203.222:2023/#/istio/demo-show/fault-injection?id=状态码">状态码</a><a class="headerlink" href="#_36" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-bash">$ cat virtualservice-details-aborted.yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -1792,9 +1903,9 @@ $ kubectl apply -f virtualservice-details-aborted.yaml
 # 再次刷新查看details的状态，查看productpage的日志
 $ kubectl -n bookinfo logs -f $(kubectl -n bookinfo get po -l app=productpage -ojsonpath='{.items[0].metadata.name}') -c istio-proxy
 [2020-11-09T09:00:16.020Z] "GET /details/0 HTTP/1.1" 500 FI "-" "-" 0 18 0 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36" "f0387bb6-a445-922c-89ab-689dfbf548f8" "details:9080" "-" - - 10.111.67.169:9080 10.244.0.52:56552 - -</code></pre>
-<h2 id="_37">可观测性</h2>
-<h4 id="_38"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=可观察性">可观察性</a></h4>
-<h6 id="_39"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=安装集成组件">安装集成组件</a></h6>
+<h2 id="_37">可观测性<a class="headerlink" href="#_37" title="Permanent link">&para;</a></h2>
+<h4 id="_38"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=可观察性">可观察性</a><a class="headerlink" href="#_38" title="Permanent link">&para;</a></h4>
+<h6 id="_39"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=安装集成组件">安装集成组件</a><a class="headerlink" href="#_39" title="Permanent link">&para;</a></h6>
 <p>https://istio.io/latest/docs/ops/integrations</p>
 <ol>
 <li>
@@ -1815,7 +1926,7 @@ $ kubectl apply -f samples/addons/kiali.yaml</code></pre>
 <pre class="highlight"><code class="language-bash">$ kubectl apply -f samples/addons/prometheus.yaml</code></pre>
 </li>
 </ol>
-<h5 id="prometheus"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=prometheus">prometheus</a></h5>
+<h5 id="prometheus"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=prometheus">prometheus</a><a class="headerlink" href="#prometheus" title="Permanent link">&para;</a></h5>
 <p>Prometheus：</p>
 <pre class="highlight"><code class="language-bash">$ cat prometheus-ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -1839,6 +1950,10 @@ spec:
 $ kubectl apply -f prometheus-ingress.yaml</code></pre>
 <p>查看默认添加的targets列表：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/prometheus-targets.jpg" /></p>
+<pre class="highlight"><code class="language-text">Prometheus 监控(Istio):
+  网格内每个服务作为一个 target
+  流量指标直接由 sidecar(Envoy) 提供
+  (核心: kubernetes-pods)</code></pre>
 <p>其中最核心的是<code>kubernetes-pods</code> 的监控，服务网格内的每个服务都作为一个target被监控，而且服务流量指标直接由sidecar容器来提供指标。</p>
 <pre class="highlight"><code class="language-bash">$ kubectl -n bookinfo get po -owide
 $ curl 10.244.0.53:15020/stats/prometheus</code></pre>
@@ -1868,7 +1983,7 @@ $ for i in $(seq 1 10000); do curl -s -o /dev/null "http://bookinfo.luffy.com/pr
 <pre class="highlight"><code class="language-bash">$ kubectl -n istio-system get cm istio-services-grafana-dashboards
 NAME                                DATA   AGE
 istio-services-grafana-dashboards   3      7d1h</code></pre>
-<h5 id="jaeger"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=jaeger">jaeger</a></h5>
+<h5 id="jaeger"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=jaeger">jaeger</a><a class="headerlink" href="#jaeger" title="Permanent link">&para;</a></h5>
 <pre class="highlight"><code class="language-bash">$ cat jaeger-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -1889,7 +2004,7 @@ spec:
               number: 80
 
 $ kubectl apply -f jaeger-ingress.yaml</code></pre>
-<h5 id="kiali"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=kiali">kiali</a></h5>
+<h5 id="kiali"><a href="http://49.7.203.222:2023/#/istio/demo-show/observability?id=kiali">kiali</a><a class="headerlink" href="#kiali" title="Permanent link">&para;</a></h5>
 <p>kiali 是一个 可观测性分析服务</p>
 <pre class="highlight"><code class="language-bash">$ cat kiali-ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -1916,17 +2031,25 @@ $ kubectl apply -f kiali-ingress.yaml</code></pre>
 <p>https://istio.io/latest/docs/tasks/observability/kiali/</p>
 <p>https://kiali.io/documentation/latest/configuration/authentication/</p>
 </blockquote>
-<h1 id="_40">小结</h1>
-<h4 id="_41"><a href="http://49.7.203.222:2023/#/istio/summary?id=展望未来">展望未来</a></h4>
+<h1 id="_40">小结<a class="headerlink" href="#_40" title="Permanent link">&para;</a></h1>
+<h4 id="_41"><a href="http://49.7.203.222:2023/#/istio/summary?id=展望未来">展望未来</a><a class="headerlink" href="#_41" title="Permanent link">&para;</a></h4>
 <p>Kubernets已经成为了容器调度编排的事实标准，而容器正好可以作为微服务的最小工作单元，从而发挥微服务架构的最大优势。所以未来微服务架构会围绕Kubernetes展开。而Istio和Conduit这类Service Mesh天生就是为了Kubernetes设计，它们的出现补足了Kubernetes在微服务间服务通讯上的短板。虽然Dubbo、Spring Cloud等都是成熟的微服务框架，但是它们或多或少都会和具体语言或应用场景绑定，并只解决了微服务Dev层面的问题。若想解决Ops问题，它们还需和诸如Cloud Foundry、Mesos、Docker Swarm或Kubernetes这类资源调度框架做结合：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/kubernetes%E4%B8%8Espringcloud.jpg" /></p>
+<pre class="highlight"><code class="language-text">K8s 与 SpringCloud 结合:
+  容器调度(K8s) + 微服务框架(SpringCloud)
+  两者结合但有适用性/生态差异需解决</code></pre>
 <p>但是这种结合又由于初始设计和生态，有很多适用性问题需要解决。</p>
 <p>Kubernetes则不同，它本身就是一个和开发语言无关的、通用的容器管理平台，它可以支持运行云原生和传统的容器化应用。并且它覆盖了微服务的Dev和Ops阶段，结合Service Mesh，它可以为用户提供完整端到端的微服务体验。</p>
 <p>所以我认为，未来的微服务架构和技术栈可能是如下形式：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/microservice-future.jpg" /></p>
+<pre class="highlight"><code class="language-text">未来微服务技术栈:
+  多云(资源) -&gt; 容器(K8s 编排)
+    -&gt; Service Mesh(通信治理)
+    -&gt; API Gateway(对外)
+  (围绕 K8s 展开的云原生体系)</code></pre>
 <p>多云平台为微服务提供了资源能力（计算、存储和网络等），容器作为最小工作单元被Kubernetes调度和编排，Service Mesh管理微服务的服务通信，最后通过API Gateway向外暴露微服务的业务接口。</p>
 <p>未来随着以Kubernetes和Service Mesh为标准的微服务框架的盛行，将大大降低微服务实施的成本，最终为微服务落地以及大规模使用提供坚实的基础和保障。</p>
-<h4 id="_42"><a href="http://49.7.203.222:2023/#/istio/summary?id=小结">小结</a></h4>
+<h4 id="_42"><a href="http://49.7.203.222:2023/#/istio/summary?id=小结">小结</a><a class="headerlink" href="#_42" title="Permanent link">&para;</a></h4>
 <ul>
 <li>
 <p>第一代为Spring Cloud为代表的服务治理能力，是和业务代码紧耦合的，没法跨编程语言去使用</p>
@@ -1936,6 +2059,9 @@ $ kubectl apply -f kiali-ingress.yaml</code></pre>
 </li>
 </ul>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/20200503110532-1669084762160404.png" /></p>
+<pre class="highlight"><code class="language-text">小结: Sidecar 注入
+  istio 为每个业务 Pod 注入 sidecar 代理
+  (实现通用服务治理能力)</code></pre>
 <ul>
 <li>
 <p>为了能够做到服务治理，需要接管pod内的出入流量，因此通过注入的时候引入初始化容器istio-init实现pod内防火墙规则的初始化，分别将出入站流量拦截到pod内的15001和15006端口</p>
@@ -1945,6 +2071,10 @@ $ kubectl apply -f kiali-ingress.yaml</code></pre>
 </li>
 </ul>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/envoy-config-init.png" /></p>
+<pre class="highlight"><code class="language-text">小结: istio-proxy 端口
+  istio-proxy(Envoy) 监听
+    15001(出站) / 15006(入站)
+  istio-init 初始化防火墙规则做拦截</code></pre>
 <ul>
 <li>
 <p>istio在istio-system命名空间启动了istiod服务，用于监听用户写入etcd中的流量规则，转换成envoy可度的配置片段，通过envoy支持的xDS协议，同步到网格内的各envoy中</p>
@@ -1958,6 +2088,10 @@ $ kubectl apply -f kiali-ingress.yaml</code></pre>
 </ul>
 <p>最后，通过分析bookinfo中，从 Productpage服务调用Reviews服务的 请求流程 来回顾istio重点：</p>
 <p><img alt="img" src="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86.assets/envoy-traffic-route.png" /></p>
+<pre class="highlight"><code class="language-text">小结: Bookinfo 请求流程
+  Productpage -&gt; http://reviews:9080/reviews/0
+  -&gt; 经 Envoy 按规则路由到 Reviews 服务
+  (回顾 Istio 全流程)</code></pre>
 <ol>
 <li>
 <p>Productpage发起对Reviews服务的调用：<code>http://reviews:9080/reviews/0</code></p>
@@ -2220,7 +2354,7 @@ Chain ISTIO_IN_REDIRECT (3 references)
                 },</code></pre>
 </li>
 </ol>
-<h1 id="_43">容器管理平台</h1>
+<h1 id="_43">容器管理平台<a class="headerlink" href="#_43" title="Permanent link">&para;</a></h1>
 <ul>
 <li>rancher</li>
 <li>kubesphere</li>
@@ -2265,6 +2399,8 @@ Chain ISTIO_IN_REDIRECT (3 references)
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {

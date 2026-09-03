@@ -116,16 +116,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="promtheus">Promtheus 架构</h1>
+                <h1 id="promtheus">Promtheus 架构<a class="headerlink" href="#promtheus" title="Permanent link">&para;</a></h1>
 <p>Prometheus 是一个开源监控系统，它本身已经成为了云原生中指标监控的事实标准 。</p>
-<h5 id="k8s"><a href="http://49.7.203.222:2023/#/prometheus/arct?id=k8s集群监控体系演变史">k8s集群监控体系演变史</a></h5>
+<h5 id="k8s"><a href="http://49.7.203.222:2023/#/prometheus/arct?id=k8s集群监控体系演变史">k8s集群监控体系演变史</a><a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h5>
 <p>第一版本：<strong>Cadvisor+InfluxDB+Grafana</strong></p>
 <p>只能从主机维度进行采集，没有Namespace、Pod等维度的汇聚功能</p>
 <p>第二版本： <strong>Heapster+InfluxDB+Grafana</strong></p>
 <p>heapster负责调用各node中的cadvisor接口，对数据进行汇总，然后导到InfluxDB ， 可以从cluster，node，pod的各个层面提供详细的资源使用情况。</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/monitor-earlier.png" /></p>
+<pre class="highlight"><code class="language-text">早期监控 (Heapster):
+  Heapster --调用--&gt; 各 Node 的 cAdvisor
+      |
+      v  汇总数据
+   InfluxDB (时序存储)
+      |
+      v
+  从 cluster / node / pod 层面展示资源使用</code></pre>
 <p>第三版本：Metrics-Server + Prometheus</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/custom-hpa.webp" /></p>
+<pre class="highlight"><code class="language-text">监控体系标准化(三类接口):
+  metrics.k8s.io        -&gt; Metrics-Server (CPU/内存)
+  custom.metrics.k8s.io -&gt; Prometheus Adapter (自定义指标)
+  external.metrics...   -&gt; 外部指标
+      |
+      v
+  HPA 基于上述指标做弹性伸缩</code></pre>
 <p>k8s对监控接口进行了标准化，主要分了三类：</p>
 <ul>
 <li>Resource Metrics</li>
@@ -140,8 +155,19 @@
 <li>External Metrics</li>
 </ul>
 <p>对应的接口是 external.metrics.k8s.io。主要的实现厂商就是各个云厂商的 provider，通过这个 provider 可以通过云资源的监控指标</p>
-<h5 id="prometheus"><a href="http://49.7.203.222:2023/#/prometheus/arct?id=prometheus架构">Prometheus架构</a></h5>
+<h5 id="prometheus"><a href="http://49.7.203.222:2023/#/prometheus/arct?id=prometheus架构">Prometheus架构</a><a class="headerlink" href="#prometheus" title="Permanent link">&para;</a></h5>
 <p><img alt="image-20221122092246137" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/image-20221122092246137.png" /></p>
+<pre class="highlight"><code class="language-text">Prometheus 架构:
+  Prometheus Server (抓取 / 存储 / 告警)
+     |  pull /metrics
+     v
+  被监控目标 (Exporter / 应用 / k8s 组件)
+     |
+     v
+  TSDB (时间序列数据库)
+     |
+     +--&gt; PromQL 查询
+     +--&gt; Alertmanager (告警)</code></pre>
 <ul>
 <li>Prometheus Server ，监控、告警平台核心，抓取目标端监控数据，生成聚合数据，存储时间序列数据</li>
 <li>exporter，由被监控的对象提供，提供API暴漏监控对象的指标，供prometheus 抓取</li>
@@ -155,8 +181,8 @@
 <li>Alertmanager，接收Prometheus发送的告警并对于告警进行一系列的处理后发送给指定的目标</li>
 <li>Grafana：配置数据源，图标方式展示数据</li>
 </ul>
-<h1 id="_1">安装</h1>
-<h5 id="prometheus_1"><a href="http://49.7.203.222:2023/#/prometheus/install?id=prometheus安装">Prometheus安装</a></h5>
+<h1 id="_1">安装<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h5 id="prometheus_1"><a href="http://49.7.203.222:2023/#/prometheus/install?id=prometheus安装">Prometheus安装</a><a class="headerlink" href="#prometheus_1" title="Permanent link">&para;</a></h5>
 <p>基于go开发， https://github.com/prometheus/prometheus</p>
 <p>若使用docker部署直接启动镜像即可：</p>
 <pre class="highlight"><code class="language-bash">docker run --name prometheus -d -p 127.0.0.1:9090:9090 prom/prometheus:v2.28.0</code></pre>
@@ -460,7 +486,7 @@ prometheus-6c8768547-7vh7p   1/1     Running   0          &lt;invalid&gt;   10.2
 
 
 </code></pre>
-<h1 id="tsdb"><a href="http://49.7.203.222:2023/#/prometheus/tsdb?id=理解时间序列数据库（tsdb）">理解时间序列数据库（TSDB）</a></h1>
+<h1 id="tsdb"><a href="http://49.7.203.222:2023/#/prometheus/tsdb?id=理解时间序列数据库（tsdb）">理解时间序列数据库（TSDB）</a><a class="headerlink" href="#tsdb" title="Permanent link">&para;</a></h1>
 <pre class="highlight"><code class="language-bash"># http://localhost:9090/metrics
 $ kubectl -n monitor get po -o wide
 prometheus-6c8768547-7vh7p   1/1     Running   0          13h   10.244.2.63    k8s-slave1 
@@ -509,9 +535,9 @@ promhttp_metric_handler_requests_total{code="503"} 0</code></pre>
 <li>标签(label)反映了当前样本的特征维度，通过这些维度Prometheus可以对样本数据进行过滤，聚合等。</li>
 </ul>
 <p>Prometheus：定期去Tragets列表拉取监控数据，存储到TSDB中，并且提供指标查询、分析的语句和接口。</p>
-<h1 id="_2">添加监控目标</h1>
-<h2 id="coredns">coredns</h2>
-<h5 id="_3"><a href="http://49.7.203.222:2023/#/prometheus/targets/coredns?id=添加监控目标">添加监控目标</a></h5>
+<h1 id="_2">添加监控目标<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h1>
+<h2 id="coredns">coredns<a class="headerlink" href="#coredns" title="Permanent link">&para;</a></h2>
+<h5 id="_3"><a href="http://49.7.203.222:2023/#/prometheus/targets/coredns?id=添加监控目标">添加监控目标</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h5>
 <p>无论是业务应用还是k8s系统组件，只要提供了metrics api，并且该api返回的数据格式满足标准的Prometheus数据格式要求即可。</p>
 <p>其实，很多组件已经为了适配Prometheus采集指标，添加了对应的/metrics api，比如</p>
 <p>CoreDNS：</p>
@@ -550,8 +576,8 @@ kubectl -n monitor logs -f prometheus-6c8768547-7vh7p
 
 
 # 浏览器上可查看到新添加的coredns  http://prometheus.luffy.com/targets  </code></pre>
-<h2 id="apiserver">监控apiserver等系统组件</h2>
-<h5 id="_4"><a href="http://49.7.203.222:2023/#/prometheus/targets/apiserver?id=常用监控对象的指标采集">常用监控对象的指标采集</a></h5>
+<h2 id="apiserver">监控apiserver等系统组件<a class="headerlink" href="#apiserver" title="Permanent link">&para;</a></h2>
+<h5 id="_4"><a href="http://49.7.203.222:2023/#/prometheus/targets/apiserver?id=常用监控对象的指标采集">常用监控对象的指标采集</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h5>
 <p>对于集群的监控一般我们需要考虑以下几个方面：</p>
 <ul>
 <li>内部系统组件的状态：比如 kube-apiserver、kube-scheduler、kube-controller-manager、kubedns/coredns 等组件的详细运行状态</li>
@@ -560,7 +586,7 @@ kubectl -n monitor logs -f prometheus-6c8768547-7vh7p
 <li>业务容器业务指标的监控，业务代码实现了/metrics的api，暴漏业务的指标</li>
 <li>编排级的 metrics：比如 Deployment 的状态、资源请求、调度和 API 延迟等数据指标</li>
 </ul>
-<h6 id="kube-apiserver"><a href="http://49.7.203.222:2023/#/prometheus/targets/apiserver?id=监控kube-apiserver">监控kube-apiserver</a></h6>
+<h6 id="kube-apiserver"><a href="http://49.7.203.222:2023/#/prometheus/targets/apiserver?id=监控kube-apiserver">监控kube-apiserver</a><a class="headerlink" href="#kube-apiserver" title="Permanent link">&para;</a></h6>
 <p>apiserver自身也提供了/metrics 的api来提供监控数据</p>
 <pre class="highlight"><code class="language-bash">$ kubectl get svc
 NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
@@ -674,8 +700,8 @@ failed to reload config: couldn't load configuration (--config.file="/etc/promet
   line 35: field bearer_token_file not found in type struct { Targets []string "yaml:\"targets\""; Labels model.LabelSet "yaml:\"labels\"" }
 
 配置文件加载错误?, 重新检查了很多遍 依然报错</code></pre>
-<h2 id="_5">宿主机指标</h2>
-<h6 id="_6"><a href="http://49.7.203.222:2023/#/prometheus/targets/node?id=监控集群节点基础指标">监控集群节点基础指标</a></h6>
+<h2 id="_5">宿主机指标<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h6 id="_6"><a href="http://49.7.203.222:2023/#/prometheus/targets/node?id=监控集群节点基础指标">监控集群节点基础指标</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h6>
 <p>node_exporter https://github.com/prometheus/node_exporter</p>
 <p>分析：</p>
 <ul>
@@ -779,7 +805,7 @@ curl 172.16.1.226:9100/metrics  |grep nodel_load
 <li>带来新的问题，集群节点的增删，都需要手动维护列表</li>
 <li>target列表维护量随着集群规模增加</li>
 </ul>
-<h2 id="prometheusrelabeling"><a href="http://49.7.203.222:2023/#/prometheus/targets/service-discovery?id=prometheus的服务发现与relabeling">Prometheus的服务发现与Relabeling</a></h2>
+<h2 id="prometheusrelabeling"><a href="http://49.7.203.222:2023/#/prometheus/targets/service-discovery?id=prometheus的服务发现与relabeling">Prometheus的服务发现与Relabeling</a><a class="headerlink" href="#prometheusrelabeling" title="Permanent link">&para;</a></h2>
 <p>之前已经给Prometheus配置了RBAC，有读取node的权限，因此Prometheus可以去调用Kubernetes API获取node信息，所以Prometheus通过与 Kubernetes API 集成，提供了内置的服务发现分别是：<code>Node</code>、<code>Service</code>、<code>Pod</code>、<code>Endpoints</code>、<code>Ingress</code></p>
 <p>配置job即可：</p>
 <pre class="highlight"><code class="language-bash"># kubectl -n monitor edit cm prometheus-config
@@ -793,8 +819,19 @@ curl 172.16.1.226:9100/metrics  |grep nodel_load
 # curl -XPOST 10.244.1.72:9090/-/reload  #软加载配置</code></pre>
 <p>重新reload后查看效果：</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/prometheus-target-err1.jpg" /></p>
+<pre class="highlight"><code class="language-text">Reload 后 Target 异常示例:
+  Prometheus 以 node 类型服务发现
+  默认抓取地址: http://&lt;node-ip&gt;:10250/metrics
+  10250 = kubelet API 端口(需鉴权)
+  (需用 relabel 改成只读/metrics 端口, 否则 401 失败)</code></pre>
 <p>默认访问的地址是http://node-ip/10250/metrics，10250是kubelet API的服务端口，说明Prometheus的node类型的服务发现模式，默认是和kubelet的10250绑定的，而我们是期望使用node-exporter作为采集的指标来源，因此需要把访问的endpoint替换成http://node-ip:9100/metrics。</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/when-relabel-work.png" /></p>
+<pre class="highlight"><code class="language-text">Relabeling (重打标签):
+  抓取前, 对 target 的标签做改写/筛选
+    - 修改抓取地址 (__address__)
+    - 过滤不需要的目标
+    - 注入自定义标签
+  在 scrape 前进行, 决定"抓谁 / 怎么抓</code></pre>
 <p>在真正抓取数据前，Prometheus提供了relabeling的能力。怎么理解？</p>
 <p>查看Target的Label列，可以发现，每个target对应会有很多Before Relabeling的标签，这些__开头的label是系统内部使用，不会存储到样本的数据里，但是，我们在查看数据的时候，可以发现，每个数据都有两个默认的label，即：</p>
 <pre class="highlight"><code class="language-bash">prometheus_notifications_dropped_total{instance="localhost:9090",job="prometheus"}    </code></pre>
@@ -817,8 +854,8 @@ curl 172.16.1.226:9100/metrics  |grep nodel_load
 # kubectl -n monitor exec prometheus-6c8768547-rh49z -- cat /etc/prometheus/prometheus.yml     
 # curl -XPOST 10.244.1.72:9090/-/reload  #软加载配置          </code></pre>
 <p>再次更新Prometheus服务后，查看targets列表及node-exporter提供的指标，node_load1</p>
-<h2 id="_7">容器指标采集</h2>
-<h6 id="cadvisor"><a href="http://49.7.203.222:2023/#/prometheus/targets/cadvisor?id=使用cadvisor实现容器指标的采集（新）">使用cadvisor实现容器指标的采集（新）</a></h6>
+<h2 id="_7">容器指标采集<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h6 id="cadvisor"><a href="http://49.7.203.222:2023/#/prometheus/targets/cadvisor?id=使用cadvisor实现容器指标的采集（新）">使用cadvisor实现容器指标的采集（新）</a><a class="headerlink" href="#cadvisor" title="Permanent link">&para;</a></h6>
 <p>目前cAdvisor集成到了kubelet组件内 ，因此可以通过kubelet的接口实现容器指标的采集，具体的API为:</p>
 <pre class="highlight"><code class="language-bash">https://&lt;node-ip&gt;:10250/metrics/cadvisor    # node上的cadvisor采集到的容器指标
 https://&lt;node-ip&gt;:10250/metrics             # node上的kubelet的指标数据
@@ -879,7 +916,7 @@ http://172.21.51.68:10250/metrics
 # 等30秒查看配置更新了
 # kubectl -n monitor exec prometheus-6c8768547-rh49z -- cat /etc/prometheus/prometheus.yml     
 # curl -XPOST 10.244.1.72:9090/-/reload  #软加载配置    </code></pre>
-<h2 id="k8s-service">k8s Service服务的监控指标采集</h2>
+<h2 id="k8s-service">k8s Service服务的监控指标采集<a class="headerlink" href="#k8s-service" title="Permanent link">&para;</a></h2>
 <p>比如集群中存在100个业务应用，每个业务应用都需要被Prometheus监控。</p>
 <p>每个服务是不是都需要手动添加配置？有没有更好的方式？</p>
 <pre class="highlight"><code class="language-bash">      - job_name: 'kubernetes-sd-endpoints'
@@ -895,10 +932,21 @@ http://172.21.51.68:10250/metrics
 </code></pre>
 <p>reload prometheush，此使的Target列表中，<code>kubernetes-sd-endpoints</code>下出现了N多条数据，</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/prometheus-target-err2.png" /></p>
+<pre class="highlight"><code class="language-text">kubernetes_sd endpoints 类型:
+  抓取集群所有命名空间的 Endpoint 列表
+  默认用 /metrics 去抓
+  但很多 endpoint 并未实现 /metrics
+  (需用 relabel keep/drop 过滤出真正暴露指标的)</code></pre>
 <p>可以发现，实际上endpoint这个类型，目标是去抓取整个集群中所有的命名空间的Endpoint列表，然后使用默认的/metrics进行数据抓取，我们可以通过查看集群中的所有ep列表来做对比：</p>
 <pre class="highlight"><code class="language-bash">$ kubectl get endpoints --all-namespaces</code></pre>
 <p>但是实际上并不是每个服务都已经实现了/metrics监控的，也不是每个实现了/metrics接口的服务都需要注册到Prometheus中，因此，我们需要一种方式对需要采集的服务实现自主可控。这就需要利用relabeling中的keep功能。</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/when-relabel-work-1669080479809213.png" /></p>
+<pre class="highlight"><code class="language-text">Relabel 作用对象 = target 的 Before Relabeling 标签
+  例: 通过 source_labels / matchLabels
+  对 __meta_kubernetes_* 等内置标签做:
+    - action: keep/drop (筛选)
+    - action: replace (改写)
+  决定最终纳入采集的目标</code></pre>
 <p>我们知道，relabel的作用对象是target的Before Relabling标签，比如说，假如通过如下定义:</p>
 <pre class="highlight"><code class="language-bash">  - job_name: 'kubernetes-sd-endpoints'
     kubernetes_sd_configs:
@@ -1151,7 +1199,7 @@ scrape_configs:
 </code></pre>
 <p>验证一下：</p>
 <p>更新configmap并重启Prometheus服务，查看target列表。</p>
-<h2 id="kube-state-metrics"><a href="http://49.7.203.222:2023/#/prometheus/targets/kube-state-metrics?id=kube-state-metrics监控">kube-state-metrics监控</a></h2>
+<h2 id="kube-state-metrics"><a href="http://49.7.203.222:2023/#/prometheus/targets/kube-state-metrics?id=kube-state-metrics监控">kube-state-metrics监控</a><a class="headerlink" href="#kube-state-metrics" title="Permanent link">&para;</a></h2>
 <p>已经有了cadvisor，容器运行的指标已经可以获取到，但是下面这种情况却无能为力：</p>
 <ul>
 <li>我调度了多少个replicas？现在可用的有几个？</li>
@@ -1254,9 +1302,9 @@ kube-state-metrics-7dc6bc9d6-89cf2   1/1     Running   0          3m45s   10.244
 <p>kube_pod_container_status_running</p>
 <p>kube_deployment_status_replicas</p>
 <p>kube_deployment_status_replicas_unavailable</p>
-<h1 id="grafana"><a href="http://49.7.203.222:2023/#/prometheus/grafana/install?id=grafana">Grafana</a></h1>
+<h1 id="grafana"><a href="http://49.7.203.222:2023/#/prometheus/grafana/install?id=grafana">Grafana</a><a class="headerlink" href="#grafana" title="Permanent link">&para;</a></h1>
 <p>可视化面板，功能齐全的度量仪表盘和图形编辑器，支持 Graphite、zabbix、InfluxDB、Prometheus、OpenTSDB、Elasticsearch 等作为数据源，比 Prometheus 自带的图表展示功能强大太多，更加灵活，有丰富的插件，功能更加强大。</p>
-<h6 id="_8"><a href="http://49.7.203.222:2023/#/prometheus/grafana/install?id=安装">安装</a></h6>
+<h6 id="_8"><a href="http://49.7.203.222:2023/#/prometheus/grafana/install?id=安装">安装</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h6>
 <p>注意点：</p>
 <ul>
 <li>使用最新版本的镜像 https://github.com/grafana/grafana</li>
@@ -1404,13 +1452,13 @@ VictoriaMetrics: 选择刚刚的数据源 Prometheus  -&gt;点击import</code></
 <li>安装相应的插件</li>
 <li>自定义监控面板</li>
 </ul>
-<h1 id="_9">完善监控面板</h1>
-<h6 id="dashboard">导入Dashboard的配置</h6>
+<h1 id="_9">完善监控面板<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h1>
+<h6 id="dashboard">导入Dashboard的配置<a class="headerlink" href="#dashboard" title="Permanent link">&para;</a></h6>
 <p>dashboard： https://grafana.com/grafana/dashboards</p>
 <ul>
 <li>Node Exporter https://grafana.com/grafana/dashboards/11074</li>
 </ul>
-<h6 id="devopsprodigy-kubegraf">DevOpsProdigy KubeGraf插件的使用</h6>
+<h6 id="devopsprodigy-kubegraf">DevOpsProdigy KubeGraf插件的使用<a class="headerlink" href="#devopsprodigy-kubegraf" title="Permanent link">&para;</a></h6>
 <p>除了直接导入Dashboard，我们还可以通过安装插件的方式获得，Configuration -&gt; Plugins可以查看已安装的插件，通过 <a href="https://grafana.com/grafana/plugins?utm_source=grafana_plugin_list">官方插件列表</a> 我们可以获取更多可用插件。</p>
 <p>Kubernetes相关的插件：</p>
 <ul>
@@ -1464,7 +1512,7 @@ grep client-key-data ~/.kube/config</code></pre>
 <li>Pod</li>
 </ul>
 <p>/pod="(.+?)"/</p>
-<h6 id="_10"><a href="http://49.7.203.222:2023/#/prometheus/grafana/add-grafana-metrics?id=自定义监控面板">自定义监控面板</a></h6>
+<h6 id="_10"><a href="http://49.7.203.222:2023/#/prometheus/grafana/add-grafana-metrics?id=自定义监控面板">自定义监控面板</a><a class="headerlink" href="#_10" title="Permanent link">&para;</a></h6>
 <p>通用的监控需求基本上都可以使用第三方的Dashboard来解决，对于业务应用自己实现的指标的监控面板，则需要我们手动进行创建。</p>
 <p>调试Panel：直接输入Metrics，查询数据。</p>
 <p>如，输入<code>node_load1</code>来查看集群节点最近1分钟的平均负载，直接保存即可生成一个panel</p>
@@ -1493,7 +1541,7 @@ grep client-key-data ~/.kube/config</code></pre>
 <p>再添加一个面板，使用如下的表达式：</p>
 <pre class="highlight"><code class="language-bash">100-avg(irate(node_cpu_seconds_total{mode="idle",instance=~"$node"}[5m])) by (instance)*100
 </code></pre>
-<h1 id="metricspromql"><a href="http://49.7.203.222:2023/#/prometheus/grafana/promql?id=metrics指标类型与promql">Metrics指标类型与PromQL</a></h1>
+<h1 id="metricspromql"><a href="http://49.7.203.222:2023/#/prometheus/grafana/promql?id=metrics指标类型与promql">Metrics指标类型与PromQL</a><a class="headerlink" href="#metricspromql" title="Permanent link">&para;</a></h1>
 <p>TSDB的样本分布示意图：</p>
 <pre class="highlight"><code class="language-bash">  ^
   │   . . . . . . . . . . . . . . . . .   . .   node_cpu{cpu="cpu0",mode="idle"}
@@ -1648,7 +1696,7 @@ rate(node_cpu_seconds_total{instance="k8s-master",mode="idle"}[1m])
 <p>因此rate的值，相对来讲更平滑，因为计算的是时间段内的平均，更适合于用作告警。</p>
 <p>取CPU平均使用率也可以用如下表达式表示：</p>
 <pre class="highlight"><code class="language-bash">(1 - avg(rate(node_cpu_seconds_total{mode="idle"}[1m])) by (instance)) * 100</code></pre>
-<h1 id="alertmanager"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/install?id=alertmanager">Alertmanager安装配置</a></h1>
+<h1 id="alertmanager"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/install?id=alertmanager">Alertmanager安装配置</a><a class="headerlink" href="#alertmanager" title="Permanent link">&para;</a></h1>
 <p>Alertmanager是一个独立的告警模块。</p>
 <ul>
 <li>接收Prometheus等客户端发来的警报</li>
@@ -1656,6 +1704,13 @@ rate(node_cpu_seconds_total{instance="k8s-master",mode="idle"}[1m])
 <li>告警方式可以按照不同的规则发送给不同的模块负责人。Alertmanager支持Email, Slack，等告警方式, 也可以通过webhook接入钉钉等国内IM工具。</li>
 </ul>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/alertmanager.png" /></p>
+<pre class="highlight"><code class="language-text">Alertmanager:
+  Prometheus --push 告警--&gt; Alertmanager
+        |
+        分组 / 去重 / 抑制 / 静默 / 降噪
+        |
+        v  按路由(route)
+  Email / Slack / 钉钉(webhook) 等接收器</code></pre>
 <p>如果集群主机的内存使用率超过80%，且该现象持续了2分钟？想实现这样的监控告警，如何做？</p>
 <p>从上图可得知设置警报和通知的主要步骤是：</p>
 <ul>
@@ -1663,7 +1718,7 @@ rate(node_cpu_seconds_total{instance="k8s-master",mode="idle"}[1m])
 <li>配置Prometheus与Alertmanager对话</li>
 <li>在Prometheus中创建警报规则</li>
 </ul>
-<h6 id="_11"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/install?id=安装">安装</a></h6>
+<h6 id="_11"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/install?id=安装">安装</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h6>
 <p>Alertmanager， https://github.com/prometheus/alertmanager#install</p>
 <pre class="highlight"><code class="language-bash">./alertmanager --config.file=config.yml</code></pre>
 <p>alertmanager.yml配置文件格式：</p>
@@ -1792,7 +1847,7 @@ spec:
             name: alertmanager
             port:
               number: 9093</code></pre>
-<h6 id="prometheusalertmanager"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/install?id=配置prometheus与alertmanager对话">配置Prometheus与Alertmanager对话</a></h6>
+<h6 id="prometheusalertmanager"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/install?id=配置prometheus与alertmanager对话">配置Prometheus与Alertmanager对话</a><a class="headerlink" href="#prometheusalertmanager" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/alertmanager.png" /></p>
 <p>是否告警是由Prometheus进行判断的，若有告警产生，Prometheus会将告警push到Alertmanager，因此，需要在Prometheus端配置alertmanager的地址：</p>
 <pre class="highlight"><code class="language-bash">    alerting:
@@ -1833,7 +1888,7 @@ $ kubectl -n monitor exec -ti prometheus-dcb499cbf-pljfn cat /etc/prometheus/pro
 
 # 使用软加载的方式，
 $ curl -X POST 10.244.1.167:9090/-/reload</code></pre>
-<h1 id="_12"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/alert-rules?id=配置报警规则">配置报警规则</a></h1>
+<h1 id="_12"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/alert-rules?id=配置报警规则">配置报警规则</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h1>
 <p>目前Prometheus与Alertmanager已经连通，接下来我们可以针对收集到的各类指标配置报警规则，一旦满足报警规则的设置，则Prometheus将报警信息推送给Alertmanager，进而转发到我们配置的邮件中。</p>
 <p>在哪里配置？同样是在prometheus-configmap中：</p>
 <pre class="highlight"><code class="language-bash">$ kuectl -n monitor edit configmap prometheus-config
@@ -1925,7 +1980,7 @@ data:
 <p>查看Alertmanager日志：</p>
 <pre class="highlight"><code class="language-bash">level=warn ts=2020-07-28T13:43:59.430Z caller=notify.go:674 component=dispatcher receiver=email integration=email[0] msg="Notify attempt failed, will retry later" attempts=1 err="*email.loginAuth auth: 550 User has no permission"</code></pre>
 <p>说明告警已经推送到Alertmanager端了，但是邮箱登录的时候报错，这是因为邮箱默认没有开启第三方客户端登录。因此需要登录163邮箱设置SMTP服务允许客户端登录。</p>
-<h1 id="webhook"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/dingtalk-webhook?id=自定义webhook实现告警消息的推送">自定义webhook实现告警消息的推送</a></h1>
+<h1 id="webhook"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/dingtalk-webhook?id=自定义webhook实现告警消息的推送">自定义webhook实现告警消息的推送</a><a class="headerlink" href="#webhook" title="Permanent link">&para;</a></h1>
 <p>目前官方内置的第三方通知集成包括：邮件、 即时通讯软件（如Slack、Hipchat）、移动应用消息推送(如Pushover)和自动化运维工具（例如：Pagerduty、Opsgenie、Victorops）。可以在alertmanager的管理界面中查看到。</p>
 <p>每一个receiver具有一个全局唯一的名称，并且对应一个或者多个通知方式：</p>
 <pre class="highlight"><code class="language-bash">name: &lt;string&gt;
@@ -2130,8 +2185,8 @@ data:
       - send_resolved: true
         url: http://webhook-dingtalk:8060/dingtalk/webhook_dev/send</code></pre>
 <p>验证钉钉消息是否正常收到。</p>
-<h1 id="_13">动态告警配置</h1>
-<h6 id="label"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/alert-severity?id=基于label的动态告警处理">基于Label的动态告警处理</a></h6>
+<h1 id="_13">动态告警配置<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h1>
+<h6 id="label"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/alert-severity?id=基于label的动态告警处理">基于Label的动态告警处理</a><a class="headerlink" href="#label" title="Permanent link">&para;</a></h6>
 <p>真实的场景中，我们往往期望可以给告警设置级别，而且可以实现不同的报警级别可以由不同的receiver接收告警消息。</p>
 <p>Alertmanager中路由负责对告警信息进行分组匹配，并向告警接收器发送通知。告警接收器可以通过以下形式进行配置：</p>
 <pre class="highlight"><code class="language-bash">routes:
@@ -2253,7 +2308,7 @@ metadata:
   name: webhook-dingtalk-config
   namespace: monitor</code></pre>
 <p>分别更新Prometheus和Alertmanager配置，查看报警的发送。</p>
-<h6 id="_14"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/alert-severity?id=抑制和静默">抑制和静默</a></h6>
+<h6 id="_14"><a href="http://49.7.203.222:2023/#/prometheus/alertmanager/alert-severity?id=抑制和静默">抑制和静默</a><a class="headerlink" href="#_14" title="Permanent link">&para;</a></h6>
 <p>前面我们知道，告警的<code>group(分组)</code>功能通过把多条告警数据聚合，有效的减少告警的频繁发送。除此之外，Alertmanager还支持<code>Inhibition(抑制)</code> 和 <code>Silences(静默)</code>，帮助我们抑制或者屏蔽报警。</p>
 <ul>
 <li>
@@ -2302,11 +2357,22 @@ source_match_re:
 <p>简单直接的在指定时段关闭告警。静默通过匹配器（Matcher）来配置，类似于路由树。警告进入系统的时候会检查它是否匹配某条静默规则，如果是则该警告的通知将忽略。 静默规则在Alertmanager的 Web 界面里配置。</p>
 <p>一条告警产生后，还要经过 Alertmanager 的分组、抑制处理、静默处理、去重处理和降噪处理最后再发送给接收者。这个过程中可能会因为各种原因会导致告警产生了却最终没有进行通知，可以通过下图了解整个告警的生命周期：</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/alertmanager-process.png" /></p>
-<h1 id="k8s-prometheus-adaptor">k8s-prometheus-adaptor安装配置</h1>
-<h5 id="_15"><a href="http://49.7.203.222:2023/#/prometheus/adaptor?id=自定义指标实现业务伸缩">自定义指标实现业务伸缩</a></h5>
-<h6 id="kubernetes-metrics-api"><a href="http://49.7.203.222:2023/#/prometheus/adaptor?id=kubernetes-metrics-api体系回顾">Kubernetes Metrics API体系回顾</a></h6>
+<pre class="highlight"><code class="language-text">一条告警: 产生 -&gt; 通知 的处理链:
+  产生 -&gt; 分组(group) -&gt; 抑制(inhibit)
+       -&gt; 静默(silence) -&gt; 去重 -&gt; 降噪
+       -&gt; 发送接收者
+  (任一环节都可能使告警最终不通知)</code></pre>
+<h1 id="k8s-prometheus-adaptor">k8s-prometheus-adaptor安装配置<a class="headerlink" href="#k8s-prometheus-adaptor" title="Permanent link">&para;</a></h1>
+<h5 id="_15"><a href="http://49.7.203.222:2023/#/prometheus/adaptor?id=自定义指标实现业务伸缩">自定义指标实现业务伸缩</a><a class="headerlink" href="#_15" title="Permanent link">&para;</a></h5>
+<h6 id="kubernetes-metrics-api"><a href="http://49.7.203.222:2023/#/prometheus/adaptor?id=kubernetes-metrics-api体系回顾">Kubernetes Metrics API体系回顾</a><a class="headerlink" href="#kubernetes-metrics-api" title="Permanent link">&para;</a></h6>
 <p>前面章节，我们讲过基于CPU和内存的HPA，即利用metrics-server及HPA，可以实现业务服务可以根据pod的cpu和内存进行弹性伸缩。</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/hpa-prometheus-custom.png" /></p>
+<pre class="highlight"><code class="language-text">HPA 弹性伸缩指标来源:
+  CPU / 内存     -&gt; Metrics-Server (metrics.k8s.io)
+  QPS / 队列长度 -&gt; Prometheus Adapter (custom.metrics.k8s.io)
+      |
+      v
+  HPA 根据指标自动扩缩 Pod 副本</code></pre>
 <p>k8s对监控接口进行了标准化：</p>
 <ul>
 <li>Resource Metrics</li>
@@ -2317,6 +2383,11 @@ source_match_re:
 </ul>
 <p>对应的接口是 custom.metrics.k8s.io，主要的实现是 Prometheus， 它提供的是资源监控和自定义监控</p>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/k8s-metrics.png" /></p>
+<pre class="highlight"><code class="language-text">K8s Metrics API 体系:
+  metrics.k8s.io        (资源指标)  &lt;- Metrics-Server
+  custom.metrics.k8s.io (自定义)    &lt;- Prometheus Adapter
+  external.metrics...   (外部)      &lt;- 外部数据源
+  (通过 kube-aggregator 聚合注册)</code></pre>
 <p>安装完metrics-server后，利用kube-aggregator的功能，实现了metrics api的注册。可以通过如下命令</p>
 <pre class="highlight"><code class="language-bash">$ kubectl api-versions
 ...
@@ -2332,7 +2403,7 @@ $ wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 $ rpm -ivh epel-release-latest-7.noarch.rpm
 $ yum install -y jq</code></pre>
 <p>同样，为了实现通用指标的采集，需要部署Prometheus Adapter，来提供<code>custom.metrics.k8s.io</code>，作为HPA获取通用指标的入口。</p>
-<h6 id="adapter"><a href="http://49.7.203.222:2023/#/prometheus/adaptor?id=adapter安装对接">Adapter安装对接</a></h6>
+<h6 id="adapter"><a href="http://49.7.203.222:2023/#/prometheus/adaptor?id=adapter安装对接">Adapter安装对接</a><a class="headerlink" href="#adapter" title="Permanent link">&para;</a></h6>
 <p>项目地址为： https://github.com/DirectXMan12/k8s-prometheus-adapter</p>
 <pre class="highlight"><code class="language-bash">$ git clone -b v0.8.4 https://github.com/DirectXMan12/k8s-prometheus-adapter.git</code></pre>
 <p>查看部署说明 https://github.com/DirectXMan12/k8s-prometheus-adapter/tree/v0.8.4/deploy</p>
@@ -2407,9 +2478,17 @@ $ kubectl get --raw /apis/custom.metrics.k8s.io/v1beta2 |jq
   "groupVersion": "custom.metrics.k8s.io/v1beta2",
   "resources": []                                    
 }</code></pre>
-<h1 id="_16">配置自定义指标</h1>
-<h6 id="_17"><a href="http://49.7.203.222:2023/#/prometheus/custom-metrics?id=通用指标示例程序部署">通用指标示例程序部署</a></h6>
+<h1 id="_16">配置自定义指标<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h1>
+<h6 id="_17"><a href="http://49.7.203.222:2023/#/prometheus/custom-metrics?id=通用指标示例程序部署">通用指标示例程序部署</a><a class="headerlink" href="#_17" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/hpa-prometheus-custom-1669080924564225.png" /></p>
+<pre class="highlight"><code class="language-text">演示: 部署示例业务
+  kubectl apply -f deployment (模拟业务应用)
+     |
+     v
+  应用暴露 /metrics (如 http_requests_total)
+     |
+     v
+  Prometheus 抓取 -&gt; Adapter 注册为自定义指标 -&gt; HPA 使用</code></pre>
 <p>为了演示效果，我们新建一个deployment来模拟业务应用。</p>
 <pre class="highlight"><code class="language-bash">$ cat custom-metrics-demo.yaml
 apiVersion: apps/v1
@@ -2491,8 +2570,14 @@ spec:
       targetAverageValue: 10</code></pre>
 </li>
 </ul>
-<h6 id="adapter_1"><a href="http://49.7.203.222:2023/#/prometheus/custom-metrics?id=adapter配置自定义指标">Adapter配置自定义指标</a></h6>
+<h6 id="adapter_1"><a href="http://49.7.203.222:2023/#/prometheus/custom-metrics?id=adapter配置自定义指标">Adapter配置自定义指标</a><a class="headerlink" href="#adapter_1" title="Permanent link">&para;</a></h6>
 <p><img alt="img" src="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88.assets/customer-metrics.png" /></p>
+<pre class="highlight"><code class="language-text">Prometheus Adapter 配置自定义指标:
+  rules:
+    - 从 Prometheus 查询(如 rate(http_requests_total))
+    -&gt; 映射为 custom.metrics.k8s.io 的指标名
+    -&gt; HPA 通过 metricName 引用
+  ( Adapter 把 Prometheus 数据翻译成 K8s 指标 API )</code></pre>
 <p>思考：</p>
 <p>前面讲CPU的平均使用率的采集，其实是通过<code>node_cpu_seconds_total</code>指标计算得到的。</p>
 <pre class="highlight"><code class="language-bash">  ^
@@ -2656,7 +2741,7 @@ $ kubectl -n monitor delete po custom-metrics-apiserver-c689ff947-zp8gq</code></
 We can now connect to $KUBERNETES/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*/nginx_vts_server_requests_per_second, and we should see</code></pre>
 <p>https://github.com/DirectXMan12/k8s-prometheus-adapter/blob/master/docs/config-walkthrough.md</p>
 <p>https://github.com/DirectXMan12/k8s-prometheus-adapter/blob/master/docs/config.md</p>
-<h1 id="hpa"><a href="http://49.7.203.222:2023/#/prometheus/hpa-custom?id=配置hpa实现自定义指标的业务伸缩">配置HPA实现自定义指标的业务伸缩</a></h1>
+<h1 id="hpa"><a href="http://49.7.203.222:2023/#/prometheus/hpa-custom?id=配置hpa实现自定义指标的业务伸缩">配置HPA实现自定义指标的业务伸缩</a><a class="headerlink" href="#hpa" title="Permanent link">&para;</a></h1>
 <pre class="highlight"><code class="language-bash">$ cat hpa-custom-metrics.yaml
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
@@ -2808,6 +2893,8 @@ data:
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {

@@ -38,6 +38,18 @@ https://kubernetes.io/
 
 ![img](./3Kubernetes落地实践之旅.assets/architecture.png)
 
+```text
+Kubernetes 集群 = 管理节点(Master) + 工作节点(Worker)
++--------------------------------+      +-----------------------------+
+|  Master / Control Plane        |      |  Worker Node                |
+|  - API Server                  |<---->|  - kubelet                  |
+|  - Scheduler                   |      |  - kube-proxy               |
+|  - Controller Manager          |      |  - 容器运行时(containerd)    |
+|  - etcd                        |      |  - Pod / 容器               |
++--------------------------------+      +-----------------------------+
+```
+
+
 #### [核心组件](http://49.7.203.222:2023/#/kubernetes-base/introduction?id=核心组件)
 
 - ETCD：分布式高性能键值数据库,存储整个集群的所有元数据
@@ -124,6 +136,16 @@ docker调度的是容器，在k8s集群中，最小的调度单元是Pod（豆�
 
 ![img](./3Kubernetes落地实践之旅.assets/pod-demo.png)
 
+```text
+Docker: 调度单位 = 容器(Container)
+K8s  : 最小调度单位 = Pod(可包含 1..n 个紧密关联的容器)
+        +----------- Pod -----------+
+        |  container A (sidecar?)  |
+        |  container B (主容器)     |
+        +--------------------------+
+```
+
+
 ###### [为什么引入Pod](http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=为什么引入pod)
 
 - 与容器引擎解耦
@@ -135,6 +157,16 @@ docker调度的是容器，在k8s集群中，最小的调度单元是Pod（豆�
 ###### [Pod在集群中的形态](http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=pod在集群中的形态)
 
 ![img](./3Kubernetes落地实践之旅.assets/k8s-pods.jpg)
+
+```text
+        +----------- Node1 -----------+   +----------- Node2 -----------+
+        |  Pod A    Pod B             |   |  Pod C    Pod D             |
+        +-----------------------------+   +-----------------------------+
+                  ^                                 ^
+                  |            k8s 集群调度            |
+            每个 Pod 被分配给某个 Node 运行
+```
+
 
 ###### [使用yaml格式定义Pod](http://49.7.203.222:2023/#/kubernetes-base/pod-base?id=使用yaml格式定义pod)
 
@@ -376,6 +408,23 @@ EOF
 # [工作流程](http://49.7.203.222:2023/#/kubernetes-base/workflow?id=工作流程)
 
 ![img](./3Kubernetes落地实践之旅.assets/process.png)
+
+```text
+用户 --资源文件(yaml)--> API Server
+                            |
+                            v
+                        Scheduler (选节点)
+                            |
+                            v
+                  Controller Manager (维持期望状态)
+                            |
+                            v
+                  kubelet (在目标 Node 创建/管理 Pod)
+                            |
+                            v
+                        Pod 运行 / 业务提供服务
+```
+
 
 1. 用户准备一个资源文件（记录了业务应用的名称、镜像地址等信息），通过调用APIServer执行创建Pod
 2. APIServer收到用户的Pod创建请求，将Pod信息写入到etcd中
@@ -689,6 +738,14 @@ EOF
     ```
 
     ![img](./3Kubernetes落地实践之旅.assets/livenessprobe.webp)
+
+```text
+LivenessProbe (存活探测):
+  容器启动 initialDelaySeconds=20s 后开始
+  每 periodSeconds=15s 探测一次 :8000 TCP 连接
+  连续 failureThreshold=3 次失败 -> 杀死并重启容器
+```
+
 
 - ReadinessProbe探针 可用性探测：用于判断容器是否正常提供服务，即容器的Ready是否为True，是否可以接收请求，如果`ReadinessProbe`探测失败，则容器的Ready将为False，`Endpoint Controller`控制器将此Pod的Endpoint从对应的service的Endpoint列表中移除，不再将任何请求调度此Pod上，直到下次探测成功。（剔除此pod不参与接收请求不会将流量转发给此Pod）。
 
@@ -1082,6 +1139,17 @@ k8s提供两类资源，`configMap`和`Secret`，可以用来实现业务配置�
 
 ![img](./3Kubernetes落地实践之旅.assets/configmap.png)
 
+```text
+传统: 配置写死在镜像内 (难移植)
+K8s : 配置外置
+   ConfigMap  -> 配置文件 / 环境变量(非敏感)
+   Secret     -> 密码 / token(敏感, base64)
+        |
+        v  挂载或注入
+    Pod 内的容器 (镜像保持纯净, 可移植)
+```
+
+
 - `configMap`，通常用来管理应用的配置文件或者环境变量
 
     ```yaml
@@ -1255,6 +1323,20 @@ Pod的状态如下表所示：
 
 ![img](./3Kubernetes落地实践之旅.assets/AOQgQj.jpg)
 
+```text
+Pod 生命周期:
+  [ Pending ] --调度成功--> [ ContainerCreating ]
+        |
+  运行 Init Container(初始化容器, 按顺序)
+        |
+  运行主容器 (PostStart hook)
+        |
+  [ Running ] <--> 探针维护
+        |
+  收到删除 -> (PreStop hook) -> [ Terminating ] -> [ Succeeded / Failed ]
+```
+
+
 初始化容器：
 
 - 验证业务应用依赖的组件是否均已启动
@@ -1390,6 +1472,17 @@ $ cat /tmp/loap/timing
 控制器又称工作负载是用于实现管理pod的中间层，确保pod资源符合预期的状态，pod的资源出现故障时，会尝试 进行重启，当根据重启策略无效，则会重新新建pod的资源。
 
 ![img](./3Kubernetes落地实践之旅.assets/workload.png)
+
+```text
+Workload (控制器) 管理 Pod, 维持期望状态:
+  - ReplicaSet   : 维持指定副本数, 支持扩缩容
+  - Deployment   : 管理 ReplicaSet, 支持滚动更新/回滚
+  - StatefulSet  : 有状态应用(稳定网络标识/存储)
+  - DaemonSet    : 每个 Node 跑一个 Pod
+  - Job/CronJob  : 一次性 / 定时任务
+  故障时重启; 重启无效则重建 Pod
+```
+
 
 - ReplicaSet: 用户创建指定数量的pod副本数量，确保pod副本数量符合预期状态，并且支持滚动式自动扩容和缩容功能
 - Deployment：工作在ReplicaSet之上，用于管理无状态应用，目前来说最好的控制器。支持滚动更新和回滚功能，提供声明式配置
@@ -1737,6 +1830,21 @@ $ docker push 172.16.1.226:5000/eladmin/eladmin-api:v2
 
 ![img](./3Kubernetes落地实践之旅.assets/deployment-workflow.jpg)
 
+```text
+Deployment
+   | 创建/管理
+   v
+ ReplicaSet (指定 replicas)
+   | 维持副本
+   v
+ Pod x N
+   | 新版本发布
+   v
+ 滚动更新: 新 RS 逐步扩容, 旧 RS 逐步缩容 (不中断服务)
+ 回滚: 切回旧 ReplicaSet
+```
+
+
 
 
 # 滚动更新
@@ -1841,6 +1949,15 @@ kubectl apply -f deploy-eladmin-api.yaml
 ```
 
 ![img](./3Kubernetes落地实践之旅.assets/update.png)
+
+```text
+更新策略:
+  RollingUpdate (默认): maxSurge / maxUnavailable 控制滚动节奏
+     新版本 Pod 逐个上线, 旧版本逐个下线
+  Recreate: 先删全部旧 Pod, 再建新 Pod (有中断)
+  Rollback: kubectl rollout undo -> 回到上一 Revision
+```
+
 
 策略控制：
 
@@ -2153,6 +2270,18 @@ kubectl -n kube-system logs -f kube-proxy-gmmlv  #改成当前主机的kube-prox
 
   ![image-20221121220104089](./3Kubernetes落地实践之旅.assets/image-20221121220104089.png)
 
+```text
+kube-proxy (iptables 模式):
+  Service ClusterIP:10.96.x.x:80
+        |
+        v  iptables 规则 (DNAT)
+  Pod1:192.168.1.10:80  \
+  Pod2:192.168.1.11:80   > 随机/轮询转发
+  Pod3:192.168.1.12:80  /
+  (每个 Node 上 kube-proxy 维护相同规则)
+```
+
+
 
 
 ```bash
@@ -2447,6 +2576,18 @@ Ingress-nginx是7层的负载均衡器 ，负责统一管理外部对k8s cluster
 ###### [示意图：](http://49.7.203.222:2023/#/kubernetes-base/ingress?id=示意图：)
 
 ![img](./3Kubernetes落地实践之旅.assets/ingress.webp)
+
+```text
+外部用户 --域名--> Ingress Controller
+                        |
+                        v  按规则( host / path )路由
+                   Service (ClusterIP)
+                        |
+                        v
+                    Pod (后端服务)
+  (Ingress 提供 7层 路由, 弥补 Service 仅 4层 的不足)
+```
+
 
 ###### [实现逻辑](http://49.7.203.222:2023/#/kubernetes-base/ingress?id=实现逻辑)
 
@@ -3356,6 +3497,15 @@ EOF
 
 ![img](./3Kubernetes落地实践之旅.assets/summary.jpg)
 
+```text
+K8s 落地核心:
+  集群(管理/工作节点)
+    -> 资源对象(Pod/Deployment/Service/Ingress/ConfigMap...)
+    -> 通过 声明式 yaml 描述期望状态
+    -> 各组件协同把实际状态逼近期望状态
+```
+
+
 
 
 后端快速部署记录
@@ -3678,6 +3828,16 @@ kubectl create -f ingress-eladmin-api.yaml
 ### Pod 的几种状态及其含义
 
 ![在这里插入图片描述](assets/32eca7524a9b4c1195d6a7e05c072336.png)
+
+```text
+Pod 状态:
+  Pending     : 已接受, 但容器未全部就绪(调度/拉镜像中)
+  Running     : 绑定到节点, 至少1容器运行中
+  Succeeded   : 所有容器正常退出, 不再重启
+  Failed      : 至少1容器非正常退出
+  Unknown     : 无法获取状态(节点通信异常)
+```
+
 
 1. Pending
 描述：

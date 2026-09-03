@@ -176,9 +176,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">非高可用版本</h1>
-<h2 id="_2">集群信息</h2>
-<h3 id="_3"><a href="http://49.7.203.222:2023/#/install/single-master/cluster-info?id=节点规划">节点规划</a></h3>
+                <h1 id="_1">非高可用版本<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">集群信息<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3"><a href="http://49.7.203.222:2023/#/install/single-master/cluster-info?id=节点规划">节点规划</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>部署k8s集群的节点按照用途可以划分为如下2类角色：</p>
 <ul>
 <li><strong>master</strong>：集群的master节点，集群的初始化节点，基础配置不低于2C4G</li>
@@ -215,7 +215,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="_4"><a href="http://49.7.203.222:2023/#/install/single-master/cluster-info?id=组件版本">组件版本</a></h3>
+<h3 id="_4"><a href="http://49.7.203.222:2023/#/install/single-master/cluster-info?id=组件版本">组件版本</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -272,8 +272,8 @@
 </tr>
 </tbody>
 </table>
-<h2 id="_5">安装前准备</h2>
-<h3 id="hosts"><a href="http://49.7.203.222:2023/#/install/single-master/prepare?id=设置hosts解析">设置hosts解析</a></h3>
+<h2 id="_5">安装前准备<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="hosts"><a href="http://49.7.203.222:2023/#/install/single-master/prepare?id=设置hosts解析">设置hosts解析</a><a class="headerlink" href="#hosts" title="Permanent link">&para;</a></h3>
 <p>操作节点：所有节点（<code>k8s-master，k8s-slave</code>）均需执行</p>
 <ul>
 <li><strong>修改hostname</strong> hostname必须只能包含小写字母、数字、","、"-"，且开头结尾必须是小写字母或数字</li>
@@ -294,7 +294,7 @@ $ hostnamectl set-hostname k8s-slave2 #设置slave2节点的hostname</code></pre
 172.16.1.227 k8s-slave1
 172.16.1.228 k8s-slave2
 EOF</code></pre>
-<h3 id="_6"><a href="http://49.7.203.222:2023/#/install/single-master/prepare?id=调整系统配置">调整系统配置</a></h3>
+<h3 id="_6"><a href="http://49.7.203.222:2023/#/install/single-master/prepare?id=调整系统配置">调整系统配置</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <p>操作节点： 所有的master和slave节点（<code>k8s-master,k8s-slave</code>）需要执行</p>
 <blockquote>
 <p>本章下述操作均以k8s-master为例，其他节点均是相同的操作（ip和hostname的值换成对应机器的真实值）</p>
@@ -351,7 +351,7 @@ gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
         http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 yum clean all &amp;&amp; yum makecache</code></pre>
-<h3 id="docker"><a href="http://49.7.203.222:2023/#/install/single-master/prepare?id=安装docker">安装docker</a></h3>
+<h3 id="docker"><a href="http://49.7.203.222:2023/#/install/single-master/prepare?id=安装docker">安装docker</a><a class="headerlink" href="#docker" title="Permanent link">&para;</a></h3>
 <p>操作节点： 所有节点</p>
 <pre class="highlight"><code class="language-python"> ## 查看所有的可用版本
 $ yum list docker-ce --showduplicates | sort -r
@@ -380,15 +380,15 @@ cat &gt; /etc/docker/daemon.json&lt;&lt;EOF
 EOF
 ## 启动docker
 $ systemctl enable docker &amp;&amp; systemctl start docker</code></pre>
-<h2 id="_7">初始化集群</h2>
-<h3 id="kubeadm-kubelet-kubectl"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=安装-kubeadm-kubelet-和-kubectl">安装 kubeadm, kubelet 和 kubectl</a></h3>
+<h2 id="_7">初始化集群<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h3 id="kubeadm-kubelet-kubectl"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=安装-kubeadm-kubelet-和-kubectl">安装 kubeadm, kubelet 和 kubectl</a><a class="headerlink" href="#kubeadm-kubelet-kubectl" title="Permanent link">&para;</a></h3>
 <p>操作节点： 所有的master和slave节点(<code>k8s-master,k8s-slave</code>) 需要执行</p>
 <pre class="highlight"><code class="language-bash">$ yum install -y kubelet-1.24.4 kubeadm-1.24.4 kubectl-1.24.4 --disableexcludes=kubernetes
 ## 查看kubeadm 版本
 $ kubeadm version
 ## 设置kubelet开机启动
 $ systemctl enable kubelet </code></pre>
-<h3 id="containerd"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=配置containerd">配置containerd</a></h3>
+<h3 id="containerd"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=配置containerd">配置containerd</a><a class="headerlink" href="#containerd" title="Permanent link">&para;</a></h3>
 <p>操作节点：所有的master和slave节点(<code>k8s-master,k8s-slave</code>) 需要执行</p>
 <ul>
 <li>
@@ -450,7 +450,7 @@ EOF</code></pre>
 <pre class="highlight"><code class="language-bash">systemctl restart containerd</code></pre>
 </li>
 </ul>
-<h3 id="_8"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=初始化配置文件">初始化配置文件</a></h3>
+<h3 id="_8"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=初始化配置文件">初始化配置文件</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
 <p>操作节点： 只在master节点（<code>k8s-master</code>）执行</p>
 <pre class="highlight"><code class="language-yaml">$ kubeadm config print init-defaults &gt; kubeadm.yaml
 $ cat kubeadm.yaml
@@ -512,7 +512,7 @@ systemctl restart containerd
 <blockquote>
 <p>对于上面的资源清单的文档比较杂，要想完整了解上面的资源对象对应的属性，可以查看对应的 godoc 文档，地址: https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta3。</p>
 </blockquote>
-<h3 id="_9"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=提前下载镜像">提前下载镜像</a></h3>
+<h3 id="_9"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=提前下载镜像">提前下载镜像</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
 <p>操作节点：只在master节点（<code>k8s-master</code>）执行</p>
 <pre class="highlight"><code class="language-python">  # 查看需要使用的镜像列表,若无问题，将得到如下列表
 $ kubeadm config images list --config kubeadm.yaml
@@ -532,7 +532,7 @@ $ kubeadm config images pull --config kubeadm.yaml
 [config/images] Pulled registry.aliyuncs.com/google_containers/pause:3.7
 [config/images] Pulled registry.aliyuncs.com/google_containers/etcd:3.5.3-0
 [config/images] Pulled registry.aliyuncs.com/google_containers/coredns:v1.8.6</code></pre>
-<h3 id="master"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=初始化master节点">初始化master节点</a></h3>
+<h3 id="master"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=初始化master节点">初始化master节点</a><a class="headerlink" href="#master" title="Permanent link">&para;</a></h3>
 <p>操作节点：只在master节点（<code>k8s-master</code>）执行，注意只在master节点执行！</p>
 <pre class="highlight"><code class="language-python">kubeadm init --config kubeadm.yaml</code></pre>
 <p>若初始化成功后，最后会提示如下信息：</p>
@@ -561,13 +561,13 @@ kubeadm join 172.16.1.226:6443 --token abcdef.0123456789abcdef \
 <p><strong>⚠️注意：</strong>此时使用 kubectl get nodes查看节点应该处于notReady状态，因为还未配置网络插件</p>
 <p>若执行初始化过程中出错，根据错误信息调整后，执行kubeadm reset后再次执行init操作即可</p>
 </blockquote>
-<h3 id="slave"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=添加slave节点到集群中">添加slave节点到集群中</a></h3>
+<h3 id="slave"><a href="http://49.7.203.222:2023/#/install/single-master/init?id=添加slave节点到集群中">添加slave节点到集群中</a><a class="headerlink" href="#slave" title="Permanent link">&para;</a></h3>
 <p>操作节点：所有的slave节点（<code>k8s-slave</code>）需要执行 在每台slave节点，执行如下命令，该命令是在kubeadm init成功后提示信息中打印出来的，需要替换成实际init后打印出的命令。</p>
 <pre class="highlight"><code class="language-python">kubeadm join 172.16.1.226:6443 --token abcdef.0123456789abcdef \
     --discovery-token-ca-cert-hash sha256:1c4305f032f4bf534f628c32f5039084f4b103c922ff71b12a5f0f98d1ca9a4f</code></pre>
 <p>如果忘记添加命令，可以通过如下命令生成：</p>
 <pre class="highlight"><code class="language-bash">$ kubeadm token create --print-join-command</code></pre>
-<h2 id="_10">网络插件</h2>
+<h2 id="_10">网络插件<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
 <p>操作节点：只在master节点（<code>k8s-master</code>）执行，CNI</p>
 <ul>
 <li>
@@ -620,8 +620,8 @@ kubectl apply -f kube-flannel.yml
 kubectl -n kube-flannel get po -owide</code></pre>
 </li>
 </ul>
-<h2 id="_11">集群设置</h2>
-<h3 id="master_1"><a href="http://49.7.203.222:2023/#/install/single-master/cluster-setting?id=设置master节点是否可调度（可选）">设置master节点是否可调度（可选）</a></h3>
+<h2 id="_11">集群设置<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<h3 id="master_1"><a href="http://49.7.203.222:2023/#/install/single-master/cluster-setting?id=设置master节点是否可调度（可选）">设置master节点是否可调度（可选）</a><a class="headerlink" href="#master_1" title="Permanent link">&para;</a></h3>
 <p>操作节点：<code>k8s-master</code></p>
 <p>默认部署成功后，master节点无法调度业务pod，如需设置master节点也可以参与pod的调度，需执行：</p>
 <pre class="highlight"><code class="language-bash">kubectl taint node k8s-master node-role.kubernetes.io/master:NoSchedule-
@@ -629,13 +629,13 @@ kubectl taint node k8s-master node-role.kubernetes.io/control-plane:NoSchedule-<
 <blockquote>
 <p>课程后期会部署系统组件到master节点，因此，此处建议设置k8s-master节点为可调度</p>
 </blockquote>
-<h3 id="kubectl"><a href="http://49.7.203.222:2023/#/install/single-master/cluster-setting?id=设置kubectl自动补全">设置kubectl自动补全</a></h3>
+<h3 id="kubectl"><a href="http://49.7.203.222:2023/#/install/single-master/cluster-setting?id=设置kubectl自动补全">设置kubectl自动补全</a><a class="headerlink" href="#kubectl" title="Permanent link">&para;</a></h3>
 <p>操作节点：<code>k8s-master</code></p>
 <pre class="highlight"><code class="language-bash">$ yum install bash-completion -y
 source /usr/share/bash-completion/bash_completion
 source &lt;(kubectl completion bash)
 echo "source &lt;(kubectl completion bash)" &gt;&gt; ~/.bashrc</code></pre>
-<h2 id="_12">调整证书过期</h2>
+<h2 id="_12">调整证书过期<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
 <p>使用kubeadm安装的集群，证书默认有效期为1年，可以通过如下方式修改为10年。</p>
 <pre class="highlight"><code class="language-bash">cd /etc/kubernetes/pki
 
@@ -650,7 +650,7 @@ bash update-kubeadm-cert.sh all
 
 #若无法clone项目，可以手动在浏览器中打开后，复制update-kubeadm-cert.sh 脚本内容到机器中执行
 </code></pre>
-<h2 id="_13">验证集群</h2>
+<h2 id="_13">验证集群<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
 <p>操作节点： 在master节点（<code>k8s-master</code>）执行</p>
 <pre class="highlight"><code class="language-python">$ kubectl get nodes  #观察集群节点是否全部Ready</code></pre>
 <p>创建测试nginx服务</p>
@@ -673,7 +673,7 @@ Commercial support is available at
 &lt;p&gt;&lt;em&gt;Thank you for using nginx.&lt;/em&gt;&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<h2 id="containerd_1">containerd客户端介绍</h2>
+<h2 id="containerd_1">containerd客户端介绍<a class="headerlink" href="#containerd_1" title="Permanent link">&para;</a></h2>
 <p>操作节点：所有节点</p>
 <p>由于新版本的k8s直接采用<code>containerd</code>作为容器运行时，因此，后续创建的服务，通过<code>docker</code>的命令无法查询，因此，如果有需要对节点中的容器进行操作的需求，需要用<code>containerd</code>的命令行工具来替换，目前总共有三种，包含：</p>
 <ul>
@@ -681,7 +681,7 @@ Commercial support is available at
 <li>crictl</li>
 <li>nerctl</li>
 </ul>
-<h6 id="ctr"><a href="http://49.7.203.222:2023/#/install/single-master/containerd-cli?id=ctr">ctr</a></h6>
+<h6 id="ctr"><a href="http://49.7.203.222:2023/#/install/single-master/containerd-cli?id=ctr">ctr</a><a class="headerlink" href="#ctr" title="Permanent link">&para;</a></h6>
 <p>ctr为最基础的<code>containerd</code>的操作命令行工具，安装<code>containerd</code>时已默认安装，因此无需再单独安装。</p>
 <p>ctr的可操作的命令很少，且很不人性化，因此极力不推荐使用</p>
 <p>Containerd 也有 namespaces 的概念，对于上层编排系统的支持，<code>ctr</code> 客户端 主要区分了 3 个命名空间分别是<code>k8s.io</code>、<code>moby</code>和<code>default</code></p>
@@ -702,7 +702,7 @@ ctr -n=k8s.io image import dashboard.tar
 ctr images pull --user admin:admin  --hosts-dir "/etc/containerd/certs.d"  172.16.1.226:5000/eladmin/eladmin-api:v1-rc1
 
 # ctr命令无法查看容器的日志，也无法执行exec等操作</code></pre>
-<h6 id="crictl"><a href="http://49.7.203.222:2023/#/install/single-master/containerd-cli?id=crictl">crictl</a></h6>
+<h6 id="crictl"><a href="http://49.7.203.222:2023/#/install/single-master/containerd-cli?id=crictl">crictl</a><a class="headerlink" href="#crictl" title="Permanent link">&para;</a></h6>
 <p><code>crictl</code> 是遵循 CRI 接口规范的一个命令行工具，通常用它来检查和管理kubelet节点上的容器运行时和镜像。</p>
 <p>主机安装了 k8s 后，命令行会有<code>crictl</code> 命令，无需单独安装。</p>
 <p><code>crictl</code> 命令默认使用<code>k8s.io</code> 这个名称空间，因此无需单独指定，使用前，需要先加一下配置文件：</p>
@@ -751,7 +751,7 @@ crictl logs -f d23fe516d2eeb
 
 # 清理镜像
 crictl rmi --prune</code></pre>
-<h6 id="nerdctl"><a href="http://49.7.203.222:2023/#/install/single-master/containerd-cli?id=nerdctl">nerdctl</a></h6>
+<h6 id="nerdctl"><a href="http://49.7.203.222:2023/#/install/single-master/containerd-cli?id=nerdctl">nerdctl</a><a class="headerlink" href="#nerdctl" title="Permanent link">&para;</a></h6>
 <p>推荐使用 <code>nerdctl</code>，使用效果与 docker 命令的语法基本一致 , 官网<code>https://github.com/containerd/nerdctl</code></p>
 <p>安装：</p>
 <pre class="highlight"><code class="language-bash"># 下载精简版安装包，精简版的包无法使用nerdctl进行构建镜像
@@ -792,7 +792,7 @@ nerdctl -n k8s.io logs -f test
 
 # 构建，但是需要额外安装buildkit的包
 nerdctl build . -t xxxx:tag -f Dockerfile</code></pre>
-<h6 id="_14"><a href="http://49.7.203.222:2023/#/install/single-master/containerd-cli?id=使用小经验">使用小经验</a></h6>
+<h6 id="_14"><a href="http://49.7.203.222:2023/#/install/single-master/containerd-cli?id=使用小经验">使用小经验</a><a class="headerlink" href="#_14" title="Permanent link">&para;</a></h6>
 <ul>
 <li>用了k8s后，对于业务应用的基本操作，90%以上都可以通过<code>kubectl</code>命令行完成</li>
 <li>对于镜像的构建，仍然推荐使用<code>docker build</code> 来完成，推送到镜像仓库后，containerd可以直接使用</li>
@@ -804,7 +804,7 @@ nerdctl build . -t xxxx:tag -f Dockerfile</code></pre>
 <li>https://www.modb.pro/db/485911</li>
 <li>https://github.com/containerd/nerdctl#container-management</li>
 </ul>
-<h2 id="dashboard">部署dashboard</h2>
+<h2 id="dashboard">部署dashboard<a class="headerlink" href="#dashboard" title="Permanent link">&para;</a></h2>
 <ul>
 <li>部署服务</li>
 </ul>
@@ -868,10 +868,28 @@ $ kubectl apply -f dashboard-admin.conf
 $ kubectl -n kubernetes-dashboard create token admin
 eyJhbGciOiJSUzI1NiIsImtpZCI6Ik1rb2xHWHMwbWFPMjJaRzhleGRqaExnVi1BLVNRc2txaEhETmVpRzlDeDQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi10b2tlbi1mcWRwZiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJhZG1pbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjYyNWMxNjJlLTQ1ZG...</code></pre>
 <p><img alt="img" src="../2Kubernetes%E5%AE%89%E8%A3%85%E6%96%87%E6%A1%A3.assets/dashboard.png" /></p>
+<pre class="highlight"><code class="language-text">+-------------------------------+
+|     Kubernetes Dashboard 登录   |
+|  ( ) Kubeconfig                |
+|  (*) Token   &lt;-- 选择此项       |
+|  [ token 输入框            ]   |
+|  [      登录 SIGN IN       ]   |
++-------------------------------+
+        |
+        v  粘贴下方生成的 token
++-------------------------------+
+|  eyJhbGciOiJSUzI1NiIs...      |
+|  (serviceaccount 的 JWT token) |
++-------------------------------+</code></pre>
 <p><img alt="img" src="../2Kubernetes%E5%AE%89%E8%A3%85%E6%96%87%E6%A1%A3.assets/dashboard-content.jpg" /></p>
+<pre class="highlight"><code class="language-text">Dashboard 中显示的 token 内容(示例):
++------------------------------------------------------+
+|  eyJhbGciOiJSUzI1NiIsImtpZCI6I... (长串 JWT 字符串)   |
++------------------------------------------------------+
+将其完整复制, 粘贴到登录框的 Token 输入框即可进入控制台</code></pre>
 <pre class="highlight"><code class="language-bash">#记得清理
 kubectl delete -f recommended.yaml</code></pre>
-<h2 id="_15">清理集群</h2>
+<h2 id="_15">清理集群<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
 <p>如果你的集群安装过程中遇到了其他问题，我们可以使用下面的命令来进行重置：</p>
 <pre class="highlight"><code class="language-bash"># 在全部集群节点执行
 kubeadm reset
@@ -895,9 +913,9 @@ rm -rf /etc/kubernetes/manifests/kube-controller-manager.yaml
 rm -rf /etc/kubernetes/manifests/kube-scheduler.yaml
 rm -rf /etc/kubernetes/manifests/etcd.yaml
 yum remove -y kubelet-1.24.4 kubeadm-1.24.4 kubectl-1.24.4 docker-ce</code></pre>
-<h1 id="_16">高可用版本</h1>
-<h2 id="_17">集群信息</h2>
-<h3 id="1"><a href="http://49.7.203.222:2023/#/install/multi-master/cluster-info?id=_1-节点规划">1. 节点规划</a></h3>
+<h1 id="_16">高可用版本<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h1>
+<h2 id="_17">集群信息<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<h3 id="1"><a href="http://49.7.203.222:2023/#/install/multi-master/cluster-info?id=_1-节点规划">1. 节点规划</a><a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
 <p>部署k8s集群的节点按照用途可以划分为如下2类角色：</p>
 <ul>
 <li><strong>master</strong>：集群的master节点，集群的初始化节点，基础配置不低于2C4G</li>
@@ -952,7 +970,7 @@ yum remove -y kubelet-1.24.4 kubeadm-1.24.4 kubectl-1.24.4 docker-ce</code></pre
 </tr>
 </tbody>
 </table>
-<h3 id="2"><a href="http://49.7.203.222:2023/#/install/multi-master/cluster-info?id=_2-组件版本">2. 组件版本</a></h3>
+<h3 id="2"><a href="http://49.7.203.222:2023/#/install/multi-master/cluster-info?id=_2-组件版本">2. 组件版本</a><a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1009,8 +1027,8 @@ yum remove -y kubelet-1.24.4 kubeadm-1.24.4 kubectl-1.24.4 docker-ce</code></pre
 </tr>
 </tbody>
 </table>
-<h2 id="_18">安装前准备</h2>
-<h3 id="1-hosts"><a href="http://49.7.203.222:2023/#/install/multi-master/prepare?id=_1-设置hosts解析">1. 设置hosts解析</a></h3>
+<h2 id="_18">安装前准备<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h2>
+<h3 id="1-hosts"><a href="http://49.7.203.222:2023/#/install/multi-master/prepare?id=_1-设置hosts解析">1. 设置hosts解析</a><a class="headerlink" href="#1-hosts" title="Permanent link">&para;</a></h3>
 <p>操作节点：所有节点（<code>k8s-master，k8s-node</code>）均需执行</p>
 <ul>
 <li><strong>修改hostname</strong> hostname必须只能包含小写字母、数字、","、"-"，且开头结尾必须是小写字母或数字</li>
@@ -1032,7 +1050,7 @@ $ hostnamectl set-hostname k8s-node1 #设置node1节点的hostname</code></pre>
 172.21.51.143 k8s-node1
 172.21.52.84 k8s-node2
 EOF</code></pre>
-<h3 id="2_1"><a href="http://49.7.203.222:2023/#/install/multi-master/prepare?id=_2-调整系统配置">2. 调整系统配置</a></h3>
+<h3 id="2_1"><a href="http://49.7.203.222:2023/#/install/multi-master/prepare?id=_2-调整系统配置">2. 调整系统配置</a><a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h3>
 <p>操作节点： 所有的master和node节点（<code>k8s-master,k8s-node</code>）需要执行</p>
 <blockquote>
 <p>本章下述操作均以k8s-master为例，其他节点均是相同的操作（ip和hostname的值换成对应机器的真实值）</p>
@@ -1108,7 +1126,7 @@ gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
 EOF
 $ yum clean all &amp;&amp; yum makecache
 $ yum install ipvsadm ipset sysstat conntrack libseccomp -y</code></pre>
-<h3 id="3-docker"><a href="http://49.7.203.222:2023/#/install/multi-master/prepare?id=_3-安装docker">3. 安装docker</a></h3>
+<h3 id="3-docker"><a href="http://49.7.203.222:2023/#/install/multi-master/prepare?id=_3-安装docker">3. 安装docker</a><a class="headerlink" href="#3-docker" title="Permanent link">&para;</a></h3>
 <p>操作节点： 所有节点</p>
 <pre class="highlight"><code class="language-python"> ## 查看所有的可用版本
 $ yum list docker-ce --showduplicates | sort -r
@@ -1130,15 +1148,15 @@ vi /etc/docker/daemon.json
 }
 ## 启动docker
 $ systemctl enable docker &amp;&amp; systemctl start docker</code></pre>
-<h2 id="_19">初始化集群</h2>
-<h3 id="kubeadm-kubelet-kubectl_1"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=安装-kubeadm-kubelet-和-kubectl">安装 kubeadm, kubelet 和 kubectl</a></h3>
+<h2 id="_19">初始化集群<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h2>
+<h3 id="kubeadm-kubelet-kubectl_1"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=安装-kubeadm-kubelet-和-kubectl">安装 kubeadm, kubelet 和 kubectl</a><a class="headerlink" href="#kubeadm-kubelet-kubectl_1" title="Permanent link">&para;</a></h3>
 <p>操作节点： 所有的master和node节点(<code>k8s-master,k8s-node</code>) 需要执行</p>
 <pre class="highlight"><code class="language-bash">$ yum install -y kubelet-1.24.4 kubeadm-1.24.4 kubectl-1.24.4 --disableexcludes=kubernetes
 ## 查看kubeadm 版本
 $ kubeadm version
 ## 设置kubelet开机启动
 $ systemctl enable kubelet </code></pre>
-<h3 id="containerd_2"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=配置containerd">配置containerd</a></h3>
+<h3 id="containerd_2"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=配置containerd">配置containerd</a><a class="headerlink" href="#containerd_2" title="Permanent link">&para;</a></h3>
 <p>操作节点：所有的master和slave节点(<code>k8s-master,k8s-slave</code>) 需要执行</p>
 <ul>
 <li>
@@ -1199,7 +1217,7 @@ EOF</code></pre>
 <pre class="highlight"><code class="language-bash">systemctl restart containerd</code></pre>
 </li>
 </ul>
-<h3 id="haproxykeepalived"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=安装配置haproxy、keepalived">安装配置haproxy、keepalived</a></h3>
+<h3 id="haproxykeepalived"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=安装配置haproxy、keepalived">安装配置haproxy、keepalived</a><a class="headerlink" href="#haproxykeepalived" title="Permanent link">&para;</a></h3>
 <p>操作节点： 所有的master</p>
 <pre class="highlight"><code class="language-bash">$ yum install keepalived haproxy -y
 
@@ -1345,7 +1363,7 @@ $ systemctl enable --now keepalived
 
 # 测试lbip是否生效
 $ telnet 172.21.51.120 7443</code></pre>
-<h3 id="3"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_3-初始化配置文件">3. 初始化配置文件</a></h3>
+<h3 id="3"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_3-初始化配置文件">3. 初始化配置文件</a><a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
 <p>操作节点： 只在k8s-master1节点执行</p>
 <pre class="highlight"><code class="language-yaml">$ cat kubeadm.yaml
 apiVersion: kubeadm.k8s.io/v1beta3
@@ -1394,7 +1412,7 @@ scheduler: {}</code></pre>
 <blockquote>
 <p>对于上面的资源清单的文档比较杂，要想完整了解上面的资源对象对应的属性，可以查看对应的 godoc 文档，地址: https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta3。</p>
 </blockquote>
-<h3 id="4"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_4-提前下载镜像">4. 提前下载镜像</a></h3>
+<h3 id="4"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_4-提前下载镜像">4. 提前下载镜像</a><a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
 <p>操作节点：所有master节点执行</p>
 <pre class="highlight"><code class="language-python">  # 查看需要使用的镜像列表,若无问题，将得到如下列表
 $ kubeadm config images list --config kubeadm.yaml
@@ -1408,7 +1426,7 @@ registry.aliyuncs.com/google_containers/coredns:v1.8.6
 
   # 提前下载镜像到本地
 $ kubeadm config images pull --config kubeadm.yaml</code></pre>
-<h3 id="5-master"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_5-初始化master节点">5. 初始化master节点</a></h3>
+<h3 id="5-master"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_5-初始化master节点">5. 初始化master节点</a><a class="headerlink" href="#5-master" title="Permanent link">&para;</a></h3>
 <p>操作节点：只在k8s-master1节点执行</p>
 <pre class="highlight"><code class="language-bash">$ kubeadm init --config kubeadm.yaml --upload-certs</code></pre>
 <p>若初始化成功后，最后会提示如下信息：</p>
@@ -1435,14 +1453,14 @@ kubeadm join 172.21.51.120:7443 --token 7t2weq.bjbawausm0jaxury         --discov
 <blockquote>
 <p>若执行初始化过程中出错，根据错误信息调整后，执行 kubeadm reset -f ; ipvsadm --clear ; rm -rf ~/.kube</p>
 </blockquote>
-<h3 id="6-master"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_6-添加其他master节点到集群中">6. 添加其他master节点到集群中</a></h3>
+<h3 id="6-master"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_6-添加其他master节点到集群中">6. 添加其他master节点到集群中</a><a class="headerlink" href="#6-master" title="Permanent link">&para;</a></h3>
 <pre class="highlight"><code class="language-bash">$ kubeadm join 172.21.51.120:7443 --token 7t2weq.bjbawausm0jaxury         --discovery-token-ca-cert-hash sha256:b0d875f1dafe9f479b23603c3424cad5e0e3aa0a47a8274f9d24432e97e3dbde         --control-plane --certificate-key 0ea981458813160b6fbc572d415e14cbc28c4bf958a765a7bc989b7ecc5dcdd6</code></pre>
-<h3 id="7-node"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_7-添加node节点到集群中">7. 添加node节点到集群中</a></h3>
+<h3 id="7-node"><a href="http://49.7.203.222:2023/#/install/multi-master/init?id=_7-添加node节点到集群中">7. 添加node节点到集群中</a><a class="headerlink" href="#7-node" title="Permanent link">&para;</a></h3>
 <p>操作节点：所有的node节点（<code>k8s-node</code>）需要执行 在每台node节点，执行如下命令，该命令是在kubeadm init成功后提示信息中打印出来的，需要替换成实际init后打印出的命令。</p>
 <pre class="highlight"><code class="language-python">kubeadm join 172.21.51.120:7443 --token 7t2weq.bjbawausm0jaxury         --discovery-token-ca-cert-hash sha256:b0d875f1dafe9f479b23603c3424cad5e0e3aa0a47a8274f9d24432e97e3dbde      </code></pre>
 <p>如果忘记添加命令，可以通过如下命令生成：</p>
 <pre class="highlight"><code class="language-bash">$ kubeadm token create --print-join-command</code></pre>
-<h2 id="_20">网络插件</h2>
+<h2 id="_20">网络插件<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
 <p>操作节点：只在k8s-master1节点执行</p>
 <ul>
 <li>
@@ -1489,8 +1507,8 @@ kubectl apply -f kube-flannel.yml
 kubectl -n kube-flannel get po -owide</code></pre>
 </li>
 </ul>
-<h2 id="_21">集群设置</h2>
-<h3 id="master_2"><a href="http://49.7.203.222:2023/#/install/multi-master/cluster-setting?id=设置master节点是否可调度（可选）">设置master节点是否可调度（可选）</a></h3>
+<h2 id="_21">集群设置<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h2>
+<h3 id="master_2"><a href="http://49.7.203.222:2023/#/install/multi-master/cluster-setting?id=设置master节点是否可调度（可选）">设置master节点是否可调度（可选）</a><a class="headerlink" href="#master_2" title="Permanent link">&para;</a></h3>
 <p>操作节点：<code>k8s-master</code></p>
 <p>默认部署成功后，master节点无法调度业务pod，如需设置master节点也可以参与pod的调度，需执行：</p>
 <pre class="highlight"><code class="language-bash">kubectl taint node k8s-master node-role.kubernetes.io/master:NoSchedule-
@@ -1498,13 +1516,13 @@ kubectl taint node k8s-master node-role.kubernetes.io/control-plane:NoSchedule-<
 <blockquote>
 <p>课程后期会部署系统组件到master节点，因此，此处建议设置k8s-master节点为可调度</p>
 </blockquote>
-<h3 id="kubectl_1"><a href="http://49.7.203.222:2023/#/install/multi-master/cluster-setting?id=设置kubectl自动补全">设置kubectl自动补全</a></h3>
+<h3 id="kubectl_1"><a href="http://49.7.203.222:2023/#/install/multi-master/cluster-setting?id=设置kubectl自动补全">设置kubectl自动补全</a><a class="headerlink" href="#kubectl_1" title="Permanent link">&para;</a></h3>
 <p>操作节点：<code>k8s-master</code></p>
 <pre class="highlight"><code class="language-bash">$ yum install bash-completion -y
 $ source /usr/share/bash-completion/bash_completion
 $ source &lt;(kubectl completion bash)
 $ echo "source &lt;(kubectl completion bash)" &gt;&gt; ~/.bashrc</code></pre>
-<h2 id="_22">调整证书过期</h2>
+<h2 id="_22">调整证书过期<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h2>
 <p>使用kubeadm安装的集群，证书默认有效期为1年，可以通过如下方式修改为10年。</p>
 <pre class="highlight"><code class="language-bash">cd /etc/kubernetes/pki
 
@@ -1518,7 +1536,7 @@ bash update-kubeadm-cert.sh all
 
 #若无法clone项目，可以手动在浏览器中打开后，复制update-kubeadm-cert.sh 脚本内容到机器中执行
 </code></pre>
-<h2 id="_23">验证集群</h2>
+<h2 id="_23">验证集群<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h2>
 <p>操作节点： 在master节点（<code>k8s-master</code>）执行</p>
 <pre class="highlight"><code class="language-python">$ kubectl get nodes  #观察集群节点是否全部Ready</code></pre>
 <p>创建测试nginx服务</p>
@@ -1541,7 +1559,7 @@ Commercial support is available at
 &lt;p&gt;&lt;em&gt;Thank you for using nginx.&lt;/em&gt;&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<h2 id="containerd_3">containerd客户端介绍</h2>
+<h2 id="containerd_3">containerd客户端介绍<a class="headerlink" href="#containerd_3" title="Permanent link">&para;</a></h2>
 <p>操作节点：所有节点</p>
 <p>由于新版本的k8s直接采用<code>containerd</code>作为容器运行时，因此，后续创建的服务，通过<code>docker</code>的命令无法查询，因此，如果有需要对节点中的容器进行操作的需求，需要用<code>containerd</code>的命令行工具来替换，目前总共有三种，包含：</p>
 <ul>
@@ -1549,7 +1567,7 @@ Commercial support is available at
 <li>crictl</li>
 <li>nerctl</li>
 </ul>
-<h6 id="ctr_1"><a href="http://49.7.203.222:2023/#/install/multi-master/containerd-cli?id=ctr">ctr</a></h6>
+<h6 id="ctr_1"><a href="http://49.7.203.222:2023/#/install/multi-master/containerd-cli?id=ctr">ctr</a><a class="headerlink" href="#ctr_1" title="Permanent link">&para;</a></h6>
 <p>ctr为最基础的<code>containerd</code>的操作命令行工具，安装<code>containerd</code>时已默认安装，因此无需再单独安装。</p>
 <p>ctr的可操作的命令很少，且很不人性化，因此极力不推荐使用</p>
 <p>Containerd 也有 namespaces 的概念，对于上层编排系统的支持，<code>ctr</code> 客户端 主要区分了 3 个命名空间分别是<code>k8s.io</code>、<code>moby</code>和<code>default</code></p>
@@ -1570,7 +1588,7 @@ ctr -n=k8s.io image import dashboard.tar
 ctr images pull --user admin:admin  --hosts-dir "/etc/containerd/certs.d"  172.16.1.226:5000/eladmin/eladmin-api:v1-rc1
 
 # ctr命令无法查看容器的日志，也无法执行exec等操作</code></pre>
-<h6 id="crictl_1"><a href="http://49.7.203.222:2023/#/install/multi-master/containerd-cli?id=crictl">crictl</a></h6>
+<h6 id="crictl_1"><a href="http://49.7.203.222:2023/#/install/multi-master/containerd-cli?id=crictl">crictl</a><a class="headerlink" href="#crictl_1" title="Permanent link">&para;</a></h6>
 <p><code>crictl</code> 是遵循 CRI 接口规范的一个命令行工具，通常用它来检查和管理kubelet节点上的容器运行时和镜像。</p>
 <p>主机安装了 k8s 后，命令行会有<code>crictl</code> 命令，无需单独安装。</p>
 <p><code>crictl</code> 命令默认使用<code>k8s.io</code> 这个名称空间，因此无需单独指定，使用前，需要先加一下配置文件：</p>
@@ -1605,7 +1623,7 @@ crictl logs -f d23fe516d2eeb
 
 # 清理镜像
 crictl rmi --prune</code></pre>
-<h6 id="nerdctl_1"><a href="http://49.7.203.222:2023/#/install/multi-master/containerd-cli?id=nerdctl">nerdctl</a></h6>
+<h6 id="nerdctl_1"><a href="http://49.7.203.222:2023/#/install/multi-master/containerd-cli?id=nerdctl">nerdctl</a><a class="headerlink" href="#nerdctl_1" title="Permanent link">&para;</a></h6>
 <p>推荐使用 <code>nerdctl</code>，使用效果与 docker 命令的语法基本一致 , 官网<code>https://github.com/containerd/nerdctl</code></p>
 <p>安装：</p>
 <pre class="highlight"><code class="language-bash"># 下载精简版安装包，精简版的包无法使用nerdctl进行构建镜像
@@ -1641,7 +1659,7 @@ nerdctl -n k8s.io logs -f test
 
 # 构建，但是需要额外安装buildkit的包
 nerdctl build . -t xxxx:tag -f Dockerfile</code></pre>
-<h6 id="_24"><a href="http://49.7.203.222:2023/#/install/multi-master/containerd-cli?id=使用小经验">使用小经验</a></h6>
+<h6 id="_24"><a href="http://49.7.203.222:2023/#/install/multi-master/containerd-cli?id=使用小经验">使用小经验</a><a class="headerlink" href="#_24" title="Permanent link">&para;</a></h6>
 <ul>
 <li>用了k8s后，对于业务应用的基本操作，90%以上都可以通过<code>kubectl</code>命令行完成</li>
 <li>对于镜像的构建，仍然推荐使用<code>docker build</code> 来完成，推送到镜像仓库后，containerd可以直接使用</li>
@@ -1653,7 +1671,7 @@ nerdctl build . -t xxxx:tag -f Dockerfile</code></pre>
 <li>https://www.modb.pro/db/485911</li>
 <li>https://github.com/containerd/nerdctl#container-management</li>
 </ul>
-<h2 id="dashboard_1"><a href="http://49.7.203.222:2023/#/install/multi-master/dashboard?id=部署dashboard">部署dashboard</a></h2>
+<h2 id="dashboard_1"><a href="http://49.7.203.222:2023/#/install/multi-master/dashboard?id=部署dashboard">部署dashboard</a><a class="headerlink" href="#dashboard_1" title="Permanent link">&para;</a></h2>
 <ul>
 <li>部署服务</li>
 </ul>
@@ -1717,8 +1735,26 @@ $ kubectl apply -f dashboard-admin.conf
 $ kubectl -n kubernetes-dashboard create token admin
 eyJhbGciOiJSUzI1NiIsImtpZCI6Ik1rb2xHWHMwbWFPMjJaRzhleGRqaExnVi1BLVNRc2txaEhETmVpRzlDeDQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi10b2tlbi1mcWRwZiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJhZG1pbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjYyNWMxNjJlLTQ1ZG...</code></pre>
 <p><img alt="img" src="../2Kubernetes%E5%AE%89%E8%A3%85%E6%96%87%E6%A1%A3.assets/dashboard-166903877809361.png" /></p>
+<pre class="highlight"><code class="language-text">+-------------------------------+
+|     Kubernetes Dashboard 登录   |
+|  ( ) Kubeconfig                |
+|  (*) Token   &lt;-- 选择此项       |
+|  [ token 输入框            ]   |
+|  [      登录 SIGN IN       ]   |
++-------------------------------+
+        |
+        v  粘贴下方生成的 token
++-------------------------------+
+|  eyJhbGciOiJSUzI1NiIs...      |
+|  (serviceaccount 的 JWT token) |
++-------------------------------+</code></pre>
 <p><img alt="img" src="../2Kubernetes%E5%AE%89%E8%A3%85%E6%96%87%E6%A1%A3.assets/dashboard-content-166903877809362.jpg" /></p>
-<h2 id="_25">清理集群</h2>
+<pre class="highlight"><code class="language-text">Dashboard 中显示的 token 内容(示例):
++------------------------------------------------------+
+|  eyJhbGciOiJSUzI1NiIsImtpZCI6I... (长串 JWT 字符串)   |
++------------------------------------------------------+
+将其完整复制, 粘贴到登录框的 Token 输入框即可进入控制台</code></pre>
+<h2 id="_25">清理集群<a class="headerlink" href="#_25" title="Permanent link">&para;</a></h2>
 <p>如果你的集群安装过程中遇到了其他问题，我们可以使用下面的命令来进行重置：</p>
 <pre class="highlight"><code class="language-bash"># 在全部集群节点执行
 kubeadm reset
@@ -1773,6 +1809,8 @@ ip link del dummy0</code></pre>
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {

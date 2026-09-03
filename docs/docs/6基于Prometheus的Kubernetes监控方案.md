@@ -14,9 +14,32 @@ heapster负责调用各node中的cadvisor接口，对数据进行汇总，然后
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/monitor-earlier.png)
 
+```text
+早期监控 (Heapster):
+  Heapster --调用--> 各 Node 的 cAdvisor
+      |
+      v  汇总数据
+   InfluxDB (时序存储)
+      |
+      v
+  从 cluster / node / pod 层面展示资源使用
+```
+
+
 第三版本：Metrics-Server + Prometheus
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/custom-hpa.webp)
+
+```text
+监控体系标准化(三类接口):
+  metrics.k8s.io        -> Metrics-Server (CPU/内存)
+  custom.metrics.k8s.io -> Prometheus Adapter (自定义指标)
+  external.metrics...   -> 外部指标
+      |
+      v
+  HPA 基于上述指标做弹性伸缩
+```
+
 
 k8s对监控接口进行了标准化，主要分了三类：
 
@@ -37,6 +60,21 @@ k8s对监控接口进行了标准化，主要分了三类：
 ##### [Prometheus架构](http://49.7.203.222:2023/#/prometheus/arct?id=prometheus架构)
 
 ![image-20221122092246137](./6基于Prometheus的Kubernetes监控方案.assets/image-20221122092246137.png)
+
+```text
+Prometheus 架构:
+  Prometheus Server (抓取 / 存储 / 告警)
+     |  pull /metrics
+     v
+  被监控目标 (Exporter / 应用 / k8s 组件)
+     |
+     v
+  TSDB (时间序列数据库)
+     |
+     +--> PromQL 查询
+     +--> Alertmanager (告警)
+```
+
 
 - Prometheus Server ，监控、告警平台核心，抓取目标端监控数据，生成聚合数据，存储时间序列数据
 - exporter，由被监控的对象提供，提供API暴漏监控对象的指标，供prometheus 抓取
@@ -776,9 +814,28 @@ curl 172.16.1.226:9100/metrics  |grep nodel_load
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/prometheus-target-err1.jpg)
 
+```text
+Reload 后 Target 异常示例:
+  Prometheus 以 node 类型服务发现
+  默认抓取地址: http://<node-ip>:10250/metrics
+  10250 = kubelet API 端口(需鉴权)
+  (需用 relabel 改成只读/metrics 端口, 否则 401 失败)
+```
+
+
 默认访问的地址是http://node-ip/10250/metrics，10250是kubelet API的服务端口，说明Prometheus的node类型的服务发现模式，默认是和kubelet的10250绑定的，而我们是期望使用node-exporter作为采集的指标来源，因此需要把访问的endpoint替换成http://node-ip:9100/metrics。
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/when-relabel-work.png)
+
+```text
+Relabeling (重打标签):
+  抓取前, 对 target 的标签做改写/筛选
+    - 修改抓取地址 (__address__)
+    - 过滤不需要的目标
+    - 注入自定义标签
+  在 scrape 前进行, 决定"抓谁 / 怎么抓
+```
+
 
 在真正抓取数据前，Prometheus提供了relabeling的能力。怎么理解？
 
@@ -935,6 +992,15 @@ reload prometheush，此使的Target列表中，`kubernetes-sd-endpoints`下出�
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/prometheus-target-err2.png)
 
+```text
+kubernetes_sd endpoints 类型:
+  抓取集群所有命名空间的 Endpoint 列表
+  默认用 /metrics 去抓
+  但很多 endpoint 并未实现 /metrics
+  (需用 relabel keep/drop 过滤出真正暴露指标的)
+```
+
+
 可以发现，实际上endpoint这个类型，目标是去抓取整个集群中所有的命名空间的Endpoint列表，然后使用默认的/metrics进行数据抓取，我们可以通过查看集群中的所有ep列表来做对比：
 
 ```bash
@@ -944,6 +1010,16 @@ $ kubectl get endpoints --all-namespaces
 但是实际上并不是每个服务都已经实现了/metrics监控的，也不是每个实现了/metrics接口的服务都需要注册到Prometheus中，因此，我们需要一种方式对需要采集的服务实现自主可控。这就需要利用relabeling中的keep功能。
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/when-relabel-work-1669080479809213.png)
+
+```text
+Relabel 作用对象 = target 的 Before Relabeling 标签
+  例: 通过 source_labels / matchLabels
+  对 __meta_kubernetes_* 等内置标签做:
+    - action: keep/drop (筛选)
+    - action: replace (改写)
+  决定最终纳入采集的目标
+```
+
 
 我们知道，relabel的作用对象是target的Before Relabling标签，比如说，假如通过如下定义:
 
@@ -1863,6 +1939,17 @@ Alertmanager是一个独立的告警模块。
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/alertmanager.png)
 
+```text
+Alertmanager:
+  Prometheus --push 告警--> Alertmanager
+        |
+        分组 / 去重 / 抑制 / 静默 / 降噪
+        |
+        v  按路由(route)
+  Email / Slack / 钉钉(webhook) 等接收器
+```
+
+
 如果集群主机的内存使用率超过80%，且该现象持续了2分钟？想实现这样的监控告警，如何做？
 
 从上图可得知设置警报和通知的主要步骤是：
@@ -2664,6 +2751,15 @@ metadata:
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/alertmanager-process.png)
 
+```text
+一条告警: 产生 -> 通知 的处理链:
+  产生 -> 分组(group) -> 抑制(inhibit)
+       -> 静默(silence) -> 去重 -> 降噪
+       -> 发送接收者
+  (任一环节都可能使告警最终不通知)
+```
+
+
 
 
 
@@ -2678,6 +2774,16 @@ metadata:
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/hpa-prometheus-custom.png)
 
+```text
+HPA 弹性伸缩指标来源:
+  CPU / 内存     -> Metrics-Server (metrics.k8s.io)
+  QPS / 队列长度 -> Prometheus Adapter (custom.metrics.k8s.io)
+      |
+      v
+  HPA 根据指标自动扩缩 Pod 副本
+```
+
+
 k8s对监控接口进行了标准化：
 
 - Resource Metrics
@@ -2689,6 +2795,15 @@ k8s对监控接口进行了标准化：
   对应的接口是 custom.metrics.k8s.io，主要的实现是 Prometheus， 它提供的是资源监控和自定义监控
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/k8s-metrics.png)
+
+```text
+K8s Metrics API 体系:
+  metrics.k8s.io        (资源指标)  <- Metrics-Server
+  custom.metrics.k8s.io (自定义)    <- Prometheus Adapter
+  external.metrics...   (外部)      <- 外部数据源
+  (通过 kube-aggregator 聚合注册)
+```
+
 
 安装完metrics-server后，利用kube-aggregator的功能，实现了metrics api的注册。可以通过如下命令
 
@@ -2812,6 +2927,18 @@ $ kubectl get --raw /apis/custom.metrics.k8s.io/v1beta2 |jq
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/hpa-prometheus-custom-1669080924564225.png)
 
+```text
+演示: 部署示例业务
+  kubectl apply -f deployment (模拟业务应用)
+     |
+     v
+  应用暴露 /metrics (如 http_requests_total)
+     |
+     v
+  Prometheus 抓取 -> Adapter 注册为自定义指标 -> HPA 使用
+```
+
+
 为了演示效果，我们新建一个deployment来模拟业务应用。
 
 ```bash
@@ -2912,6 +3039,16 @@ spec:
 ###### [Adapter配置自定义指标](http://49.7.203.222:2023/#/prometheus/custom-metrics?id=adapter配置自定义指标)
 
 ![img](./6基于Prometheus的Kubernetes监控方案.assets/customer-metrics.png)
+
+```text
+Prometheus Adapter 配置自定义指标:
+  rules:
+    - 从 Prometheus 查询(如 rate(http_requests_total))
+    -> 映射为 custom.metrics.k8s.io 的指标名
+    -> HPA 通过 metricName 引用
+  ( Adapter 把 Prometheus 数据翻译成 K8s 指标 API )
+```
+
 
 思考：
 

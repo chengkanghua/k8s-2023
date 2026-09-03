@@ -52,6 +52,16 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/logging-with-node-agent.png)
 
+```text
+节点级日志代理 (DaemonSet 部署):
+  Node 上运行 日志 Agent(fluentd / fluent-bit)
+    |  读取 /var/log/containers/*.log (容器 stdout/stderr)
+    v
+  转发到 Elasticsearch
+  (每个 Node 一个 Agent, 统一采集本机所有容器日志)
+```
+
+
 优势：
 
 - 部署方便，使用DaemonSet类型控制器来部署agent即可
@@ -68,6 +78,16 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
     思路：在pod中启动一个sidecar容器，把容器内的日志文件吐到标准输出，由宿主机中的日志收集agent进行采集。
 
     ![img](./5基于EFK的Kubernetes日志采集方案.assets/logging-with-streaming-sidecar.png)
+
+```text
+Pod
+  |- 业务容器 -> 写日志文件
+  |- sidecar 容器 -> 读取日志文件, 重定向到 stdout
+        |
+        v (容器 stdout/stderr)
+  宿主机 日志 Agent 采集 -> Elasticsearch
+```
+
 
     ```bash
     cat <<\EOF count-pod.yaml
@@ -129,6 +149,17 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
   ![img](./5基于EFK的Kubernetes日志采集方案.assets/logging-with-sidecar-agent.png)
 
+```text
+Pod
+  |- 业务容器 -> 写日志到文件
+  |- sidecar: fluentd Agent -> 把容器内日志当本地文件收取
+        |
+        v
+  Elasticsearch
+  (日志收集与业务容器同 Pod, 解耦)
+```
+
+
   思路：直接在业务Pod中使用sidecar的方式启动一个日志收集的组件（比如fluentd），这样日志收集可以将容器内的日志当成本地文件来进行收取。
 
   优势：不用往宿主机存储日志，本地日志完全可以收集
@@ -138,6 +169,15 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 ##### [从应用中直接暴露日志目录](http://49.7.203.222:2023/#/logging/arct?id=从应用中直接暴露日志目录)
 
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/logging-from-application.png)
+
+```text
+应用容器 --写日志--> 共享卷(emptyDir / hostPath)
+                        |
+                        v
+               日志 Agent 读取该目录 -> 转发
+  (应用与采集通过共享存储目录解耦)
+```
+
 
 ##### [企业日志方案选型](http://49.7.203.222:2023/#/logging/arct?id=企业日志方案选型)
 
@@ -165,6 +205,20 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/EFK-architecture.png)
 
+```text
+容器 / Pod 日志
+     |
+     v
+Fluentd / Fluent-bit (采集 / 过滤 / 转换)
+     |
+     v
+Elasticsearch (存储 / 索引 / 检索)
+     |
+     v
+Kibana (可视化 / 查询)
+```
+
+
 - Elasticsearch
 
   一个开源的分布式、Restful 风格的搜索和数据分析引擎，它的底层是开源库Apache Lucene。它可以被下面这样准确地形容：
@@ -183,6 +237,16 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
   ![img](./5基于EFK的Kubernetes日志采集方案.assets/fluentd-architecture.jpg)
 
+```text
+Fluentd:
+  Input (多种数据源) -> 解析 / 过滤 -> 转换为结构化(如 JSON)
+        |
+        v
+  Output -> Elasticsearch / 对象存储 / Kafka ...
+  (丰富插件: 采集 / 解析 / 转发 可组合)
+```
+
+
   Fluentd 通过一组给定的数据源抓取日志数据，处理后（转换成结构化的数据格式）将它们转发给其他服务，比如 Elasticsearch、对象存储、kafka等等。Fluentd 支持超过300个日志存储和分析服务，所以在这方面是非常灵活的。主要运行步骤如下
 
   1. 首先 Fluentd 从多个日志源获取数据
@@ -195,6 +259,13 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/what-is-fluentd.jpg)
 
+```text
+Fluentd = 开源统一日志层
+  收集(多来源) -> 解析/转换 -> 路由到不同存储
+  (解耦 数据源 与 目的地, 一套管道处理所有日志)
+```
+
+
 为什么推荐使用fluentd作为k8s体系的日志收集工具？
 
 - 云原生：https://github.com/kubernetes/kubernetes/tree/release-1.21/cluster/addons/fluentd-elasticsearch
@@ -203,15 +274,42 @@ https://kubernetes.io/docs/concepts/cluster-administration/logging/
 
   ![img](./5基于EFK的Kubernetes日志采集方案.assets/log-as-json.png)
 
+```text
+原始日志行:  2023-01-01 INFO user=alice action=login
+        |
+        v  Fluentd 解析
+JSON 化:  { "time":"2023-01-01", "level":"INFO",
+            "user":"alice", "action":"login" }
+  (便于 Elasticsearch 索引与 Kibana 检索)
+```
+
+
 - 可插拔架构设计
 
   ![img](./5基于EFK的Kubernetes日志采集方案.assets/pluggable.png)
+
+```text
+Fluentd 可插拔架构:
+  Input 插件  <- 多种来源(文件/tcp/syslog...)
+  Filter 插件 <- 解析/改写/增删字段
+  Output 插件 <- 多种目的地(ES/Kafka/S3...)
+  (插件化 = 灵活组合采集链路)
+```
+
 
 - 极小的资源占用
 
   基于C和Ruby语言， 30-40MB，13,000 events/second/core
 
   ![img](./5基于EFK的Kubernetes日志采集方案.assets/c-and-ruby.png)
+
+```text
+Fluentd 实现: C + Ruby
+  资源占用小: 30-40 MB 内存
+  性能: ~13,000 events/second/core
+  (轻量, 适合 Sidecar / DaemonSet 部署)
+```
+
 
 - 极强的可靠性
 
@@ -363,6 +461,16 @@ Input -> filter 1 -> ... -> filter N -> Buffer -> Output
 ```
 
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/buffer-internal-and-parameters.png)
+
+```text
+Fluentd 缓冲模型:
+  Input -> Filter1 -> ... -> FilterN -> [ Buffer ] -> Output
+                                  |
+                          批量 / 异步写出
+  (事件先攒批进 Buffer, 再批量写入 Output,
+   提升吞吐与稳定性, 避免每条都写)
+```
+
 
 因为每个事件数据量通常很小，考虑数据传输效率、稳定性等方面的原因，所以基本不会每条事件处理完后都会立马写入到output端，因此fluentd建立了缓冲模型，模型中主要有两个概念：
 
@@ -1532,11 +1640,41 @@ logstash-*
 
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/kibana-op1.png)
 
+```text
+Kibana 操作步骤 1: 创建 Index Pattern
+  Stack Management -> Index Patterns
+  输入名称匹配:  logstash-*   (匹配 ES 中的日志索引)
+  -> Next
+```
+
+
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/kibana-op2.png)
+
+```text
+Kibana 操作步骤 2: 选择时间字段
+  在 Time field 中选择:  @timestamp
+  (用于按时间排序与范围检索日志)
+```
+
 
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/kibana-op3.png)
 
+```text
+Kibana 操作步骤 3: Discover 查看日志
+  Menu -> Discover
+  选择刚创建的 logstash-* 索引模式
+  即可看到采集到的容器日志列表
+```
+
+
 ![img](./5基于EFK的Kubernetes日志采集方案.assets/kibana-op4.png)
+
+```text
+Kibana 操作步骤 4: 检索 / 过滤日志
+  在搜索框输入 KQL, 如:  kubernetes.pod_name : "xxx"
+  配合时间范围, 定位问题 Pod 的日志
+```
+
 
 *思考：日志中出现了很多kubernetes的元数据信息，这些数据从哪采集而来*
 

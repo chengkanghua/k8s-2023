@@ -128,11 +128,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务扫盲篇">微服务扫盲篇</a></h1>
+                <h1 id="_1"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务扫盲篇">微服务扫盲篇</a><a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>微服务并没有一个官方的定义，想要直接描述微服务比较困难，我们可以通过对比传统WEB应用，来理解什么是微服务。</p>
-<h6 id="_2"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=单体应用架构">单体应用架构</a></h6>
+<h6 id="_2"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=单体应用架构">单体应用架构</a><a class="headerlink" href="#_2" title="Permanent link">&para;</a></h6>
 <p>如下是传统打车软件架构图：</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/single.jpg" /></p>
+<pre class="highlight"><code class="language-text">单体应用架构(传统打车软件):
+  +---------------------------+
+  |    单一应用(ALL IN ONE)     |
+  |  用户 / 订单 / 支付 / 调度   |
+  +---------------------------+
+  适合小项目; 优点: 开发/部署简单
+  缺点: 耦合高, 难以扩展</code></pre>
 <p>这种单体应用比较适合于小项目，优点是：</p>
 <ul>
 <li>开发简单直接，集中式管理</li>
@@ -147,10 +154,16 @@
 <li>稳定性不高：一个微不足道的小问题，可以导致整个应用挂掉</li>
 <li>扩展性不够：无法满足高并发情况下的业务需求</li>
 </ul>
-<h6 id="_3"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务应用架构">微服务应用架构</a></h6>
+<h6 id="_3"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务应用架构">微服务应用架构</a><a class="headerlink" href="#_3" title="Permanent link">&para;</a></h6>
 <p>微服务架构的设计思路不是开发一个巨大的单体式应用，而是将应用分解为小的、互相连接的微服务。一个微服务完成某个特定功能，比如乘客管理和下单管理等。每个微服务都有自己的业务逻辑和适配器。一些微服务还会提供API接口给其他微服务和应用客户端使用。</p>
 <p>比如，前面描述的系统可被分解为：</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/micro-svcs.jpg" /></p>
+<pre class="highlight"><code class="language-text">微服务应用架构:
+  业务逻辑拆分为多个微服务:
+    [用户服务] [订单服务] [支付服务] [调度服务]
+        |  REST API 通信
+  客户端 -&gt; 通常经 API Gateway 访问后台微服务
+  (各自独立开发/部署/扩展)</code></pre>
 <p>每个业务逻辑都被分解为一个微服务，微服务之间通过REST API通信。一些微服务也会向终端用户或客户端开发API接口。但通常情况下，这些客户端并不能直接访问后台微服务，而是通过API Gateway来传递请求。API Gateway一般负责服务路由、负载均衡、缓存、访问控制和鉴权等任务。</p>
 <p>微服务架构优点：</p>
 <ul>
@@ -158,7 +171,7 @@
 <li>体系结构使得每个服务都可以由专注于此服务的团队独立开发。只要符合服务API契约，开发人员可以自由选择开发技术。这就意味着开发人员可以采用新技术编写或重构服务，由于服务相对较小，所以这并不会对整体应用造成太大影响</li>
 <li>微服务架构可以使每个微服务独立部署。这些更改可以在测试通过后立即部署。所以微服务架构也使得CI／CD成为可能</li>
 </ul>
-<h6 id="_4"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务架构问题及挑战">微服务架构问题及挑战</a></h6>
+<h6 id="_4"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务架构问题及挑战">微服务架构问题及挑战</a><a class="headerlink" href="#_4" title="Permanent link">&para;</a></h6>
 <p>微服务的一个主要缺点是微服务的分布式特点带来的复杂性。开发人员需要基于RPC或者消息实现微服务之间的调用和通信，而这就使得服务之间的发现、服务调用链的跟踪和质量问题变得的相当棘手。</p>
 <ol>
 <li>微服务的一大挑战是跨多个服务的更改</li>
@@ -187,7 +200,7 @@
 </li>
 </ul>
 <p>https://www.kancloud.cn/owenwangwen/open-capacity-platform/1480155，自助餐吃吃喝喝，竟然秒懂微服务</p>
-<h5 id="_5"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务框架">微服务框架</a></h5>
+<h5 id="_5"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=微服务框架">微服务框架</a><a class="headerlink" href="#_5" title="Permanent link">&para;</a></h5>
 <p>如何应对上述挑战，出现了如下微服务领域的框架：</p>
 <ul>
 <li>Spring Cloud（各个微服务基于Spring Boot实现）</li>
@@ -199,11 +212,15 @@
 <li>Istio</li>
 </ul>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/81805411.jpg" /></p>
-<h4 id="spring-cloud"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=了解spring-cloud">了解Spring Cloud</a></h4>
+<pre class="highlight"><code class="language-text">微服务框架(服务网格选项):
+  - Conduit
+  - Istio
+  (以及 Spring Cloud Netflix 等生态组件)</code></pre>
+<h4 id="spring-cloud"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=了解spring-cloud">了解Spring Cloud</a><a class="headerlink" href="#spring-cloud" title="Permanent link">&para;</a></h4>
 <p><a href="https://spring.io/">https://spring.io</a></p>
-<h5 id="_6"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=核心项目及组件">核心项目及组件</a></h5>
+<h5 id="_6"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=核心项目及组件">核心项目及组件</a><a class="headerlink" href="#_6" title="Permanent link">&para;</a></h5>
 <p>https://spring.io/projects</p>
-<h5 id="dubbo"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=与dubbo对比">与Dubbo对比</a></h5>
+<h5 id="dubbo"><a href="http://49.7.203.222:2023/#/spring-cloud/introduction?id=与dubbo对比">与Dubbo对比</a><a class="headerlink" href="#dubbo" title="Permanent link">&para;</a></h5>
 <p>做一个简单的功能对比：</p>
 <table>
 <thead>
@@ -273,17 +290,28 @@
 </table>
 <p><strong>从上图可以看出其实Dubbo的功能只是Spring Cloud体系的一部分。</strong></p>
 <p>这样对比是不够公平的，首先<code>Dubbo</code>是<code>SOA</code>时代的产物，它的关注点主要在于服务的调用，流量分发、流量监控和熔断。而<code>Spring Cloud</code>诞生于微服务架构时代，考虑的是微服务治理的方方面面，另外由于依托了<code>Spirng</code>、<code>Spirng Boot</code>的优势之上，两个框架在开始目标就不一致，<code>Dubbo</code>定位服务治理、<code>Spirng Cloud</code>是一个生态。</p>
-<h1 id="springboot">SpringBoot交付实战</h1>
-<h2 id="_7">项目演示</h2>
-<h4 id="spring-boot"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=spring-boot交付实践">Spring Boot交付实践</a></h4>
-<h5 id="spring-boot_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=从零开始创建spring-boot项目">从零开始创建Spring Boot项目</a></h5>
+<h1 id="springboot">SpringBoot交付实战<a class="headerlink" href="#springboot" title="Permanent link">&para;</a></h1>
+<h2 id="_7">项目演示<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h4 id="spring-boot"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=spring-boot交付实践">Spring Boot交付实践</a><a class="headerlink" href="#spring-boot" title="Permanent link">&para;</a></h4>
+<h5 id="spring-boot_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=从零开始创建spring-boot项目">从零开始创建Spring Boot项目</a><a class="headerlink" href="#spring-boot_1" title="Permanent link">&para;</a></h5>
 <p>通过File &gt; New &gt; Project，新建工程，选择Spring Initializr</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-1.jpg" /></p>
+<pre class="highlight"><code class="language-text">创建 Spring Boot 项目:
+  File -&gt; New -&gt; Project
+  选择 Spring Initializr (在线初始化脚手架)</code></pre>
 <p>配置Project Metadata：</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-2.jpg" /></p>
+<pre class="highlight"><code class="language-text">配置 Project Metadata:
+  Group / Artifact / Type: Maven
+  Language: Java, Packaging: Jar
+  (生成基础工程结构)</code></pre>
 <p>配置Dependencies依赖包：</p>
 <p>选择：Web分类中的Spring web和Template Engines中的Thymeleaf</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-3.jpg" /></p>
+<pre class="highlight"><code class="language-text">选择 Dependencies:
+  Web 分类 -&gt; Spring Web
+  Template Engines -&gt; Thymeleaf
+  (勾选后自动加入依赖)</code></pre>
 <p>配置maven settings.xml：</p>
 <p>默认使用IDE自带的maven，换成自己下载的，下载地址：</p>
 <p>链接: https://pan.baidu.com/s/1z9dRGv_4bS1uxBtk5jsZ2Q 提取码: 3gva</p>
@@ -320,7 +348,15 @@
 
 &lt;/settings&gt;</code></pre>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-4.png" /></p>
+<pre class="highlight"><code class="language-text">配置 maven settings.xml:
+  设置 本地仓库 / 镜像(如阿里私服)
+  使依赖下载走内网镜像, 加速构建</code></pre>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-springboot-5.jpg" /></p>
+<pre class="highlight"><code class="language-text">生成的项目结构:
+  src/main/java (代码)
+  src/main/resources (配置)
+  pom.xml (依赖管理)
+  (即可运行/打包的 Spring Boot 工程)</code></pre>
 <blockquote>
 <p>springboot版本为2.3.6.RELEASE</p>
 </blockquote>
@@ -334,7 +370,7 @@
     &lt;/parent&gt;
 ...</code></pre>
 <p>直接启动项目并访问本地服务：<code>localhost:8080</code></p>
-<h5 id="_8"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=编写功能代码">编写功能代码</a></h5>
+<h5 id="_8"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/demo?id=编写功能代码">编写功能代码</a><a class="headerlink" href="#_8" title="Permanent link">&para;</a></h5>
 <p>创建controller包及<code>HelloController.java</code>文件</p>
 <pre class="highlight"><code class="language-java">package com.luffy.springbootdemo.controller;
 
@@ -405,12 +441,12 @@ public class HelloController {
         return mv;
     }
 }</code></pre>
-<h2 id="maven">maven的使用</h2>
-<h5 id="javamaven"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=如何在java项目中使用maven">如何在java项目中使用maven</a></h5>
-<h6 id="maven_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=为什么需要maven">为什么需要maven</a></h6>
+<h2 id="maven">maven的使用<a class="headerlink" href="#maven" title="Permanent link">&para;</a></h2>
+<h5 id="javamaven"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=如何在java项目中使用maven">如何在java项目中使用maven</a><a class="headerlink" href="#javamaven" title="Permanent link">&para;</a></h5>
+<h6 id="maven_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=为什么需要maven">为什么需要maven</a><a class="headerlink" href="#maven_1" title="Permanent link">&para;</a></h6>
 <p>考虑一个常见的场景：以项目A为例，开发过程中，需要依赖B-2.0.jar的包，如果没有maven，那么正常做法是把B-2.0.jar拷贝到项目A中，但是如果B-2.0.jar还依赖C.jar，我们还需要去找到C.jar的包，因此，在开发阶段需要花费在项目依赖方面的精力会很大。</p>
 <p>因此，开发人员需要找到一种方式，可以管理java包的依赖关系，并可以方便的引入到项目中。</p>
-<h6 id="maven_2"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=maven如何工作">maven如何工作</a></h6>
+<h6 id="maven_2"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=maven如何工作">maven如何工作</a><a class="headerlink" href="#maven_2" title="Permanent link">&para;</a></h6>
 <p>查看<code>pom.xml</code></p>
 <pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
             &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
@@ -445,6 +481,11 @@ public class HelloController {
 <p>去哪查找？maven仓库，存储jar包的地方。</p>
 <p>当我们执行 Maven 构建命令时，Maven 开始按照以下顺序查找依赖的库：</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/maven-repo.png" /></p>
+<pre class="highlight"><code class="language-text">Maven 依赖查找顺序:
+  1. 本地仓库(~/.m2/repository)
+  2. 私服(Nexus/镜像)
+  3. 中央仓库(Maven Central)
+  (逐级回源, 命中即止)</code></pre>
 <p>本地仓库：</p>
 <ul>
 <li>
@@ -520,7 +561,7 @@ public class HelloController {
         &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
     &lt;/parent&gt;</code></pre>
 <p>parent模块中定义过的<code>dependencies</code>，在子项目中引用的话，不需要指定版本，这样可以保证所有的子项目都使用相同版本的依赖包。</p>
-<h6 id="mvn"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=生命周期及mvn命令实践">生命周期及mvn命令实践</a></h6>
+<h6 id="mvn"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/maven?id=生命周期及mvn命令实践">生命周期及mvn命令实践</a><a class="headerlink" href="#mvn" title="Permanent link">&para;</a></h6>
 <p>Maven有三套相互独立的生命周期，分别是clean、default和site。每个生命周期包含一些阶段（phase），阶段是有顺序的，后面的阶段依赖于前面的阶段。</p>
 <ul>
 <li>clean生命周期，清理项目</li>
@@ -603,8 +644,8 @@ bash-5.0# mvn package
 # 多阶段组合
 bash-5.0# mvn clean package</code></pre>
 <p>想系统学习maven，可以参考： https://www.runoob.com/maven/maven-pom.html</p>
-<h2 id="springboot-cicd">springboot 项目接入cicd</h2>
-<h5 id="springboot_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=springboot服务镜像制作">Springboot服务镜像制作</a></h5>
+<h2 id="springboot-cicd">springboot 项目接入cicd<a class="headerlink" href="#springboot-cicd" title="Permanent link">&para;</a></h2>
+<h5 id="springboot_1"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=springboot服务镜像制作">Springboot服务镜像制作</a><a class="headerlink" href="#springboot_1" title="Permanent link">&para;</a></h5>
 <p>通过<code>mvn package</code>命令拿到服务的jar包后，我们可以使用如下命令启动服务：</p>
 <pre class="highlight"><code class="language-bash">$ java -jar springboot-demo-0.0.1-SNAPSHOT.jar</code></pre>
 <p>因此，需要准备Dockerfile来构建镜像：</p>
@@ -625,7 +666,7 @@ CMD [ "sh", "-c", "java -jar /app.jar" ]</code></pre>
 $ docker run -d --name springboot-demo -p 8080:8080 springboot-demo:v1
 
 $ curl localhost:8080</code></pre>
-<h5 id="cicd"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=接入cicd流程">接入CICD流程</a></h5>
+<h5 id="cicd"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=接入cicd流程">接入CICD流程</a><a class="headerlink" href="#cicd" title="Permanent link">&para;</a></h5>
 <p>之前已经实现了shared-library，并且把python项目接入到了CICD 流程中。因此，可以直接使用已有的流程，把spring boot项目接入进去。</p>
 <ul>
 <li><code>Jenkinsfile</code></li>
@@ -822,8 +863,13 @@ data:
 <pre class="highlight"><code class="language-bash">172.21.51.143:5000/devops/tools:v4</code></pre>
 <p>由于镜像中maven的目录是<code>/opt/maven-repo</code>，而slave-pod是执行完任务后会销毁，因此需要将maven的数据目录挂载出来，不然每次构建都会重新拉取所有依赖的jar包：</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/maven-repo-vols.jpg" /></p>
+<pre class="highlight"><code class="language-text">Maven 数据目录挂载:
+  镜像内 /opt/maven-repo
+  slave-pod 任务结束后会销毁
+  -&gt; 需将 maven 目录挂载出来(PVC/宿主机)
+  否则每次构建重新拉取全部依赖</code></pre>
 <p>配置Jenkins流水线：</p>
-<h5 id="_9"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=添加单元测试覆盖率">添加单元测试覆盖率</a></h5>
+<h5 id="_9"><a href="http://49.7.203.222:2023/#/spring-cloud/springboot-demo/cicd?id=添加单元测试覆盖率">添加单元测试覆盖率</a><a class="headerlink" href="#_9" title="Permanent link">&para;</a></h5>
 <p>单元测试这块内容一直没有把覆盖率统计到<code>sonarqube</code>端，本节看下怎么样将单元测试的结果及覆盖率展示到Jenkins及<code>sonarqube</code>平台中。</p>
 <p>为了展示效果，我们先添加一个单元测试文件<code>HelloControllerTests</code>：</p>
 <pre class="highlight"><code class="language-java">package com.luffy.springbootdemo;
@@ -934,8 +980,12 @@ public class HelloControllerTests {
 <p>有了上述内容后，如何将结果发布到<code>sonarqube</code>中？</p>
 <p>提交最新代码，查看<code>sonarqube</code>的分析结果。</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/sonar-coverage.jpg" /></p>
-<h1 id="_10">服务注册中心</h1>
-<h4 id="spring-cloud_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=spring-cloud开发、交付实践">Spring Cloud开发、交付实践</a></h4>
+<pre class="highlight"><code class="language-text">单元测试覆盖率(SonarQube):
+  提交代码 -&gt; 流水线跑单测 + 覆盖率
+  SonarQube 展示 行覆盖/分支覆盖 等指标
+  (保障代码质量)</code></pre>
+<h1 id="_10">服务注册中心<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h1>
+<h4 id="spring-cloud_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=spring-cloud开发、交付实践">Spring Cloud开发、交付实践</a><a class="headerlink" href="#spring-cloud_1" title="Permanent link">&para;</a></h4>
 <p>https://spring.io/projects/spring-cloud#overview</p>
 <p>1、Netflix是一家做视频的网站，可以这么说该网站上的美剧应该是最火的。</p>
 <p>2、Netflix是一家没有CTO的公司，正是这样的组织架构能使产品与技术无缝的沟通，从而能快速迭代出更优秀的产品。在当时软件敏捷开发中，Netflix的更新速度不亚于当年的微信后台变更，虽然微信比Netflix迟发展，但是当年微信的灰度发布和敏捷开发应该算是业界最猛的。</p>
@@ -947,19 +997,32 @@ public class HelloControllerTests {
 <blockquote>
 <p>本课程基于SpringBoot 2.3.6.RELEASE 和Spring Cloud Hoxton.SR9 版本</p>
 </blockquote>
-<h4 id="_11"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=微服务场景">微服务场景</a></h4>
+<h4 id="_11"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=微服务场景">微服务场景</a><a class="headerlink" href="#_11" title="Permanent link">&para;</a></h4>
 <p>开发APP，提供个人的花呗账单管理。</p>
 <ul>
 <li>注册、登录、账单查询</li>
 <li>用户服务，账单管理服务</li>
 </ul>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/demo-project.png" /></p>
+<pre class="highlight"><code class="language-text">微服务场景示例:
+  业务: 注册 / 登录 / 账单查询
+  对应服务: 用户服务 / 账单管理服务
+  (服务间通过注册中心发现与调用)</code></pre>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/arch.png" /></p>
-<h4 id="eureka"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=eureka服务注册中心">Eureka服务注册中心</a></h4>
+<pre class="highlight"><code class="language-text">微服务整体架构:
+  [网关 / API] -&gt; [用户服务] [账单服务] ...
+        | 服务注册与发现
+   [Eureka 注册中心]
+  (各服务注册到注册中心, 互相发现)</code></pre>
+<h4 id="eureka"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=eureka服务注册中心">Eureka服务注册中心</a><a class="headerlink" href="#eureka" title="Permanent link">&para;</a></h4>
 <p>在<code>SpringCloud</code>体系中，我们知道服务之间的调用是通过<code>http</code>协议进行调用的。而注册中心的主要目的就是维护这些服务的服务列表。</p>
 <p>https://docs.spring.io/spring-cloud-netflix/docs/3.0.3/reference/html/</p>
-<h5 id="_12"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=新建项目">新建项目</a></h5>
+<h5 id="_12"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=新建项目">新建项目</a><a class="headerlink" href="#_12" title="Permanent link">&para;</a></h5>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/new-eureka.jpg" /></p>
+<pre class="highlight"><code class="language-text">新建 Eureka 项目:
+  Spring Initializr 选择 Eureka Server
+  pom 引入 spring-cloud 依赖
+  (作为服务注册中心)</code></pre>
 <p>pom中引入spring-cloud的依赖：</p>
 <p>https://spring.io/projects/spring-cloud#overview</p>
 <pre class="highlight"><code class="language-xml">&lt;properties&gt;
@@ -981,7 +1044,7 @@ public class HelloControllerTests {
             &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
             &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
         &lt;/dependency&gt;</code></pre>
-<h5 id="eureka_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=启动eureka服务">启动eureka服务</a></h5>
+<h5 id="eureka_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=启动eureka服务">启动eureka服务</a><a class="headerlink" href="#eureka_1" title="Permanent link">&para;</a></h5>
 <p>https://docs.spring.io/spring-cloud-netflix/docs/2.2.5.RELEASE/reference/html/#spring-cloud-eureka-server-standalone-mode</p>
 <p>application.yml</p>
 <pre class="highlight"><code class="language-yaml">server:
@@ -1016,7 +1079,7 @@ public class EurekaServerApplication {
 <li>修改application.yml配置文件</li>
 <li>启动类添加注解</li>
 </ul>
-<h5 id="eureka_2"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=eureka认证">eureka认证</a></h5>
+<h5 id="eureka_2"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=eureka认证">eureka认证</a><a class="headerlink" href="#eureka_2" title="Permanent link">&para;</a></h5>
 <p>没有认证，不安全，添加认证：</p>
 <pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
             &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
@@ -1040,7 +1103,7 @@ spring:
       password: ${EUREKA_PASS:admin}
   application:
     name: eureka</code></pre>
-<h5 id="eureka_3"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=注册服务到eureka">注册服务到eureka</a></h5>
+<h5 id="eureka_3"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=注册服务到eureka">注册服务到eureka</a><a class="headerlink" href="#eureka_3" title="Permanent link">&para;</a></h5>
 <p>新建项目，user-service（选择Spring Cloud依赖和SpringBoot Web依赖），用来提供用户查询功能。</p>
 <p>三部曲：</p>
 <ul>
@@ -1105,6 +1168,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 }</code></pre>
 <p>再次启动发现可以注册，但是地址是</p>
 <p><img alt="image-20200915211607173" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/image-20200915211607173.png" /></p>
+<pre class="highlight"><code class="language-text">服务注册到 Eureka:
+  启动后服务注册成功
+  但注册地址显示为 主机名/内网IP
+  (需在 application.yaml 修正 prefer-ip-address 等)</code></pre>
 <p>application.yaml</p>
 <pre class="highlight"><code class="language-yaml">server:
   port: 7000
@@ -1126,7 +1193,7 @@ spring:
 <p>开发阶段可以通过配置：<code>eureka.server.enable-self-preservation=false</code>关闭自我保护模式。</p>
 <p><strong>生产阶段，理应以默认值进行配置。</strong></p>
 <p>至于具体具体的配置参数，可至官网查看：http://cloud.spring.io/spring-cloud-static/Finchley.RELEASE/single/spring-cloud.html#_appendix_compendium_of_configuration_properties</p>
-<h5 id="_13"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=高可用">高可用</a></h5>
+<h5 id="_13"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=高可用">高可用</a><a class="headerlink" href="#_13" title="Permanent link">&para;</a></h5>
 <p>高可用：</p>
 <ul>
 <li>优先保证可用性</li>
@@ -1140,6 +1207,10 @@ spring:
 <li>各个eureka的spring.application.name相同</li>
 </ul>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/eureka-cluster.jpg" /></p>
+<pre class="highlight"><code class="language-text">Eureka 高可用:
+  eureka.instance.hostname 与 defaultZone 地址一致
+  各 eureka 的 spring.application.name 相同
+  两两相互注册(peer1 &lt;-&gt; peer2) 形成集群</code></pre>
 <p>拷贝<code>eureka</code>服务，分别命名<code>eureka-ha-peer1</code>和<code>eureka-ha-peer2</code></p>
 <p>修改模块的<code>pom.xml</code></p>
 <pre class="highlight"><code class="language-xml">&lt;artifactId&gt;eureka-ha-peer1&lt;/artifactId&gt;</code></pre>
@@ -1165,17 +1236,24 @@ spring:
 <pre class="highlight"><code class="language-bash">127.0.0.1 peer1 peer2</code></pre>
 <p>服务提供者若想连接高可用的eureka，需要修改：</p>
 <pre class="highlight"><code class="language-bash">      defaultZone: http://${EUREKA_USER:admin}:${EUREKA_PASS:admin}@peer1:8762/eureka/,http://${EUREKA_USER:admin}:${EUREKA_PASS:admin}@peer2:8763/eureka/</code></pre>
-<h5 id="k8s"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=k8s交付">k8s交付</a></h5>
+<h5 id="k8s"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=k8s交付">k8s交付</a><a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h5>
 <p>分析：</p>
 <p>高可用互相注册，但是需要知道对方节点的地址。k8s中pod ip是不固定的，如何将高可用的eureka服务使用k8s交付？</p>
 <ul>
 <li>方案一：创建三个Deployment+三个Service</li>
 </ul>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/eureka-ha-deploy.jpg" /></p>
+<pre class="highlight"><code class="language-text">Eureka K8s 交付 方案一:
+  创建 三个 Deployment + 三个 Service
+  每个 Pod 一个 Eureka 实例
+  (通过 Service 互相发现)</code></pre>
 <ul>
 <li>方案二：使用statefulset管理</li>
 </ul>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/eureka-sts.jpg" /></p>
+<pre class="highlight"><code class="language-text">Eureka K8s 交付 方案二:
+  使用 StatefulSet 管理
+  (稳定网络标识/有序部署, 适合有状态注册中心)</code></pre>
 <pre class="highlight"><code>eureka-statefulset.yaml
 # eureka-statefulset.yaml
 apiVersion: apps/v1
@@ -1276,7 +1354,7 @@ spec:
             name: eureka-ingress
             port:
               number: 8761</code></pre>
-<h5 id="statefulset"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=使用statefulset管理有状态服务">使用StatefulSet管理有状态服务</a></h5>
+<h5 id="statefulset"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=使用statefulset管理有状态服务">使用StatefulSet管理有状态服务</a><a class="headerlink" href="#statefulset" title="Permanent link">&para;</a></h5>
 <p>使用StatefulSet创建多副本pod的情况：</p>
 <pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
 kind: StatefulSet
@@ -1315,7 +1393,7 @@ spec:
   clusterIP: None
 $ kubectl -n spring exec  -ti nginx-statefulset-0 sh
 / # curl nginx-statefulset-2.nginx</code></pre>
-<h5 id="cicd_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=接入cicd流程">接入CICD流程</a></h5>
+<h5 id="cicd_1"><a href="http://49.7.203.222:2023/#/spring-cloud/register-center?id=接入cicd流程">接入CICD流程</a><a class="headerlink" href="#cicd_1" title="Permanent link">&para;</a></h5>
 <p>所需的文件:</p>
 <ul>
 <li>Jenkinsfile</li>
@@ -1476,9 +1554,9 @@ spring:
     name: eureka-cluster</code></pre>
 <p>提交项目：</p>
 <p>创建develop分支，CICD部署开发环境</p>
-<h1 id="_14">服务提供者</h1>
-<h4 id="_15"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=微服务间调用">微服务间调用</a></h4>
-<h5 id="_16"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=服务提供者">服务提供者</a></h5>
+<h1 id="_14">服务提供者<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h1>
+<h4 id="_15"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=微服务间调用">微服务间调用</a><a class="headerlink" href="#_15" title="Permanent link">&para;</a></h4>
+<h5 id="_16"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=服务提供者">服务提供者</a><a class="headerlink" href="#_16" title="Permanent link">&para;</a></h5>
 <p>前面已经将用户服务注册到了eureka注册中心，但是还没有暴漏任何API给服务消费者调用。</p>
 <p>新建controller类：</p>
 <pre class="highlight"><code class="language-java">package com.luffy.userservice.controller;
@@ -1571,7 +1649,7 @@ eureka:
 spring:
   application:
     name: user-service</code></pre>
-<h6 id="cicd_2"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=cicd持续交付服务提供者">CICD持续交付服务提供者</a></h6>
+<h6 id="cicd_2"><a href="http://49.7.203.222:2023/#/spring-cloud/provider?id=cicd持续交付服务提供者">CICD持续交付服务提供者</a><a class="headerlink" href="#cicd_2" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code>deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -1767,10 +1845,10 @@ git checkout -b develop
 git push -u origin develop</code></pre>
 <p>创建Jenkins任务，测试自动部署</p>
 <p>访问<code>http://user-service-dev.luffy.com/</code> 验证</p>
-<h1 id="_17"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=服务消费者">服务消费者</a></h1>
-<h6 id="resttemplate"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=resttemplate">RestTemplate</a></h6>
+<h1 id="_17"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=服务消费者">服务消费者</a><a class="headerlink" href="#_17" title="Permanent link">&para;</a></h1>
+<h6 id="resttemplate"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=resttemplate">RestTemplate</a><a class="headerlink" href="#resttemplate" title="Permanent link">&para;</a></h6>
 <p>在<code>Spring</code>中，提供了<code>RestTemplate</code>。<code>RestTemplate</code>是<code>Spring</code>提供的用于访问Rest服务的客户端。而在<code>SpringCloud</code>中也是使用此服务进行服务调用的。</p>
-<h6 id="bill-service"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=创建bill-service项目">创建bill-service项目</a></h6>
+<h6 id="bill-service"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=创建bill-service项目">创建bill-service项目</a><a class="headerlink" href="#bill-service" title="Permanent link">&para;</a></h6>
 <p>新的模块初始化三部曲：</p>
 <ul>
 <li>pom.xml</li>
@@ -1902,7 +1980,7 @@ public class BillController {
 <li>服务调用采用指定IP+Port方式，注册中心未使用</li>
 <li>多个服务负载均衡</li>
 </ul>
-<h6 id="_18"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=使用注册中心实现服务调用">使用注册中心实现服务调用</a></h6>
+<h6 id="_18"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=使用注册中心实现服务调用">使用注册中心实现服务调用</a><a class="headerlink" href="#_18" title="Permanent link">&para;</a></h6>
 <p>修改BillController</p>
 <pre class="highlight"><code class="language-java">package com.luffy.billservice.controller;
 
@@ -1977,7 +2055,7 @@ public class BillController {
         return normalRestTemplate.getForObject("localhost:7000/user", String.class);
     }
 }</code></pre>
-<h6 id="ribbon"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=ribbon-负载均衡">Ribbon 负载均衡</a></h6>
+<h6 id="ribbon"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=ribbon-负载均衡">Ribbon 负载均衡</a><a class="headerlink" href="#ribbon" title="Permanent link">&para;</a></h6>
 <p>再启动一个user-service-instance2，复制user-service项目</p>
 <p>修改user-service-instance2的application.yml的server.port</p>
 <pre class="highlight"><code class="language-yaml">server:
@@ -2034,8 +2112,19 @@ public class UserController {
 <p>eureka-client中包含了ribbon的包，所以不需要单独引入</p>
 </blockquote>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/ribbon-lb.jpg" /></p>
+<pre class="highlight"><code class="language-text">Ribbon 负载均衡:
+  eureka-client 已含 ribbon 包(无需单独引入)
+  在客户端侧对服务实例做负载均衡选择</code></pre>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/lb-cli.jpg" /></p>
+<pre class="highlight"><code class="language-text">客户端负载均衡(Client Side):
+  调用方(Ribbon)从注册中心拿到实例列表
+  在客户端选择一个实例发起请求
+  (与 Nginx 服务端 LB 相对)</code></pre>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/lb-server.jpg" /></p>
+<pre class="highlight"><code class="language-text">服务端负载均衡(Server Side):
+  请求先到 负载均衡器(Nginx/LB)
+  由 LB 转发到后端某个实例
+  (客户端无感知)</code></pre>
 <p>如何修改调用策略？</p>
 <ul>
 <li>代码中指定rule的规则</li>
@@ -2074,6 +2163,10 @@ public class BillServiceApplication {
     }
 }</code></pre>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/ribbon-rules.jpg" /></p>
+<pre class="highlight"><code class="language-text">Ribbon 负载均衡策略:
+  代码或配置文件指定 IRule
+  如 RoundRobinRule / RandomRule / WeightedResponseTimeRule
+  (控制"如何选实例")</code></pre>
 <p>配置文件方式： https://docs.spring.io/spring-cloud-netflix/docs/2.2.5.RELEASE/reference/html/#customizing-the-ribbon-client-by-setting-properties</p>
 <p>注释掉代码：</p>
 <pre class="highlight"><code class="language-java">package com.luffy.ticket;
@@ -2110,7 +2203,7 @@ eureka:
 user-service:
   ribbon:
     NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule</code></pre>
-<h6 id="feign"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=声明式服务feign">声明式服务Feign</a></h6>
+<h6 id="feign"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=声明式服务feign">声明式服务Feign</a><a class="headerlink" href="#feign" title="Permanent link">&para;</a></h6>
 <p>从上一章节，我们知道，当我们要调用一个服务时，需要知道服务名和api地址，这样才能进行服务调用，服务少时，这样写觉得没有什么问题，但当服务一多，接口参数很多时，上面的写法就显得不够优雅了。所以，接下来，来说说一种更好更优雅的调用服务的方式：<strong>Feign</strong>。</p>
 <blockquote>
 <p><code>Feign</code>是<code>Netflix</code>开发的声明式、模块化的HTTP客户端。<code>Feign</code>可帮助我们更好更快的便捷、优雅地调用<code>HTTP API</code>。</p>
@@ -2226,7 +2319,7 @@ public class BillController {
         //return restTemplate.getForObject("http://USER-SERVICE/user/" + id, String.class);
     }
 }</code></pre>
-<h6 id="cicd_3"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=cicd持续交付服务消费者">CICD持续交付服务消费者</a></h6>
+<h6 id="cicd_3"><a href="http://49.7.203.222:2023/#/spring-cloud/consumer?id=cicd持续交付服务消费者">CICD持续交付服务消费者</a><a class="headerlink" href="#cicd_3" title="Permanent link">&para;</a></h6>
 <p>拷贝user-service的交付文件，替换如下：</p>
 <ul>
 <li>user-service -&gt; bill-service</li>
@@ -2244,10 +2337,15 @@ data:
 ...</code></pre>
 <p>创建develop分支，提交代码到gitlab仓库，验证持续交付</p>
 <p>前面主要讲解了下服务消费者如何利用原生、ribbon、fegin三种方式进行服务调用的，其实每种调用方式都是使用<code>restTemplate</code>来进行调用的，只是有些进行了增强，目的是使用起来更简单高效。</p>
-<h1 id="_19">断路器</h1>
-<h5 id="hystrix"><a href="http://49.7.203.222:2023/#/spring-cloud/hystrix?id=hystrix-断路器">Hystrix 断路器</a></h5>
+<h1 id="_19">断路器<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h1>
+<h5 id="hystrix"><a href="http://49.7.203.222:2023/#/spring-cloud/hystrix?id=hystrix-断路器">Hystrix 断路器</a><a class="headerlink" href="#hystrix" title="Permanent link">&para;</a></h5>
 <p>为什么需要断路器？</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/hystrix.jpg" /></p>
+<pre class="highlight"><code class="language-text">为什么需要断路器(雪崩):
+  A(服务) -&gt; B(消费A) -&gt; C,D(消费B)
+  A 不可用 -&gt; B 不可用 -&gt; 放大到 C,D
+  形成雪崩效应
+  (需断路器隔离故障)</code></pre>
 <p>A作为服务提供者，B为A的服务消费者，C和D是B的服务消费者。A不可用引起了B的不可用，并将不可用像滚雪球一样放大到C和D时，雪崩效应就形成了。</p>
 <p>因此，需要实现一种机制，可以做到自动监控服务状态并根据调用情况进行自动处理。</p>
 <ul>
@@ -2256,6 +2354,10 @@ data:
 <li>提供fallback机制</li>
 </ul>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/netflix-hystrix.jpg" /></p>
+<pre class="highlight"><code class="language-text">Hystrix 断路器:
+  维护 打开 / 关闭 / 半开 三种状态
+  提供 fallback 降级机制
+  (故障隔离, 快速失败, 保护调用链)</code></pre>
 <p>修改bill-service项目：</p>
 <p>pom.xml</p>
 <pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
@@ -2423,7 +2525,7 @@ eureka:
 spring:
   application:
     name: user-service</code></pre>
-<h6 id="hystrix-dashboard"><a href="http://49.7.203.222:2023/#/spring-cloud/hystrix?id=hystrix-dashboard">Hystrix Dashboard</a></h6>
+<h6 id="hystrix-dashboard"><a href="http://49.7.203.222:2023/#/spring-cloud/hystrix?id=hystrix-dashboard">Hystrix Dashboard</a><a class="headerlink" href="#hystrix-dashboard" title="Permanent link">&para;</a></h6>
 <p>前面一章，我们讲解了如何整合<code>Hystrix</code>。而在实际情况下，使用了<code>Hystrix</code>的同时,还会对其进行实时的数据监控，反馈各类指标数据。今天我们就将讲解下<code>Hystrix Dashboard</code>和<code>Turbine</code>.其中<code>Hystrix Dashboard</code>是一款针对<code>Hystrix</code>进行实时监控的工具，通过<code>Hystrix Dashboard</code>我们可以在直观地看到各<code>Hystrix Command</code>的<strong>请求响应时间</strong>, <strong>请求成功率</strong>等数据,监控单个实例内的指标情况。后者<code>Turbine</code>，能够将多个实例指标数据进行聚合的工具。</p>
 <p>在eureka注册中心处访问<code>bill-service</code>的服务<code>actuator</code>地址: <code>http://192.168.136.1:7001/actuator/info</code></p>
 <p>若访问不了,需要添加如下内容:</p>
@@ -2548,11 +2650,18 @@ hystrix:
 </li>
 </ul>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/hystric-dashboard.jpg" /></p>
-<h1 id="_20"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=微服务网关">微服务网关</a></h1>
-<h6 id="_21"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=为什么需要网关">为什么需要网关</a></h6>
+<pre class="highlight"><code class="language-text">Hystrix Dashboard:
+  可视化 请求量 / 成功率 / 线程池 等指标
+  (监控断路器健康状态)</code></pre>
+<h1 id="_20"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=微服务网关">微服务网关</a><a class="headerlink" href="#_20" title="Permanent link">&para;</a></h1>
+<h6 id="_21"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=为什么需要网关">为什么需要网关</a><a class="headerlink" href="#_21" title="Permanent link">&para;</a></h6>
 <p>在微服务框架中，每个对外服务都是独立部署的，对外的api或者服务地址都不是不尽相同的。对于内部而言，很简单，通过注册中心自动感知即可。但我们大部分情况下，服务都是提供给外部系统进行调用的，不可能同享一个注册中心。同时一般上内部的微服务都是在内网的，和外界是不连通的。而且，就算我们每个微服务对外开放，对于调用者而言，调用不同的服务的地址或者参数也是不尽相同的，这样就会造成消费者客户端的复杂性，同时想想，可能微服务可能是不同的技术栈实现的，有的是<code>http</code>、<code>rpc</code>或者<code>websocket</code>等等，也会进一步加大客户端的调用难度。所以，<strong>一般上都有会有个api网关，根据请求的url不同，路由到不同的服务上去，同时入口统一了，还能进行统一的身份鉴权、日志记录、分流等操作</strong>。</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/before-gateway.png" /></p>
-<h6 id="_22"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=网关的功能">网关的功能</a></h6>
+<pre class="highlight"><code class="language-text">为什么需要网关(改造前):
+  外部系统直连 各微服务(api地址各异)
+  内部靠注册中心感知, 外部不行
+  (痛点: 地址多 / 无统一鉴权限流)</code></pre>
+<h6 id="_22"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=网关的功能">网关的功能</a><a class="headerlink" href="#_22" title="Permanent link">&para;</a></h6>
 <ul>
 <li>减少api请求次数</li>
 <li>限流</li>
@@ -2563,7 +2672,11 @@ hystrix:
 <li>...</li>
 </ul>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/gateway-zuul.png" /></p>
-<h6 id="zuul"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=zuul实践">Zuul实践</a></h6>
+<pre class="highlight"><code class="language-text">网关功能(Zuul):
+  统一入口 / 路由转发
+  支持混合通信协议(前端只和网关通信)
+  鉴权 / 限流 / 日志 等横切能力</code></pre>
+<h6 id="zuul"><a href="http://49.7.203.222:2023/#/spring-cloud/gateway?id=zuul实践">Zuul实践</a><a class="headerlink" href="#zuul" title="Permanent link">&para;</a></h6>
 <p>新建模块，gateway-zuul,(spring cloud)</p>
 <p>pom.xml中需要引入zuul和eureka服务发现的依赖</p>
 <pre class="highlight"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -2721,10 +2834,14 @@ localhost:10000/bill-service/service/user/2
 <blockquote>
 <p>提交代码到代码仓库</p>
 </blockquote>
-<h1 id="_23"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=调用链路追踪">调用链路追踪</a></h1>
-<h6 id="_24"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=介绍">介绍</a></h6>
+<h1 id="_23"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=调用链路追踪">调用链路追踪</a><a class="headerlink" href="#_23" title="Permanent link">&para;</a></h1>
+<h6 id="_24"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=介绍">介绍</a><a class="headerlink" href="#_24" title="Permanent link">&para;</a></h6>
 <p>服务追踪的追踪单元是从客户发起请求（request）抵达被追踪系统的边界开始，到被追踪系统向客户返回响应（response）为止的过程，称为一个 trace。每个 trace 中会调用若干个服务，为了记录调用了哪些服务，以及每次调用的消耗时间等信息，在每次调用服务时，埋入一个调用记录，称为一个 span。这样，若干个有序的 span 就组成了一个 trace。在系统向外界提供服务的过程中，会不断地有请求和响应发生，也就会不断生成 trace，把这些带有 span 的 trace 记录下来，就可以描绘出一幅系统的服务拓扑图。附带上 span 中的响应时间，以及请求成功与否等信息，就可以在发生问题的时候，找到异常的服务；根据历史数据，还可以从系统整体层面分析出哪里性能差，定位性能优化的目标。</p>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/640.jpg" /></p>
+<pre class="highlight"><code class="language-text">服务追踪(Sleuth + Zipkin):
+  一次请求 (trace) 从入口到返回的完整链路
+  链路拆分为多个 span(每个服务一跳)
+  (定位跨服务调用耗时与故障)</code></pre>
 <p>Spring Cloud Sleuth 为服务之间调用提供链路追踪。通过 Sleuth 可以很清楚的了解到一个服务请求经过了哪些服务，每个服务处理花费了多长。从而让我们可以很方便的理清各微服务间的调用关系。此外 Sleuth 可以帮助我们：</p>
 <ul>
 <li>
@@ -2738,7 +2855,7 @@ localhost:10000/bill-service/service/user/2
 </li>
 </ul>
 <p>https://zipkin.io/pages/quickstart</p>
-<h6 id="zipkin"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=启动zipkin">启动zipkin</a></h6>
+<h6 id="zipkin"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=启动zipkin">启动zipkin</a><a class="headerlink" href="#zipkin" title="Permanent link">&para;</a></h6>
 <pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -2802,7 +2919,7 @@ spec:
             name: zipkin
             port:
               number: 9411</code></pre>
-<h6 id="_25"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=实践">实践</a></h6>
+<h6 id="_25"><a href="http://49.7.203.222:2023/#/spring-cloud/zipkin?id=实践">实践</a><a class="headerlink" href="#_25" title="Permanent link">&para;</a></h6>
 <p>分别对<code>bill-service</code>和<code>user-service</code>进行改造：</p>
 <p>pom.xml中添加：</p>
 <pre class="highlight"><code class="language-xml">        &lt;dependency&gt;
@@ -2822,7 +2939,7 @@ logging:
   level:
     org.springframework.cloud: debug</code></pre>
 <p>访问zuul网关的接口 <span v-pre> <code>localhost:10000/apis/bill-service/bill/user/2</code> </span></p>
-<h1 id="springboot-admin"><a href="http://49.7.203.222:2023/#/spring-cloud/admin?id=springboot-admin监控">SpringBoot Admin监控</a></h1>
+<h1 id="springboot-admin"><a href="http://49.7.203.222:2023/#/spring-cloud/admin?id=springboot-admin监控">SpringBoot Admin监控</a><a class="headerlink" href="#springboot-admin" title="Permanent link">&para;</a></h1>
 <p>新建项目，<code>springboot-admin</code></p>
 <pre class="highlight"><code>pom.xml
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -2927,7 +3044,7 @@ public class SpringbootAdminApplication {
             &lt;artifactId&gt;spring-boot-admin-starter-client&lt;/artifactId&gt;
             &lt;version&gt;2.2.1&lt;/version&gt;
         &lt;/dependency&gt;</code></pre>
-<h1 id="_26"><a href="http://49.7.203.222:2023/#/spring-cloud/summary?id=小结">小结</a></h1>
+<h1 id="_26"><a href="http://49.7.203.222:2023/#/spring-cloud/summary?id=小结">小结</a><a class="headerlink" href="#_26" title="Permanent link">&para;</a></h1>
 <ol>
 <li>伴随着业务场景复杂度的提高，单体架构应用弊端显现，微服务的思想逐步盛行，微服务架构带来诸多便捷的同时，也带来了很多问题，最主要的是多个微服务的服务治理（服务发现、调用、负载均衡、跟踪）</li>
 <li>为了解决服务治理问题，出现了微服务框架（Dubbo、Spring Cloud等）</li>
@@ -2936,6 +3053,11 @@ public class SpringbootAdminApplication {
 <li>SpringBoot是微服务的开发框架，通过maven与Spring Cloud生态中的组件集成，极大方便了java应用程序的交付</li>
 </ol>
 <p><img alt="img" src="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98.assets/arch-1669083777635340.png" /></p>
+<pre class="highlight"><code class="language-text">Spring Cloud 体系小结:
+  Netflix 套件: eureka / ribbon / feign
+                 / hystrix / zuul
+  链路追踪: sleuth + zipkin
+  SpringBoot + Maven 集成, 便利 Java 交付</code></pre>
 <p>问题：</p>
 <ol>
 <li>无论是Dubbo还是SpringCloud，均属于Java语言体系下的产物，跨语言没法共用，同时，通过走了一遍内部集成的过程，可以清楚的发现，服务治理过程中，各模块的集成，均需要对原始业务逻辑形成侵入。</li>
@@ -2981,6 +3103,8 @@ public class SpringbootAdminApplication {
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {
