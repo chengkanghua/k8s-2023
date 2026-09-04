@@ -11,6 +11,7 @@ nav:
   - SpringCloud微服务项目交付: 9SpringCloud微服务项目交付.md
   - 基于Istio实现微服务治理: 10基于Istio实现微服务治理.md
   - 问题记录: 问题记录.md
+  - k8s精简版: k8s精简版.md
   - About: index.md
 # 说明：当前使用已安装的 readthedocs 主题，mermaid 通过 extra_javascript 引入即可渲染。
 # 若想改用 Material 主题：先 `pip install mkdocs-material`，再把下面 theme.name 改成 material，
