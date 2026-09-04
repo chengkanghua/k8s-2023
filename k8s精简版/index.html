@@ -1,0 +1,4290 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>k8s精简版 - k8s-2023</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "k8s\u7cbe\u7b80\u7248";
+        var mkdocs_page_input_path = "k8s\u7cbe\u7b80\u7248.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> k8s-2023
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../1%E8%B5%B0%E8%BF%9BDocker%E7%9A%84%E4%B8%96%E7%95%8C/">走进Docker的世界</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../2Kubernetes%E5%AE%89%E8%A3%85%E6%96%87%E6%A1%A3/">Kubernetes安装文档</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../3Kubernetes%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5%E4%B9%8B%E6%97%85/">Kubernetes落地实践之旅</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../4Kubernetes%E8%BF%9B%E9%98%B6%E5%AE%9E%E8%B7%B5/">Kubernetes进阶实践</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../5%E5%9F%BA%E4%BA%8EEFK%E7%9A%84Kubernetes%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E6%96%B9%E6%A1%88/">基于EFK的Kubernetes日志采集方案</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../6%E5%9F%BA%E4%BA%8EPrometheus%E7%9A%84Kubernetes%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88/">基于Prometheus的Kubernetes监控方案</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../7%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84DevOps%E5%B9%B3%E5%8F%B0%E5%AE%9E%E8%B7%B5/">基于Kubernetes的DevOps平台实践</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../8%E5%9F%BA%E4%BA%8EsharedLibrary%E8%BF%9B%E8%A1%8CCICD%E6%B5%81%E7%A8%8B%E7%9A%84%E4%BC%98%E5%8C%96/">基于sharedLibrary进行CICD流程的优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../9SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE%E4%BA%A4%E4%BB%98/">SpringCloud微服务项目交付</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../10%E5%9F%BA%E4%BA%8EIstio%E5%AE%9E%E7%8E%B0%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/">基于Istio实现微服务治理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">问题记录</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">k8s精简版</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_1">目录</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#docker">一、走进 Docker 的世界</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-docker">1. 为什么需要 Docker</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-docker">2. Docker 是什么 / 架构</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#docker-cs-">Docker 整体架构（C/S 客户端 - 服务端架构）</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#1-client">1. Client 客户端</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#2-daemondockerd">2. Daemon（dockerd 守护进程，服务端核心）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#3-registry">3. Registry 镜像仓库</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#4">4. 内核支撑技术（底层隔离基础）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#docker-run-nginx">完整调用流程举例（docker run nginx）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#_2">极简架构总结</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3">3. 安装要点</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4_1">4. 三大核心要素与常用操作</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-dockerfile">5. Dockerfile 关键指令</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-1">6. 通过 1 号进程理解容器本质</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#7-multi-stage">7. 多阶段构建（Multi-stage）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#8">8. 实现原理</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#9-unionfs">9. UnionFS 分层与写时复制</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#10-docker">10. Docker 网络</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#11-containerd-crioci">11. containerd 与 CRI/OCI</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#12">12. 实用技巧</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#13">13. 一句话小结</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nsenter-namespace-enter">nsenter 全称 namespace enter</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#kubernetes">二、Kubernetes 安装部署</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#21">2.1 环境准备与架构</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#22-containerd">2.2 安装容器运行时（containerd）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#23-kubeadm-kubelet-kubectl">2.3 安装 kubeadm / kubelet / kubectl</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#24-master">2.4 初始化 Master 节点</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#25-cni-flannel">2.5 安装 CNI 网络插件（Flannel）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#26">2.6 工作节点加入集群</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#27">2.7 集群访问架构</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#28-nginx">2.8 部署测试应用（Nginx）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#29">2.9 常见问题排查</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#210">2.10 集群自恢复与运维</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#_3">操作记录</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#kubernetes_1">三、Kubernetes 落地实践之旅</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#31-kubernetes">3.1 为什么需要 Kubernetes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#32">3.2 官方标准架构（控制平面 + 工作节点）</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#1">1. 控制平面组件（集群大脑，全局决策）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#2">2. 工作节点组件（运行业务负载）</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#deployment">二、官方标准工作流程（以创建 Deployment 为例）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#_4">三、核心设计原则（官方核心思想）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#_5">什么是分布式？</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#k8s_1">二、结合 K8s 控制平面 + 工作节点，拆解分布式三层含义</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#k8s_2">三、分布式架构给 K8s 带来三大核心价值</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#vs">四、补充对比：单体 vs 分布式</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#_6">五、延伸小考点</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#_7">理解集群资源</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#_8">核心理解 🎯</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#_9">五大类资源（必背）</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#1_2">1. 工作负载类（部署业务）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#2_2">2. 网络服务类（流量访问）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#3_2">3. 配置管理类（解耦配置与镜像）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#4_2">4. 存储资源类（数据持久化）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#5">5. 集群管控类（隔离、权限、资源限制）</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#_10">三、加分总结</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#kubectl">kubectl 高频常用命令</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#_11">核心组件</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#33">3.3 核心对象概览</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#34-deployment-nginx">3.4 第一个应用：Deployment 跑 Nginx</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#35-service">3.5 暴露服务：Service 三种类型</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#36-configmap-secret">3.6 配置与敏感信息：ConfigMap / Secret</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#37-volume-pvc">3.7 持久化存储：Volume 与 PVC</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#38-k8s">3.8 探针：让 k8s 知道“活没活”</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#39-hpa">3.9 扩缩容：HPA 自动伸缩</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#310">3.10 滚动更新与回滚</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#311-qos">3.11 资源限制与 QoS</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#312">3.12 命名空间与资源配额</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#313">3.13 排障套路</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#314">3.14 进阶补充</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#kubernetes_2">四、Kubernetes 进阶实践</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#41-kube-scheduler">4.1 调度器（kube-scheduler）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#42">4.2 工作负载管理</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#43">4.3 配置与存储管理</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#44">4.4 服务发现与网络</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#45-rbac">4.5 权限与安全管理（RBAC）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#46-qos">4.6 资源限制与 QoS</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#47">4.7 健康检查（探针）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#48">4.8 滚动更新与回滚策略</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#49-hpa">4.9 自动扩缩容（HPA）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#410">4.10 进阶补充</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#411">4.11 小结</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#efk-kubernetes">五、基于 EFK 的 Kubernetes 日志采集方案</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#51">5.1 为什么要做日志采集</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#52-efk">5.2 EFK 是什么</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#53-kubernetes">5.3 Kubernetes 日志来源</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#54-fluent-bit-vs-fluentd">5.4 采集端选型：Fluent Bit vs Fluentd</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#55-fluent-bit">5.5 Fluent Bit 核心配置</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#56-elasticsearch-ilm">5.6 Elasticsearch 索引与生命周期管理（ILM）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#57-kibana">5.7 Kibana 可视化与查询</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#58">5.8 整体数据流</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#59">5.9 常见问题与调优</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#510">5.10 小结</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#prometheus-kubernetes">六、基于 Prometheus 的 Kubernetes 监控方案</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#61">6.1 为什么需要监控</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#62-prometheus">6.2 Prometheus 是什么</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#63">6.3 整体架构</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#64-prometheus-server">6.4 部署 Prometheus Server</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#65-promql">6.5 指标模型与 PromQL 基础</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#66-node-exporter">6.6 部署 Node Exporter</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#67-kubernetes">6.7 在 Kubernetes 中抓取指标</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#68-alertmanager">6.8 告警规则与 Alertmanager</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#69-grafana">6.9 可视化（Grafana）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#610-kube-state-metrics-metrics-server">6.10 kube-state-metrics 与 metrics-server 的区别</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#611-prometheus-kubernetes_sd_configs">6.11 Prometheus 服务发现（kubernetes_sd_configs）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#612-remote-write-thanos-victoriametrics">6.12 持久化存储（Remote Write / Thanos / VictoriaMetrics）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#613-promql">6.13 常用 PromQL 速查</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#614-prometheus-operator-kube-prometheus">6.14 Prometheus-Operator / kube-prometheus</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#615">6.15 常见排错清单</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#616">6.16 小结</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#kubernetes-devops">七、基于 Kubernetes 的 DevOps 平台实践</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#71-devops">7.1 为什么需要 DevOps 平台</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#72">7.2 整体架构</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#73-cicd">7.3 CI/CD 流水线设计</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#74">7.4 镜像构建与仓库管理</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#75">7.5 部署策略</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#76">7.6 配置与密钥管理</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#77-helm">7.7 Helm 与包管理</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#78">7.8 流水线中的质量门禁</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#79-gitops-argo-cd">7.9 GitOps 实践（Argo CD）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#710">7.10 可观测性接入</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#711">7.11 常见问题与排错</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#712">7.12 进阶补充</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#713">7.13 小结</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sharedlibrary-cicd">八、基于 sharedLibrary 的 CICD 流程优化</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#81-jenkins-shared-library">8.1 为什么要用 Jenkins Shared Library</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#82-shared-library">8.2 Shared Library 的目录结构</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#83-jenkins-shared-library">8.3 在 Jenkins 中配置 Shared Library</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#84-vars">8.4 编写 vars 步骤（全局变量）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#85-src-groovy">8.5 使用 src 下的 Groovy 类</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#86-ci">8.6 完整 CI 流程示例</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#87">8.7 版本管理与最佳实践</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#88">8.8 常见问题速查</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#89">8.9 小结</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#springcloud">九、SpringCloud 微服务项目交付</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#91">9.1 微服务扫盲</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#92-springboot">9.2 SpringBoot 交付实战</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#93-eureka">9.3 服务注册中心 Eureka</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#94">9.4 服务间调用（消费者）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#95-hystrix">9.5 断路器 Hystrix</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#96-zuul">9.6 微服务网关 Zuul</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#97-sleuth-zipkin">9.7 调用链路追踪 Sleuth + Zipkin</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#98-springboot-admin">9.8 SpringBoot Admin 监控</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#99">9.9 整体架构</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#910">9.10 小结</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#istio">十、基于 Istio 实现微服务治理</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#101-istio">10.1 服务网格与 Istio 是什么</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#102">10.2 安装与注入</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#103-envoy-xds">10.3 Envoy 与 xDS</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#104">10.4 工作原理（一次调用的完整链路）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#105-crdvirtualservice-destinationrule">10.5 核心 CRD：VirtualService 与 DestinationRule</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#106-gateway-vs-ingress">10.6 入口流量：Gateway vs Ingress</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#107">10.7 路由匹配类型</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#108-shadow-traffic">10.8 流量镜像（Shadow Traffic）</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#109">10.9 重试与熔断</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#1010">10.10 故障注入与超时</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#1011">10.11 可观测性</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#1012-productpage-reviews">10.12 重点回顾（Productpage → Reviews 全流程）</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">k8s-2023</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">k8s精简版</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="k8s">K8s 知识精简总结（面试向）<a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>本文档由《走进 Docker 的世界》《Kubernetes 安装 / 落地实践 / 进阶实践》《EFK 日志》《Prometheus 监控》《DevOps 平台实践》《sharedLibrary 的 CICD 优化》《SpringCloud 微服务项目交付》《Istio 微服务治理》十篇文档精炼而成。</p>
+<ul>
+<li>已删除全部配图，结构 / 流程 / 架构改用 <strong>ASCII 文字图</strong> 表达；</li>
+<li>操作命令、YAML、代码块 <strong>逐字保留</strong>，未做改写；</li>
+<li>用 <code>&gt; 💡 **面试重点：**</code> 标记常考知识点；</li>
+<li>风格：通俗易懂、简洁明了，保留不可替代的核心原理。</li>
+</ul>
+</blockquote>
+<h2 id="_1">目录<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#一走进-docker-的世界">走进 Docker 的世界</a></li>
+<li><a href="#二kubernetes-安装部署">Kubernetes 安装部署</a></li>
+<li><a href="#三kubernetes-落地实践之旅">Kubernetes 落地实践之旅</a></li>
+<li><a href="#四kubernetes-进阶实践">Kubernetes 进阶实践</a></li>
+<li><a href="#五基于-efk-的-kubernetes-日志采集方案">基于 EFK 的 Kubernetes 日志采集方案</a></li>
+<li><a href="#六基于-prometheus-的-kubernetes-监控方案">基于 Prometheus 的 Kubernetes 监控方案</a></li>
+<li><a href="#七基于-kubernetes-的-devops-平台实践">基于 Kubernetes 的 DevOps 平台实践</a></li>
+<li><a href="#八基于-sharedlibrary-的-cicd-流程优化">基于 sharedLibrary 的 CICD 流程优化</a></li>
+<li><a href="#九springcloud-微服务项目交付">SpringCloud 微服务项目交付</a></li>
+<li><a href="#十基于-istio-实现微服务治理">基于 Istio 实现微服务治理</a></li>
+</ol>
+<hr />
+<h2 id="docker">一、走进 Docker 的世界<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h2>
+<h3 id="1-docker">1. 为什么需要 Docker<a class="headerlink" href="#1-docker" title="Permanent link">&para;</a></h3>
+<p>传统虚拟机（Hypervisor）需自带 Guest OS 完整内核，重、启动慢；容器共享宿主机内核，轻、启动快。</p>
+<pre class="highlight"><code>+---------- 虚拟机 (Hypervisor) ----------+    +------------- 容器 (Docker) -------------+
+|  Guest OS (完整内核)                    |    |  App A            App B               |
+|    App A          App B                |    |     \              /                  |
+|       \              /                 |    |      \            /                   |
+|   共享硬件 + Hypervisor(完全隔离)      |    |  共享宿主机内核 + 容器引擎(轻量隔离)  |
++----------------------------------------+    +----------------------------------------+
+            较重 / 启动慢                              轻量 / 启动快</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 容器与虚拟机的本质区别——容器共享宿主机内核、轻量快速；虚拟机自带完整 Guest OS、隔离更强但更重。</p>
+</blockquote>
+<p>Docker 底层利用 LXC（Linux 容器）实现资源隔离与限制。容器运行时代表：Docker、CoreOS Rkt、Podman。</p>
+<h3 id="2-docker">2. Docker 是什么 / 架构<a class="headerlink" href="#2-docker" title="Permanent link">&para;</a></h3>
+<p>基于操作系统内核、提供轻量级虚拟化的 CS 架构软件。</p>
+<p><strong>定义</strong>：轻量容器化工具，将程序、依赖、运行环境打包，实现一次打包任意机器运行。</p>
+<p><strong>对比虚拟机</strong>：共享宿主机内核，占用资源少、秒级启动；虚拟机自带完整系统，笨重缓慢。</p>
+<p>四大核心</p>
+<ul>
+<li>引擎：Docker 后台服务，执行所有操作命令</li>
+<li>镜像：只读环境模板（如 mysql、nginx）</li>
+<li>容器：镜像运行后的可读写实例</li>
+<li>镜像仓库：存储、下载镜像的平台</li>
+</ul>
+<p><strong>使用流程</strong>：拉取镜像→运行容器--&gt;容器内部署业务程序；自定义项目通过 Dockerfile 打包成镜像分发。</p>
+<p><strong>核心优点</strong>：环境统一、资源省、部署快、方便微服务与自动化发布。</p>
+<p><strong>一句话总结</strong>：解决环境不一致问题，轻量化打包部署应用。</p>
+<p>适用场景: 本地搭建多套测试环境；CI/CD 自动化流水线打包发布。</p>
+<p>​                 无状态服务（Nginx、Tomcat、SpringBoot 后端、前端）→ 生产最推荐容器化</p>
+<pre class="highlight"><code>+------------------+       REST API        +---------------------------+
+|  Docker Client   | &lt;-------------------&gt; |     Docker Daemon         |
+|  (docker CLI)    |                       |     (dockerd)             |
++------------------+                       +---------------------------+
+                                                  | 管理
+                          +-----------------------+-----------------------+
+                          v                       v                       v
+                      [镜像 Image]           [容器 Container]        [仓库 Registry]</code></pre>
+<ul>
+<li>版本：CE（社区版）/ EE（企业版）。</li>
+<li>发展史：1.8 前用 LXC，后抽出 libcontainer；2015 成立 OCI（开放容器标准）。</li>
+<li>OCI 维护 <strong>runC</strong>（libcontainer，符合 OCI 标准、对接内核）。</li>
+<li><strong>containerd</strong> 剥离自 dockerd，向上提供 gRPC，向下经 containerd-shim 调 runC。</li>
+</ul>
+<pre class="highlight"><code>Docker Daemon (dockerd)
+        |  gRPC 接口
+        v
+     containerd  (镜像管理 / 容器执行调用)
+        |  containerd-shim
+        v
+     runC (libcontainer)  --&gt;  Linux 内核 (Namespace + Cgroup)</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> runC 是符合 OCI 标准的低层运行时（对接内核）；containerd 是上层运行时（镜像/容器管理）；dockerd 是最上层与 CLI 交互的进程。</p>
+<p>💡 <strong>containerd vs containerd-shim 分工：</strong> containerd = 大管家（常驻 1 个，管镜像、容器生命周期调度，向上提供 gRPC）；<strong>containerd-shim = 每容器 1 个的贴身守护</strong>——runC 创建完容器就退出，shim 收养容器主进程当父进程，负责转发 stdout/stderr、转发信号、上报退出码。<strong>解耦价值：上层 daemon（dockerd/containerd）重启时容器不挂</strong>，这就是 <code>systemctl restart docker</code> 容器照常运行的原理。Kata/gVisor 等安全运行时也是通过替换 shim（runtime class）接入的。</p>
+</blockquote>
+<h3 id="docker-cs-">Docker 整体架构（C/S 客户端 - 服务端架构）<a class="headerlink" href="#docker-cs-" title="Permanent link">&para;</a></h3>
+<p>Docker 采用 <strong>Client-Server（C/S）</strong> 模型，分为四大核心模块：客户端、Docker 守护进程、镜像仓库、容器运行环境。</p>
+<h4 id="1-client">1. Client 客户端<a class="headerlink" href="#1-client" title="Permanent link">&para;</a></h4>
+<p>就是你敲命令的地方（<code>docker run/pull/build</code> 等）</p>
+<ul>
+<li>交互入口：CLI 命令行、Docker Desktop、SDK</li>
+<li>作用：发送请求给 Docker Daemon，<strong>不直接操作容器 / 镜像</strong></li>
+</ul>
+<h4 id="2-daemondockerd">2. Daemon（dockerd 守护进程，服务端核心）<a class="headerlink" href="#2-daemondockerd" title="Permanent link">&para;</a></h4>
+<p>后台常驻服务，Linux 系统后台进程，Docker 真正干活的核心。引擎内部不是单个进程，而是<strong>三层协作</strong>，命令从 dockerd 一路下放到内核：</p>
+<h5 id="dockerd">dockerd（最上层 · 面向人 / 镜像 / 网络 / 卷）<a class="headerlink" href="#dockerd" title="Permanent link">&para;</a></h5>
+<p>职责（这些"上层活"全部是 dockerd 的，containerd 不掺和）：
+- <strong>对外 API 服务</strong>：REST API，接收客户端（CLI / Docker Desktop / SDK）请求
+- <strong>镜像构建</strong>：读 Dockerfile 逐层 build（<code>docker build</code> 只在 dockerd）
+- <strong>镜像仓库交互</strong>：<code>docker login</code> / <code>push</code> / <code>pull</code> 的认证与传输（拉下来的镜像内容交给 containerd 存储）
+- <strong>网络管理（libnetwork）</strong>：创建 bridge / overlay 网络、<code>-p</code> 端口映射、容器 DNS
+- <strong>存储卷管理</strong>：<code>docker volume</code> 创建、挂载、对接卷驱动
+- <strong>容器"组装层"</strong>：解析 <code>docker run</code> 参数（env / 端口 / 挂载 / 资源限制）拼成一份完整配置
+- <strong>附带管理</strong>：日志驱动、健康检查、restart 策略、swarm 集群</p>
+<p>→ 配置拼好后，把"真正把容器建起来跑起来"这个执行活交给 containerd。</p>
+<h5 id="containerd">containerd（中层 · 容器运行时）<a class="headerlink" href="#containerd" title="Permanent link">&para;</a></h5>
+<p>负责：
+- 容器生命周期执行：create / start / stop / delete / exec（docker 这些命令最终都落到它）
+- 镜像内容存储：拉取镜像层 → content store → 解包成快照 snapshot（容器可写层）
+- 为每个容器拉起 containerd-shim 守护进程（收容容器主进程）</p>
+<p>不负责（全是 dockerd 的活）：docker volume、docker network、镜像构建（Dockerfile）、push / login</p>
+<h5 id="runc-oci">runc（底层 · OCI 标准运行时）<a class="headerlink" href="#runc-oci" title="Permanent link">&para;</a></h5>
+<p>遵循 OCI 标准，直接调用 Linux 内核能力（namespace、cgroups）实现资源隔离、限制。</p>
+<h4 id="3-registry">3. Registry 镜像仓库<a class="headerlink" href="#3-registry" title="Permanent link">&para;</a></h4>
+<p>存放镜像的远程服务器（可以理解成"镜像版的 Git 仓库"：<code>push</code> 上传、<code>pull</code> 下载、用标签区分版本）。</p>
+<ul>
+<li>官方公共：Docker Hub（默认仓库，写 <code>nginx</code> 等于 <code>docker.io/library/nginx</code>）</li>
+<li>私有仓库：Harbor、阿里云镜像仓库、AWS ECR</li>
+</ul>
+<p><strong>镜像怎么寻址</strong>：<code>仓库地址/项目名/镜像名:标签</code>，如 <code>registry.cn-hangzhou.aliyuncs.com/myproj/nginx:1.25</code>。不写标签默认 <code>latest</code>（生产环境别用 latest，无法回滚）。</p>
+<p><strong>流程（呼应 dockerd 职责第 3 条）</strong>：dockerd 负责和 Registry 打交道 —— <code>login</code> 认证、拉 manifest、下载分层 blob；拉下来的内容交给 containerd 存进 content store。所以"传输"是 dockerd 的活，containerd 只管"存"。</p>
+<p>pull 是<strong>分层并行下载</strong>：本地已有的层直接复用、不重复传。</p>
+<h4 id="4">4. 内核支撑技术（底层隔离基础）<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<p>容器不是 Docker 发明的技术，本质就是 Linux 内核的三种能力；<strong>真正调用它们的不是 dockerd，而是最底层的 runc</strong>：</p>
+<ol>
+<li><strong>Namespace（隔离"看得见什么"）</strong>：把系统资源包进独立命名空间，容器之间互相看不见。共六项：</li>
+<li><code>pid</code> 进程树 ／ <code>net</code> 网络栈 ／ <code>mnt</code> 挂载点 ／ <code>uts</code> 主机名 ／ <code>ipc</code> 进程间通信 ／ <code>user</code> 用户与权限</li>
+<li><strong>Cgroups（限制"能用多少"）</strong>：限制 CPU、内存、磁盘 IO，防止单个容器把宿主机资源吃光</li>
+<li><strong>Union FS（决定"文件怎么叠"）</strong>：镜像分层，下面多层只读复用 + 最顶一个可写层，靠 <strong>CoW 写时复制</strong>（要改下层文件时，先把文件拷到可写层再改）。所以容器启动快、镜像省空间</li>
+</ol>
+<p>Union FS 补充：它是"分层合并"这类能力的统称 —— 把多个目录（层）叠加挂载成一个统一视图，<strong>上层覆盖下层、下层只读复用</strong>。它只定义能力，不规定实现：</p>
+<ul>
+<li>真正的联合文件系统：AUFS、OverlayFS（Docker 现在默认用 <strong>overlay2</strong>）</li>
+<li>Docker 的<strong>存储驱动（storage driver）</strong>还包括 devicemapper、btrfs、zfs、vfs —— 这些<strong>不是</strong> Union FS，是靠 CoW 实现分层的另一套机制（早期版本或特殊场景才用）</li>
+</ul>
+<p>一句话区分三者：<strong>Namespace 管隔离边界，Cgroups 管资源上限，Union FS 管文件分层。</strong></p>
+<h4 id="docker-run-nginx">完整调用流程举例（docker run nginx）<a class="headerlink" href="#docker-run-nginx" title="Permanent link">&para;</a></h4>
+<p>以本地没有 nginx 镜像为例，完整链路走一遍：</p>
+<ol>
+<li><strong>客户端</strong>：敲 <code>docker run nginx</code>，CLI 通过 REST API 把请求发给 dockerd</li>
+<li><strong>dockerd 组装</strong>：解析参数（端口 / env / 挂载 / 资源限制），拼成一份完整容器配置</li>
+<li><strong>dockerd 查本地镜像</strong> → 没有 → 去 Registry 拉：认证、拉 manifest、下载分层 blob（已存在的层复用）</li>
+<li><strong>dockerd 交镜像</strong>：拉下来的内容交给 containerd → 存进 content store → 解包成快照（容器的只读层）</li>
+<li><strong>containerd 建容器</strong>：准备 rootfs 和可写层（网络由 dockerd 的 libnetwork 提前配好），拉起 containerd-shim，由 shim 调用 <strong>runc</strong></li>
+<li><strong>runc 造进程</strong>：调内核 namespace + cgroups 把 nginx 进程隔离起来；<strong>runc 建完就退出</strong>，容器进程交给 shim 收养托管</li>
+<li><strong>返回</strong>：nginx 主进程在隔离环境里跑起来，容器 ID 返回给客户端</li>
+</ol>
+<p>一句话串起来：<strong>dockerd 组装 + 拉镜像 → containerd 调度 + 存储 → shim 托管 → runc 隔离 → 内核执行。</strong></p>
+<h4 id="_2">极简架构总结<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<p>主链路（纵向，越往右越底层）：</p>
+<p>客户端（发命令）→ <strong>dockerd</strong>（组装 + 调度 + 与 Registry 交互）→ <strong>containerd</strong>（生命周期 + 镜像存储 + 拉起 shim）→ <strong>runc</strong>（调内核做隔离）→ <strong>Linux 内核</strong>（Namespace / Cgroups / Union FS）</p>
+<p>旁路：Registry 是<strong>侧挂</strong>在 dockerd 上的（只在拉/推镜像那一步被访问），不在主执行链路上。</p>
+<h3 id="3">3. 安装要点<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">#centos7 升级内核 6.9版本
+# https://dl.lamp.sh/kernel/el7/
+wget https://dl.lamp.sh/kernel/el7/kernel-ml-devel-6.9.10-1.el7.x86_64.rpm
+wget https://dl.lamp.sh/kernel/el7/kernel-ml-6.9.10-1.el7.x86_64.rpm
+
+yum localinstall -y  kernel-ml-6.9.10-1.el7.x86_64.rpm kernel-ml-devel-6.9.10-1.el7.x86_64.rpm
+
+#安装完毕后查看系统可用启动内核
+awk -F\' '$1=="menuentry " {print  $2}' /etc/grub2.cfg
+
+# 修改默认的启动内核
+grub2-set-default 'CentOS Linux (6.9.10-1.el7.x86_64) 7 (Core)'
+grub2-editenv list
+
+reboot
+uname -r
+-----------------------------------------------------------------
+## 若未配置，需要执行如下
+#加载网桥过滤模块
+modprobe br_netfilter
+cat &lt;&lt;EOF &gt; /etc/modules-load.d/br_netfilter.conf
+br_netfilter
+EOF
+cat &lt;&lt;EOF &gt;  /etc/sysctl.d/docker.conf
+# 让 iptables 防火墙规则生效在网桥转发流量上。
+# 1：网桥流量同样走 iptables 链做 NAT、过滤、端口转发
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+# 开启 Linux 内核 IPv4 数据包转发。
+net.ipv4.ip_forward=1
+EOF
+sysctl -p /etc/sysctl.d/docker.conf
+# 检查
+sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward</code></pre>
+<pre class="highlight"><code class="language-bash">#docker 安装
+# https://mirrors.huaweicloud.com/mirrorDetail/5ea14d84b58d16ef329c5c13?mirrorName=docker-ce&amp;catalog=docker
+sudo yum remove docker docker-common docker-selinux docker-engine
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+wget -O /etc/yum.repos.d/docker-ce.repo https://mirrors.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
+sudo sed -i 's+download.docker.com+mirrors.huaweicloud.com/docker-ce+' /etc/yum.repos.d/docker-ce.repo
+sudo yum makecache fast
+sudo yum install docker-ce
+
+#华为云的镜像加速地址
+https://console.huaweicloud.com/swr/?region=cn-north-4#/swr/mirror
+进入华为云搜索“容器镜像服务”或者 "SWR" ，进入控制台
+点击 “镜像资源”---&gt; “镜像中心”---&gt; "镜像加速器"
+cat &lt;&lt;EOF &gt; /etc/docker/daemon.json
+{
+    "registry-mirrors": [ "https://4c0c57d8b79a402d811834c1be74f7ae.mirror.swr.myhuaweicloud.com" ]
+}
+EOF
+
+## 设置开机自启
+systemctl enable docker  
+systemctl daemon-reload
+
+## 启动docker
+systemctl start docker 
+
+## 查看docker信息
+docker info
+## docker-client
+which docker
+## docker daemon
+ps aux |grep docker
+## containerd
+ps aux|grep containerd
+systemctl status containerd
+</code></pre>
+<h3 id="4_1">4. 三大核心要素与常用操作<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>        +-------------------+
+        |   镜像 Registry   |   (Docker Hub / Harbor)
+        +-------------------+
+                 |  pull / push
+                 v
+        +-------------------+
+        |     镜像 Image     |   (静态包: 业务代码 + 运行环境)
+        +-------------------+
+                 |  run
+                 v
+        +-------------------+
+        |   容器 Container   |   (运行时, 可对外提供服务)
+        +-------------------+</code></pre>
+<ul>
+<li>镜像：静态包，不能直接服务；容器：镜像的运行时；仓库：存镜像。</li>
+<li>公网地址形如 <code>registry.devops.com/demo/hello:latest</code>，缺省解析为 <code>docker.io/library/xxx:latest</code>。</li>
+</ul>
+<pre class="highlight"><code class="language-bash"># Docker 命令分类（按图中模块划分）
+一、镜像相关 Images
+1. 镜像基础操作
+    images：列出本地所有镜像
+    rmi：删除镜像
+    tag：给镜像打标签
+    history：查看镜像分层构建历史
+2. 镜像构建
+    build：通过 Dockerfile 构建镜像
+3. 镜像本地导入导出（Tar 包）
+    save：镜像导出为 tar 文件
+        docker save -o nginx-alpine.tar nginx:alpine
+    load：从 tar 文件导入镜像
+        docker load -i nginx-alpine.tar
+    export：容器导出为 tar 文件
+    import：容器 tar 包导入生成镜像
+4. 镜像仓库 Registry 交互
+    pull：从仓库拉取镜像到本地
+        docker pull nginx:alpine
+    push：推送本地镜像到仓库
+    search：搜索仓库镜像
+    login：登录镜像仓库
+    logout：退出镜像仓库登录
+5. 容器生成镜像
+    commit：把运行中的容器打包生成新镜像
+6. 对比容器与镜像差异
+    diff：查看容器相对于底层镜像的文件改动
+二、容器相关 Container
+1. 容器生命周期（状态流转）
+创建容器
+    create：创建容器（不启动）
+    run：创建并立刻启动容器
+    运行 / 停止 / 暂停状态切换
+    start：启动已停止容器
+    stop：优雅停止运行容器
+    kill：强制杀死运行容器
+    pause：暂停容器所有进程
+    unpause：恢复暂停的容器
+删除容器
+    rm：删除停止状态的容器
+2. 容器信息查看
+    ps：列出容器
+    inspect：查看容器详细元数据
+    port：查看容器端口映射
+    top：查看容器内进程
+    logs：查看容器日志
+    wait：阻塞等待容器停止并返回退出码
+3. 容器交互操作
+    attach：附着到容器前台终端
+    exec：在运行容器内执行命令（进入容器终端常用）
+    cp：宿主机与容器之间互传文件 / 文件夹
+
+三、宿主机与容器文件传输 Host
+    cp：容器 ↔ 宿主机 文件 / 文件夹拷贝
+四、Dockerfile 构建镜像
+    build：读取 Dockerfile 构建镜像
+五、Tar 文件（镜像 / 容器打包）
+    save：镜像导出 tar
+    load：tar 导入镜像
+    export：容器导出 tar
+    import：容器 tar 导入为镜像
+六、镜像仓库 Registry
+    pull、push、search、login、logout
+七、Docker Engine 引擎全局信息
+    version：查看 Docker 客户端 / 服务端版本
+    info：查看 Docker 系统全局信息（存储、容器、镜像数量等）
+    events：实时监听 Docker 后台事件（创建 / 删除容器、拉取镜像等）
+
+
+docker images
+docker pull nginx:alpine
+docker tag nginx:alpine 172.21.51.143:5000/nginx:alpine
+docker build . -t my-nginx:ubuntu -f Dockerfile
+docker run --name my-nginx-alpine -d nginx:alpine
+docker run --name nginx -d -p 8080:80 nginx:alpine
+docker run --memory=500m nginx:alpine
+docker exec -ti my-nginx-alpine /bin/sh
+docker save -o nginx-alpine.tar nginx:alpine
+docker load -i nginx-alpine.tar
+docker rmi nginx:alpine
+docker rm -f nginx
+docker logs --tail=100 -f nginx
+docker inspect nginx</code></pre>
+<p>推送私有仓库（带认证 + insecure 跳过 HTTPS 校验）：</p>
+<pre class="highlight"><code class="language-bash"># 创建 Docker Registry 认证文件目录
+mkdir /var/lib/registry_auth
+
+# 使用 htpasswd 来创建加密文件
+[ -f /usr/bin/htpasswd ] || yum install -y httpd-tools
+htpasswd -Bbn admin admin &gt; /var/lib/registry_auth/htpasswd
+#-B：使用 bcrypt 加密密码（安全性更高，推荐）
+#-b：批量模式，直接在命令行传入用户名 + 密码，不用交互式输入
+#-n：不输出到终端，输出标准输出
+
+
+## 使用docker镜像启动镜像仓库服务
+docker run -p 5000:5000 \
+--restart=always \
+--name registry \
+-v /var/lib/registry:/var/lib/registry \
+-v /var/lib/registry_auth/:/auth/ \
+-e "REGISTRY_AUTH=htpasswd" \
+-e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+-e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
+-d registry
+
+docker run -p 5000:5000 \          # 端口映射：宿主机5000映射容器5000
+--restart=always \                 # 容器异常/开机自动重启
+--name registry \                  # 容器命名registry
+-v /var/lib/registry:/var/lib/registry \  # 持久化镜像存储目录 宿主机位置:容器内位置
+-v /var/lib/registry_auth/:/auth/ \      # 挂载账号密码文件目录
+-e "REGISTRY_AUTH=htpasswd" \      # 启用htpasswd账号密码认证
+-e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \ # 登录提示域名
+-e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \ # 指定密码文件容器内路径
+-d registry                        # 后台运行registry官方仓库镜像
+# -e 是添加容器内环境变量
+# -d 后台守护进程运行容器，不占用当前终端
+
+
+## docker默认不允许向http的仓库地址推送，如何做成https的，参考：https://docs.docker.com/registry/deploying/#run-an-externally-accessible-registry
+## 我们没有可信证书机构颁发的证书和域名，自签名证书需要在每个节点中拷贝证书文件，比较麻烦，因此我们通过配置daemon的方式，来跳过证书的验证：
+vim /etc/docker/daemon.json
+{
+    "registry-mirrors": [ "https://4c0c57d8b79a402d811834c1be74f7ae.mirror.swr.myhuaweicloud.com" ],
+    "insecure-registries": ["10.0.0.80:5000"]
+}
+
+systemctl restart docker
+docker login 10.0.0.80:5000
+Username: admin
+Password: admin
+
+
+docker pull nginx:alpine
+docker tag nginx:alpine 10.0.0.80:5000/nginx:alpine
+docker push 10.0.0.80:5000/nginx:alpine
+
+
+## 查看仓库内元数据
+curl -u admin:admin -X GET http://10.0.0.80:5000/v2/_catalog
+curl -u admin:admin  -X GET http://10.0.0.80:5000/v2/nginx/tags/list
+
+docker rmi nginx:alpine
+
+
+</code></pre>
+<p><strong>docker命令练习</strong></p>
+<pre class="highlight"><code class="language-bash">## 查看运行状态的容器列表
+docker ps
+## 查看全部状态的容器列表
+docker ps -a
+## 后台启动
+docker run --name nginx -d nginx:alpine
+## 映射端口,把容器的端口映射到宿主机中,-p &lt;host_port&gt;:&lt;container_port&gt;
+docker run --name nginx -d -p 8080:80 nginx:alpine
+## 资源限制,最大可用内存500M
+docker run --memory=500m nginx:alpine
+## 挂载主机目录
+docker run --name nginx -d  -v /opt:/opt  nginx:alpine
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=123456  -d -v /opt/mysql/:/var/lib/mysql mysql:5.7
+
+# 进入容器或者执行容器内的命令
+docker exec -ti &lt;container_id_or_name&gt; /bin/sh
+# -t：分配伪终端，支持交互
+# -i：保持标准输入打开
+# -ti：组合，实现交互式进容器
+docker exec &lt;container_id_or_name&gt; hostname命令
+
+# 主机与容器之间拷贝数据
+## 主机拷贝到容器
+echo '123'&gt;/tmp/test.txt
+docker cp /tmp/test.txt nginx:/tmp
+docker exec nginx cat /tmp/test.txt
+## 容器拷贝到主机
+docker cp nginx:/tmp/test.txt ./
+
+## 查看全部日志
+docker logs nginx
+## 实时查看最新日志
+docker logs -f nginx
+## 从最新的100条开始查看
+docker logs --tail=100 -f nginx
+
+## 停止运行中的容器
+docker stop nginx
+## 启动退出容器
+docker start nginx
+## 删除非运行中状态的容器
+docker rm nginx
+## 删除运行中的容器
+docker rm -f nginx
+
+## 查看容器详细信息，包括容器IP地址等
+$ docker inspect nginx
+## 查看镜像的明细信息
+$ docker inspect nginx:alpine</code></pre>
+<h3 id="5-dockerfile">5. Dockerfile 关键指令<a class="headerlink" href="#5-dockerfile" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">docker build . -t ImageName:ImageTag -f Dockerfile</code></pre>
+<ul>
+<li><code>FROM</code>：基础镜像，必须首条。</li>
+<li><code>RUN</code>：构建期执行，生成可缓存中间层。</li>
+<li><code>COPY/ADD</code>：拷贝本地文件。</li>
+<li><code>WORKDIR</code>：工作目录。</li>
+<li><code>ENV</code>：环境变量。</li>
+<li><code>EXPOSE</code>：仅声明端口，需 <code>-p</code> 发布。</li>
+<li><code>CMD</code>：容器启动命令；<code>docker run</code> 后命令会覆盖它。</li>
+<li><code>ENTRYPOINT</code>：容器入口，run 后参数作为其参数，不被覆盖；仅允许一个。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> CMD 可被 <code>docker run</code> 后的命令覆盖；ENTRYPOINT 不可被覆盖、会接收附加参数；二者共存时 CMD 作为参数传给 ENTRYPOINT。</p>
+</blockquote>
+<pre class="highlight"><code class="language-bash">Dockerfile使用
+docker build . -t ImageName:ImageTag -f Dockerfile
+
+FROM 指定基础镜像，必须为第一个命令
+MAINTAINER 镜像维护者的信息
+COPY|ADD 添加本地文件到镜像中
+WORKDIR 工作目录
+RUN 构建镜像过程中执行命令
+CMD 构建容器后调用，也就是在容器启动时才进行调用
+ENTRYPOINT 设置容器初始化命令，使其可执行化
+ENV
+EXPOSE   容器内端口
+----------------------------------------------------
+# 1. FROM：指定基础镜像，必须首行
+FROM centos:7
+# 2. RUN：构建时执行shell命令
+RUN yum install nginx -y
+# 3. COPY：宿主机文件/目录复制到容器
+COPY ./index.html /usr/share/nginx/html/
+# 4. ADD：类似COPY，自动解压tar、支持远程url
+ADD test.tar.gz /opt/
+# 5. WORKDIR：设置容器工作目录，后续命令默认在此执行
+WORKDIR /app
+# 6. ENV：定义环境变量
+ENV VERSION=1.0
+# 7. ARG：构建时传入临时参数，镜像内不保留
+ARG build_user
+# 8. EXPOSE：声明容器暴露端口（仅说明，不自动映射）
+EXPOSE 80
+# 9. VOLUME：声明数据卷，持久化目录
+VOLUME ["/data"]
+# 10. CMD：容器启动默认命令，docker run可覆盖
+CMD ["nginx","-g","daemon off;"]
+# 11. ENTRYPOINT：容器入口程序，CMD仅作参数
+ENTRYPOINT ["/bin/sh"]
+# 12. USER：切换运行用户（默认root）
+USER nginx
+# 13. LABEL：给镜像添加元数据标签
+LABEL author="admin"
+# 14. HEALTHCHECK：容器健康检查
+HEALTHCHECK --interval=3s CMD curl -s 127.0.0.1</code></pre>
+<h3 id="6-1">6. 通过 1 号进程理解容器本质<a class="headerlink" href="#6-1" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">docker run -d --name test-4 nginx:alpine ping www.luffycity.com</code></pre>
+<p>容器本质：利用 namespace + cgroup 在宿主机创建的隔离虚拟空间；容器内 pid=1 的进程即启动命令。容器共享内核，<strong>无法在容器内升级内核</strong>。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 容器是宿主机上的一个进程（pid 1 即入口命令），不是完整操作系统；共享内核、无法独立升级内核。</p>
+</blockquote>
+<pre class="highlight"><code>通过1号进程理解容器的本质
+----------------------------------------------------------
+-- 容器内 PID 1 是什么
+容器启动后，容器内部的第一个进程就是 PID=1 进程，由runc依托 Linux Namespace 创建。
+宿主机有完整 PID 树，容器拥有独立 PID Namespace：
+宿主机看该进程是随机大 PID；
+容器内部视角，它就是 PID=1。
+本质上讲容器是利用namespace和cgroup等技术在宿主机中创建的独立的虚拟空间，这个空间内的网络、进程、挂载等资源都是隔离的。
+------------------------------------------------------------
+docker run -d --name xxx nginx:alpine &lt;自定义命令&gt;
+# &lt;自定义命令&gt;会覆盖镜像中指定的CMD指令，作为容器的1号进程启动。
+docker run -d --name test-3 nginx:alpine echo 123
+docker run -d --name test-4 nginx:alpine ping www.badu.com
+$ docker exec -ti test-4 /bin/sh
+#/ ps aux
+#/ ip addr
+#/ ls -l /
+#/ apt install xxx
+#/ #安装的软件对宿主机和其他容器没有任何影响，和虚拟机不同的是，容器间共享一个内核，所以容器内没法升级内核</code></pre>
+<h3 id="7-multi-stage">7. 多阶段构建（Multi-stage）<a class="headerlink" href="#7-multi-stage" title="Permanent link">&para;</a></h3>
+<p>把编译环境与运行环境分离，最终镜像只含运行所需产物，大幅瘦身。</p>
+<pre class="highlight"><code class="language-dockerfile">FROM srinivasansekar/javamvn as builder
+WORKDIR /opt/springboot-app
+COPY  . .
+RUN mvn clean package -DskipTests=true
+
+FROM openjdk:8-jdk-alpine
+COPY --from=builder /opt/springboot-app/target/sample.jar sample.jar
+CMD [ "sh", "-c", "java -jar /sample.jar" ]</code></pre>
+<pre class="highlight"><code class="language-bash">多阶段构建（极简理解）
+1. 核心痛点
+单阶段打包会把编译工具、源码、依赖包全塞进最终镜像，镜像体积巨大，包含无用编译环境。
+2. 本质
+一个 Dockerfile 里写多个 FROM，分出「构建阶段」+「运行阶段」：
+构建阶段：带编译环境，编译代码生成可执行文件；
+运行阶段：只用极简基础镜像，只拷贝上一阶段编译好的产物，丢弃所有编译工具 / 源码。
+3. 关键语法
+COPY --from=阶段名 源路径 目标路径：跨阶段复制文件。
+4. 优点
+镜像体积大幅缩小；
+减少攻击面（无 gcc、maven、npm 等工具）；
+无需手动导出文件，一条docker build完成。
+5. 一句话总结
+多阶段构建 =分开编译与运行环境，只保留程序运行必需文件，剔除编译冗余。
+
+
+yum install -y git 
+git clone --depth=1 https://gitee.com/chengkanghua/eladmin-web.git
+#--depth=1：只拉取最新 1 次提交，不下载完整 git 历史，加速克隆、减小体积
+cd eladmin-web/
+
+# 多阶段构建dockerfile.multi
+-------------------------------------------------------
+cat &lt;&lt;EOF &gt; Dockerfile.multi
+# # 阶段1：编译阶段（大镜像，仅用来打包程序）
+FROM codemantn/vue-node AS builder
+LABEL maintainer="inspur_lyx@hotmail.com"
+
+# config npm
+RUN npm config set sass_binary_site  https://npmmirror.com/mirror/sass &amp;&amp; \
+    npm config set registry  https://registry.npmmirror.com
+WORKDIR /opt/eladmin-web
+COPY  . .
+
+# build
+RUN ls -l &amp;&amp; npm install &amp;&amp; npm run build:prod
+# 阶段2：运行阶段（超轻量空镜像，只放成品）
+FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
+# 只拷贝构建好的文件，编译器、源码全部丢弃
+COPY --from=builder /opt/eladmin-web/dist /usr/share/nginx/html/
+EXPOSE 80
+EOF
+----------------------------------------------------
+docker build --no-cache . -t eladmin-web:v1 -f Dockerfile.multi
+# --no-cache：构建时不使用旧镜像缓存，全部重新构建
+# .：构建上下文为当前目录
+
+# docker login 10.0.0.80:5000
+docker tag eladmin-web:v1 10.0.0.80:5000/eladmin/eladmin-web:v1
+docker push 10.0.0.80:5000/eladmin/eladmin-web:v1
+
+
+
+
+----------------------------------------------------------------eladmin-api
+docker search maven:alpine
+docker run --rm -ti aerialist7/maven-git sh
+# git clone --depth=1 https://gitee.com/chengkanghua/eladmin.git
+# mvn clean package
+#上面是手动测试 是否可行
+
+git clone --depth=1 https://gitee.com/chengkanghua/eladmin.git
+cd eladmin
+cat &gt; Dockerfile.multi &lt;&lt;EOF
+FROM aerialist7/maven-git as builder
+WORKDIR /opt/eladmin
+COPY  . .
+RUN mvn clean package
+
+FROM java:8u111
+WORKDIR /opt/eladmin
+COPY --from=builder /opt/eladmin/eladmin-system/target/eladmin-system-2.6.jar .
+CMD [ "sh", "-c", "java -Dspring.profiles.active=prod -jar eladmin-system-2.6.jar" ]
+EOF
+
+docker build . -t eladmin:v1 -f Dockerfile.multi
+docker tag eladmin:v1 10.0.0.80:5000/eladmin/eladmin-api:v1
+docker push 10.0.0.80:5000/eladmin/eladmin-api:v1
+</code></pre>
+<h3 id="8">8. 实现原理<a class="headerlink" href="#8" title="Permanent link">&para;</a></h3>
+<p>本质：Namespace 做资源隔离，Cgroup 做资源限制，UnionFS 做分层存储。</p>
+<p><strong>Namespace 隔离</strong>（docker 默认全开）：</p>
+<table>
+<thead>
+<tr>
+<th>分类</th>
+<th>隔离内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pid</td>
+<td>进程 ID;独立进程编号（容器内 PID 1，宿主机是大 PID）</td>
+</tr>
+<tr>
+<td>net</td>
+<td>网络接口;独立网卡、IP、端口</td>
+</tr>
+<tr>
+<td>ipc</td>
+<td>进程间通信</td>
+</tr>
+<tr>
+<td>mnt</td>
+<td>文件系统挂载点</td>
+</tr>
+<tr>
+<td>uts</td>
+<td>主机名/域名</td>
+</tr>
+<tr>
+<td>user</td>
+<td>用户/用户组</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cgroup 限制</strong>：</p>
+<pre class="highlight"><code>Docker Daemon
+     v
+  CGroup (按资源划分的进程组)
+   |-- cpu        CPU 配额/权重
+   |-- memory     内存上限
+   |-- blkio      磁盘 IO 限制
+   |-- pids       进程数限制
+     v
+  容器进程 (受内核资源子系统约束)
+
+限制容器 CPU、内存、磁盘 IO、网络带宽，防止单个容器耗尽宿主机资源。</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Namespace 解决“隔离”（看得见但互不影响），Cgroup 解决“限制”（用多少资源），二者缺一不可。</p>
+</blockquote>
+<h3 id="9-unionfs">9. UnionFS 分层与写时复制<a class="headerlink" href="#9-unionfs" title="Permanent link">&para;</a></h3>
+<p>镜像由多层组成（每条指令一层，只读）；运行容器时在最上层加一个可写“容器层”。</p>
+<pre class="highlight"><code>+---------------------------+
+|   可写容器层            |  &lt;-- 运行容器时新增(读写)
++---------------------------+
+|   RUN make /app          |  镜像层(只读)
++---------------------------+
+|   COPY . /app            |  镜像层(只读)
++---------------------------+
+|   FROM ubuntu:15.04      |  基础层(只读)
++---------------------------+</code></pre>
+<ul>
+<li>写时复制（CoW）CoW就是copy-on-write ：仅在写入时才从镜像复制文件到本容器层，</li>
+<li>多容器共享底层、互不污染。</li>
+<li>存储驱动最新推荐 <strong>overlay2</strong>；早期用 aufs。</li>
+</ul>
+<h3 id="10-docker">10. Docker 网络<a class="headerlink" href="#10-docker" title="Permanent link">&para;</a></h3>
+<p>4 种模式：<code>bridge</code>（默认）、<code>host</code>、<code>container</code>、<code>none</code>。</p>
+<p><strong>bridge 模式</strong>：docker0 虚拟网桥（二层交换机）连接各容器 veth pair。</p>
+<pre class="highlight"><code>      容器 test1                 容器 test2
+        eth0                      eth0
+          |  veth pair              |  veth pair
+          |                          |
+      [==== docker0 网桥 (虚拟二层交换机) ====]
+                        |
+                    宿主机 eth0  --&gt;  外部网络</code></pre>
+<ul>
+<li>端口映射靠 iptables NAT：PREROUTING/DOCKER 链做 <strong>DNAT</strong>（8088 → 172.17.0.2:80）；POSTROUTING 链做 <strong>MASQUERADE（SNAT）</strong>：源地址 172.17.0.0/16 出网时换成宿主机 IP。</li>
+<li>启动容器时 Docker 自动：创建 veth pair → 一端插 docker0、一端放入容器改名 eth0 → 分配容器 IP → 配默认路由。</li>
+</ul>
+<pre class="highlight"><code class="language-bash">iptables -t nat -nvL DOCKER
+iptables -t nat -nvL POSTROUTING</code></pre>
+<pre class="highlight"><code>外部用户                宿主机                     容器
+访问 :8088  ──&gt;  iptables DNAT  ──&gt;  docker0 网桥  ──&gt;  172.17.0.2:80
+             8088 -&gt; 172.17.0.2:80    按 MAC 转发</code></pre>
+<p>小结: </p>
+<ul>
+<li>网桥 docker0/CNI 网桥，iptables 实现端口映射、SNAT/DNAT 转发；</li>
+<li>需开启 ip_forward、br_netfilter 网桥转发内核参数（K8s 安装前必做）：</li>
+</ul>
+<pre class="highlight"><code class="language-bash"># 1. 先加载 br_netfilter 模块（必须先做，否则第 2 步的 sysctl 参数根本不存在，会报 cannot stat）
+modprobe br_netfilter
+echo br_netfilter &gt; /etc/modules-load.d/k8s.conf   # 开机自动加载
+
+# 2. 写入内核参数
+cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt;EOF
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+sysctl --system        # 立即生效，不用重启
+
+# 3. 验证
+lsmod | grep br_netfilter
+sysctl net.ipv4.ip_forward net.bridge.bridge-nf-call-iptables</code></pre>
+<p>两个参数分别是干什么的：
+- <code>ip_forward=1</code>：允许内核在不同网卡 / 网桥之间转发 IP 包。<strong>不开</strong> → 容器（如 172.17.0.0/16）出不了宿主机，访问不了外网、跨节点也不通。
+- <code>br_netfilter</code> + <code>bridge-nf-call-iptables=1</code>：让<strong>经过网桥（二层）的流量也交给 iptables（三层）规则处理</strong>。<strong>不开</strong> → K8s Service 的 iptables/IPVS 规则对 Pod 之间走网桥的流量失效，Service 访问不通，kubeadm 也会在 preflight 阶段直接报错。</p>
+<p><strong>host 模式</strong>：共享宿主机网络，无独立网络空间。</p>
+<p><strong>container 模式</strong>：与指定容器共享 Network Namespace（仅网络共享，经 lo 互通），K8s Pod 即此思路。<strong>none 模式</strong>：仅建网络空间、不配网卡/路由。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> bridge 模式靠 docker0 网桥 + veth pair 实现容器互通，靠 iptables DNAT/SNAT 实现端口映射与出网；必须开启宿主机 <code>net.ipv4.ip_forward=1</code>。</p>
+</blockquote>
+<p>注意事项:</p>
+<ol>
+<li>bridge 模式必须开启内核 IP 转发、加载<code>br_netfilter</code>模块</li>
+<li>频繁启停容器需排查残留 veth 网卡，避免占用内核资源</li>
+<li>容器内网 IP 仅同网段容器、宿主机可访问，外网不能直接路由</li>
+<li>推荐自定义网桥，规避默认网段冲突，实现业务网络隔离</li>
+</ol>
+<pre class="highlight"><code class="language-bash">1. bridge（默认，可不加--net）
+# 默认docker0网桥
+docker run -d --name test nginx
+# 显式指定bridge
+docker run -d --net bridge --name test nginx
+
+2. host 宿主机网络
+docker run -d --net host --name test nginx
+
+3. none 无网络
+docker run -d --net none --name test nginx
+
+4. container 复用其他容器网络
+docker run -d --net container:已存在容器名/ID --name test nginx
+
+二、生产自定义网桥常用套路命令
+1. 创建自定义网桥（指定网段、网关）
+docker network create \
+--subnet=172.20.0.0/16 \
+--gateway=172.20.0.1 \
+my-net
+
+2. 容器启动直接加入自定义网络
+docker run -d --net my-net --name nginx nginx
+3. 已有运行容器追加加入自定义网络
+docker network connect my-net 容器名
+4. 容器从网络中移除
+docker network disconnect my-net 容器名
+5. 查看网络详情
+docker network inspect my-net
+6. 删除闲置自定义网络
+docker network rm my-net
+
+
+</code></pre>
+<h3 id="11-containerd-crioci">11. containerd 与 CRI/OCI<a class="headerlink" href="#11-containerd-crioci" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>OCI</strong>：开放容器标准（镜像规范 + 运行时规范），runC 是参考实现。</li>
+<li><strong>CRI</strong>：K8s 容器运行时接口，让 Kubelet 像插件一样对接运行时。</li>
+</ul>
+<pre class="highlight"><code>Kubernetes
+    |  CRI
+    v
+  Kubelet --OCI--&gt; 容器运行时(containerd/runC)
+                        | OCI 规范
+                        v
+              镜像规范 + 运行时规范</code></pre>
+<p>弃用 dockershim：</p>
+<pre class="highlight"><code>旧: Kubelet --CRI--&gt; Dockershim --&gt; Docker Daemon --&gt; containerd --&gt; runC
+新: Kubelet --CRI------------------------------&gt; containerd --&gt; runC</code></pre>
+<h3 id="12">12. 实用技巧<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">## 清理所有退出的容器
+docker rm  $(docker ps -aq)
+## 调试启动失败：起临时容器手动跑入口命令
+docker run --rm -ti &lt;image_id&gt; sh</code></pre>
+<h3 id="13">13. 一句话小结<a class="headerlink" href="#13" title="Permanent link">&para;</a></h3>
+<p>Docker = 轻量虚拟化（CS 架构）+ 镜像/容器/仓库三要素 + Namespace 隔离 + Cgroup 限制 + UnionFS 分层 + bridge 网络（docker0 + iptables NAT）；构建用 Dockerfile（多阶段瘦身），编排时代已由 containerd 接棒。</p>
+<h3 id="nsenter-namespace-enter">nsenter  全称 namespace enter<a class="headerlink" href="#nsenter-namespace-enter" title="Permanent link">&para;</a></h3>
+<p><code>docker exec / kubectl exec</code> 依赖容器内部必须有 <code>bash/sh</code>、<code>ip</code>、<code>ifconfig</code> 等工具；</p>
+<p>而 <strong>nsenter 是从宿主机直接进入容器的隔离环境</strong>，可以<strong>直接使用宿主机的所有命令</strong>，哪怕容器是极简镜像、没有任何网络工具也能调试网络、进程、文件系统。</p>
+<pre class="highlight"><code class="language-bash"># 属于 util-linux 系统工具包 CentOS 安装（自带，一般不用装）
+yum install -y util-linux
+
+二、Docker 容器标准用法
+1. 先拿到容器在宿主机的 PID
+# 容器名/容器ID替换成你的
+PID=$(docker inspect --format '{{.State.Pid}}' 容器名)
+2. 完整进入容器所有命名空间（拿到交互式 shell）
+nsenter -t $PID -m -u -i -n -p /bin/bash
+
+参数说明：
+-t：指定目标进程 PID（必选）
+-m：挂载命名空间（看到容器文件系统）
+-u：主机名命名空间
+-i：进程间通信
+-n：网络命名空间（你用来查 ip 最常用）
+-p：进程命名空间
+
+极简写法（新版系统）
+nsenter -t $PID -a bash
+# -a 等价上面所有命名空间参数
+
+
+不用进完整 shell，直接在容器网络环境执行宿主机的 ip/ss/curl：
+# 只进入网络命名空间查看网卡
+nsenter -t $PID -n ip addr
+# 查看端口监听
+nsenter -t $PID -n ss -tunlp
+# 测试容器内部网络连通性
+nsenter -t $PID -n curl 127.0.0.1:8080
+
+
+K8s Pod 使用 nsenter 步骤
+先登录 Pod 所在的宿主机节点
+获取容器 PID：
+# 拿到容器ID
+crictl ps | grep pod名
+# 拿PID
+crictl inspect 容器ID | grep pid
+再用 nsenter -t PID -n ip addr 调试网络
+
+
+# 和 kubectl exec /docker exec 区别
+exec：在容器内部新建进程，只能用容器里预装的命令；容器没有 shell 就进不去
+nsenter：加入已有容器进程的隔离环境，复用宿主机所有命令，适合极简容器、容器卡死无法 exec 的紧急调试场景
+
+
+</code></pre>
+<hr />
+<h2 id="kubernetes">二、Kubernetes 安装部署<a class="headerlink" href="#kubernetes" title="Permanent link">&para;</a></h2>
+<h3 id="21">2.1 环境准备与架构<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<p>生产级 K8s 由<strong>控制平面（Master）</strong>与<strong>工作节点（Node）</strong>组成。单 Master 存在单点故障，生产建议多 Master + 负载均衡。</p>
+<pre class="highlight"><code>        +-------------------+
+        |   LoadBalancer    |
+        +---------+---------+
+                  |
+   +--------------+--------------+
+   |              |              |
++--+---+      +---+--+      +----+--+
+|Master|      |Master|      |Master |
++------+      +------+      +-------+
+   |              |              |
+   +--------------+--------------+
+                  |
+   +--------------+--------------+
+   |              |              |
++--+---+      +---+--+      +----+--+
+| Node |      | Node |      | Node  |
++------+      +------+      +-------+</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Master 承载 API Server、Scheduler、Controller Manager、etcd；Node 运行 kubelet、kube-proxy 与容器运行时。etcd 是集群唯一一致的数据存储。</p>
+</blockquote>
+<p>最小化机器规划：</p>
+<table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>节点ip</th>
+<th>角色</th>
+<th>部署组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k8s-master</td>
+<td>10.0.0.80</td>
+<td>master</td>
+<td>etcd, kube-apiserver, kube-controller-manager, kubectl, kubeadm, kubelet, kube-proxy, flannel</td>
+</tr>
+<tr>
+<td>k8s-slave1</td>
+<td>10.0.0.81</td>
+<td>slave</td>
+<td>kubectl, kubelet, kube-proxy, flannel</td>
+</tr>
+<tr>
+<td>k8s-slave2</td>
+<td>10.0.0.82</td>
+<td>slave</td>
+<td>kubectl, kubelet, kube-proxy, flannel</td>
+</tr>
+</tbody>
+</table>
+<p>所有节点通用前置（逐字保留）：</p>
+<pre class="highlight"><code class="language-bash">systemctl stop firewalld
+systemctl disable firewalld
+sed -i 's/enforcing/disabled/' /etc/selinux/config
+setenforce 0
+swapoff -a
+sed -ri 's/.*swap.*/#&amp;/' /etc/fstab
+hostnamectl set-hostname &lt;hostname&gt;
+cat &gt;&gt; /etc/hosts &lt;&lt; EOF
+192.168.10.10 k8s-master
+192.168.10.11 k8s-node1
+192.168.10.12 k8s-node2
+EOF
+cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt; EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sysctl --system</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 必须关闭 swap，否则 kubelet 默认无法启动。<code>net.bridge.bridge-nf-call-iptables=1</code> 保证桥接流量经 iptables 处理，是 Service 网络正常的必要条件。</p>
+</blockquote>
+<h3 id="22-containerd">2.2 安装容器运行时（containerd）<a class="headerlink" href="#22-containerd" title="Permanent link">&para;</a></h3>
+<p>K8s 自 1.24 起移除 dockershim，推荐直接使用 containerd。</p>
+<pre class="highlight"><code class="language-bash">cat &gt; /etc/yum.repos.d/docker-ce.repo &lt;&lt; 'EOF'
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://mirrors.aliyun.com/docker-ce/linux/centos/7/$basearch/stable
+enabled=1
+gpgcheck=0
+EOF
+yum install -y containerd.io
+mkdir -p /etc/containerd
+containerd config default &gt; /etc/containerd/config.toml</code></pre>
+<pre class="highlight"><code class="language-toml">SystemdCgroup = true
+sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.9"</code></pre>
+<pre class="highlight"><code class="language-bash">systemctl enable containerd
+systemctl start containerd</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> containerd 的 <code>SystemdCgroup</code> 必须与 kubelet 的 <code>--cgroup-driver=systemd</code> 一致，否则节点 NotReady。</p>
+</blockquote>
+<h3 id="23-kubeadm-kubelet-kubectl">2.3 安装 kubeadm / kubelet / kubectl<a class="headerlink" href="#23-kubeadm-kubelet-kubectl" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">cat &gt; /etc/yum.repos.d/kubernetes.repo &lt;&lt; 'EOF'
+[kubernetes]
+name=Kubernetes
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+EOF
+yum install -y kubelet-1.28.0 kubeadm-1.28.0 kubectl-1.28.0
+systemctl enable kubelet</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> kubeadm 是“引导工具”（只负责初始化/加入），kubelet 是常驻的“节点管家”（真正干活），kubectl 是命令行客户端。</p>
+</blockquote>
+<h3 id="24-master">2.4 初始化 Master 节点<a class="headerlink" href="#24-master" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubeadm init \
+  --apiserver-advertise-address=192.168.10.10 \
+  --image-repository registry.aliyuncs.com/google_containers \
+  --kubernetes-version v1.28.0 \
+  --service-cidr=10.96.0.0/12 \
+  --pod-network-cidr=10.244.0.0/16</code></pre>
+<pre class="highlight"><code class="language-bash">mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+kubeadm join 192.168.10.10:6443 --token xxxx.xxxxxxxxxxxxxxxx \
+  --discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>--pod-network-cidr</code> 必须与后续 CNI 插件（如 Flannel 默认 10.244.0.0/16）网段一致，否则 Pod 无法跨节点通信。<code>kubeadm init</code> 失败可用 <code>kubeadm reset</code> 清理后重试。</p>
+</blockquote>
+<p>初始化流程：</p>
+<pre class="highlight"><code>kubeadm init
+     |-- 检查前置条件 (swap/端口/镜像)
+     |-- 生成证书与 kubeconfig
+     |-- 启动静态 Pod(APIServer/ControllerManager/Scheduler/etcd)
+     |-- 生成 join token
+     |-- 输出 kubectl 配置 &amp; join 命令</code></pre>
+<h3 id="25-cni-flannel">2.5 安装 CNI 网络插件（Flannel）<a class="headerlink" href="#25-cni-flannel" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> CNI 负责给 Pod 分配 IP 并实现跨节点通信。没有 CNI，节点永远 NotReady。常见选型：Flannel（简单）、Calico（网络策略强）、Cilium（eBPF）。</p>
+</blockquote>
+<h3 id="26">2.6 工作节点加入集群<a class="headerlink" href="#26" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubeadm join 192.168.10.10:6443 --token xxxx.xxxxxxxxxxxxxxxx \
+  --discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+kubectl get nodes</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> token 默认 24 小时过期；过期后在 Master 执行 <code>kubeadm token create --print-join-command</code> 重新生成。</p>
+</blockquote>
+<h3 id="27">2.7 集群访问架构<a class="headerlink" href="#27" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>        kubectl / 其他客户端
+                |
+                v
+        +------------------+
+        |  kube-apiserver  |  (6443)
+        +------------------+
+           |     |     |
+     +-----+  +--+--+  +-----+
+     v        v     v        v
+  scheduler  controller  etcd  kubelet(各节点)
+                  |             |
+              调度/控制      容器运行时(CRI)</code></pre>
+<h3 id="28-nginx">2.8 部署测试应用（Nginx）<a class="headerlink" href="#28-nginx" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl create deployment nginx --image=nginx:1.14-alpine
+kubectl expose deployment nginx --port=80 --type=NodePort
+kubectl get pods,svc</code></pre>
+<h3 id="29">2.9 常见问题排查<a class="headerlink" href="#29" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl describe node &lt;node-name&gt;
+kubectl describe pod &lt;pod-name&gt;
+kubectl logs &lt;pod-name&gt;
+kubeadm reset -f
+rm -rf /etc/cni /var/lib/kubelet /var/lib/etcd</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 节点 <code>NotReady</code> 先查 CNI Pod 是否 Running，再看 <code>journalctl -u kubelet -f</code>；<code>kubeadm reset</code> 仅用于测试/排错环境。</p>
+</blockquote>
+<h3 id="210">2.10 集群自恢复与运维<a class="headerlink" href="#210" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>故障场景         处理动作
+-----------    -------------------------
+Worker 宕机  -&gt;  controller 检测 -&gt; 调度 Pod 到健康节点
+Master 宕机 -&gt;  需多 Master(HA)避免单点</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl cluster-info
+kubectl get componentstatuses
+kubectl drain &lt;node&gt; --ignore-daemonsets
+kubectl uncordon &lt;node&gt;</code></pre>
+<h3 id="_3">操作记录<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>安装前准备 + docker安装</p>
+<pre class="highlight"><code class="language-bash"># 在master节点
+hostnamectl set-hostname k8s-master #设置master节点的hostname
+# 在slave-1节点
+hostnamectl set-hostname k8s-slave1 #设置slave1节点的hostname
+# 在slave-2节点
+hostnamectl set-hostname k8s-slave2 #设置slave2节点的hostname
+
+cat &gt;&gt;/etc/hosts&lt;&lt;EOF
+10.0.0.80 k8s-master
+10.0.0.81 k8s-slave1
+10.0.0.82 k8s-slave2
+EOF
+
+# 关闭swap
+swapoff -a 
+# 防止开机自动挂载 swap 分区
+sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+#或者
+#sed -ri '/ swap / s/(.*)/#\1/g' /etc/fstab
+
+
+关闭selinux和防火墙
+sed -ri 's#(SELINUX=).*#\1disabled#' /etc/selinux/config
+setenforce 0
+systemctl disable firewalld &amp;&amp; systemctl stop firewalld
+
+# 默认放行所有转发流量
+iptables -P FORWARD ACCEPT
+
+修改内核参数
+cat &lt;&lt;EOF &gt;  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+# 让网桥转发的 IPv4 流量经过 iptables 防火墙规则，实现 NAT、端口映射、网络策略管控。
+net.bridge.bridge-nf-call-iptables = 1
+# 开启 IPv4 数据包跨网卡转发，容器访问外网、宿主机端口映射必备。
+net.ipv4.ip_forward=1
+# 调整进程最大内存映射区域数
+vm.max_map_count=262144
+EOF
+modprobe br_netfilter
+sysctl -p /etc/sysctl.d/k8s.conf
+
+
+#配置yum源
+rm -rf /etc/yum.repos.d/*
+curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
+curl -o /etc/yum.repos.d/Centos-7.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+# curl -o /etc/yum.repos.d/docker-ce.repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0
+gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
+        http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF
+yum clean all &amp;&amp; yum makecache
+
+#所有节点安装docker
+#docker 安装
+# https://mirrors.huaweicloud.com/mirrorDetail/5ea14d84b58d16ef329c5c13?mirrorName=docker-ce&amp;catalog=docker
+sudo yum remove docker docker-common docker-selinux docker-engine
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+wget -O /etc/yum.repos.d/docker-ce.repo https://mirrors.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo
+sudo sed -i 's+download.docker.com+mirrors.huaweicloud.com/docker-ce+' /etc/yum.repos.d/docker-ce.repo
+sudo yum makecache fast
+sudo yum -y install docker-ce
+
+
+## 配置docker加速和非安全的镜像仓库，需要根据个人的实际环境修改
+mkdir -p /etc/docker
+cat &lt;&lt;EOF &gt; /etc/docker/daemon.json
+{
+    "registry-mirrors": [ "https://4c0c57d8b79a402d811834c1be74f7ae.mirror.swr.myhuaweicloud.com" ],
+    "insecure-registries": ["10.0.0.80:5000"]
+}
+EOF
+## 启动docker
+systemctl enable docker &amp;&amp; systemctl start docker
+
+
+</code></pre>
+<p>初始化集群</p>
+<p>时间同步(所有节点都安装)</p>
+<pre class="highlight"><code class="language-bash"># 1. 检查并安装 chrony（最小化安装默认已装）
+rpm -q chrony || yum install -y chrony 
+
+# 2. 配置阿里云 NTP 服务器（国内首选，稳定低延迟）
+cp /etc/chrony.conf /etc/chrony.conf.bak  # 备份原配置
+# 写入新配置
+cat &gt; /etc/chrony.conf &lt;&lt; EOF
+# 使用阿里云公共NTP服务器
+server ntp1.aliyun.com iburst
+server ntp2.aliyun.com iburst
+server ntp3.aliyun.com iburst
+# 允许本机查询时间（可选）
+allow 127.0.0.1
+# 同步硬件时钟
+rtcsync
+# 不使用本地时钟兜底（外网可用时建议开启）
+# local stratum 10
+EOF
+
+# 启用并立即启动
+systemctl enable chronyd --now 
+# 确认状态 active(running) 
+systemctl status chronyd
+
+ # 设置为上海时区
+timedatectl set-timezone Asia/Shanghai
+ # 验证时区与同步状态 
+timedatectl status                   
+# 1. 查看时间源状态（^* 表示当前活跃源）
+chronyc sources -v 
+# 2. 查看同步精度（offset 应 &lt; 10ms，MGR 要求 &lt; 50ms）
+chronyc tracking 
+# 3. 强制立即同步（仅首次部署时可选）
+chronyc makestep 
+
+</code></pre>
+<pre class="highlight"><code>
+
+#所有节点执行
+yum install -y kubelet-1.24.4 kubeadm-1.24.4 kubectl-1.24.4 --disableexcludes=kubernetes
+## 查看kubeadm 版本
+kubeadm version
+## 设置kubelet开机启动
+systemctl enable kubelet --now
+
+
+# 导出默认配置，config.toml这个文件默认是不存在的
+# 将 sandbox_image 镜像源设置为阿里云google_containers镜像源
+containerd config default &gt; /etc/containerd/config.toml
+grep sandbox_image  /etc/containerd/config.toml
+
+sed -i "s#k8s.gcr.io/pause#registry.aliyuncs.com/google_containers/pause#g"       /etc/containerd/config.toml
+sed -i "s#registry.k8s.io/pause#registry.aliyuncs.com/google_containers/pause#g"       /etc/containerd/config.toml
+
+#配置镜像加速
+sed -i '147s#\"\"#\"/etc/containerd/certs.d\"#g' /etc/containerd/config.toml
+# 创建对应的目录
+mkdir -p /etc/containerd/certs.d/docker.io
+# 配置加速
+cat &gt;/etc/containerd/certs.d/docker.io/hosts.toml &lt;&lt;EOF
+server = "https://docker.io"
+[host."https://4c0c57d8b79a402d811834c1be74f7ae.mirror.swr.myhuaweicloud.com"]
+  capabilities = ["pull","resolve"]
+[host."https://docker.mirrors.ustc.edu.cn"]
+  capabilities = ["pull","resolve"]
+[host."https://registry-1.docker.io"]
+  capabilities = ["pull","resolve","push"]
+EOF
+
+
+# 配置containerd cgroup 驱动程序systemd
+sed -i 's#SystemdCgroup = false#SystemdCgroup = true#g' /etc/containerd/config.toml
+
+
+
+# 配置非安全的私有镜像仓库：
+# 此处目录必须和个人环境中实际的仓库地址保持一致
+mkdir -p /etc/containerd/certs.d/10.0.0.80:5000
+cat &gt;/etc/containerd/certs.d/10.0.0.80:5000/hosts.toml &lt;&lt;EOF
+server = "http://10.0.0.80:5000"
+[host."http://10.0.0.80:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+EOF
+
+systemctl restart containerd
+
+
+# 操作节点： 只在master节点（k8s-master）执行
+kubeadm config print init-defaults &gt; kubeadm.yaml
+sed -ri 's#(advertiseAddress: ).*#\110.0.0.80#' kubeadm.yaml
+sed -ri 's#(name: ).*#\1k8s-master#' kubeadm.yaml
+sed -ri 's#(imageRepository: ).*#\1registry.aliyuncs.com/google_containers#' kubeadm.yaml
+sed -ri 's#(kubernetesVersion: ).*#\11.24.4#' kubeadm.yaml
+#sed -i '34a\ \ podSubnet: 10.244.0.0/16' kubeadm.yaml  #指定34行挤下一行添加
+sed -i '/dnsDomain:/a\ \ podSubnet: 10.244.0.0/16' kubeadm.yaml
+
+  # 查看需要使用的镜像列表,若无问题，将得到如下列表
+$ kubeadm config images list --config kubeadm.yaml
+registry.aliyuncs.com/google_containers/kube-apiserver:v1.24.4
+registry.aliyuncs.com/google_containers/kube-controller-manager:v1.24.4
+registry.aliyuncs.com/google_containers/kube-scheduler:v1.24.4
+registry.aliyuncs.com/google_containers/kube-proxy:v1.24.4
+registry.aliyuncs.com/google_containers/pause:3.7
+registry.aliyuncs.com/google_containers/etcd:3.5.3-0
+registry.aliyuncs.com/google_containers/coredns:v1.8.6
+ # 提前下载镜像到本地
+$ kubeadm config images pull --config kubeadm.yaml
+
+# 初始化master节点
+kubeadm init --config kubeadm.yaml
+------------- 成功提示
+kubeadm join 10.0.0.80:6443 --token abcdef.0123456789abcdef \
+        --discovery-token-ca-cert-hash sha256:d3cc8c1f6666842101f79964ca5580291a41d54ac13d8a5862e0f84572a9b08a
+----------------
+# 执行集群重置清理残留  #初始化失败 再次执行初始化之前做的
+# kubeadm reset -f
+# 手动删除残留目录（兜底清理）
+# rm -rf /etc/kubernetes /var/lib/etcd
+
+#接下来按照上述提示信息操作，配置kubectl客户端的认证
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+
+[root@k8s-master ~]# kubeadm token create --print-join-command
+kubeadm join 10.0.0.80:6443 --token srw121.zmapgf66alkiurel --discovery-token-ca-cert-hash sha256:d3cc8c1f6666842101f79964ca5580291a41d54ac13d8a5862e0f84572a9b08a
+
+
+# 添加slave节点到集群中  #再slave节点运行
+kubeadm join 10.0.0.80:6443 --token srw121.zmapgf66alkiurel --discovery-token-ca-cert-hash sha256:d3cc8c1f6666842101f79964ca5580291a41d54ac13d8a5862e0f84572a9b08a
+
+
+
+# master 安装网络插件
+wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+# wget https://gitee.com/chengkanghua/script/raw/master/k8s/kube-flannel.yml
+
+#命令修改  修改网卡名eth0
+sed -i '/kube-subnet-mgr/a\ \ \ \ \ \ \ \ - --iface=eth0' kube-flannel.yml
+
+# 执行flannel安装
+kubectl apply -f kube-flannel.yml
+kubectl -n kube-flannel get po -owide
+
+# 默认部署成功后，master节点无法调度业务pod，如需设置master节点也可以参与pod的调度，需执行：
+#kubectl taint node k8s-master node-role.kubernetes.io/master:NoSchedule-
+#kubectl taint node k8s-master node-role.kubernetes.io/control-plane:NoSchedule-
+
+# 设置kubectl自动补全
+$ yum install bash-completion -y
+source /usr/share/bash-completion/bash_completion
+source &lt;(kubectl completion bash)
+echo "source &lt;(kubectl completion bash)" &gt;&gt; ~/.bashrc
+
+# 使用kubeadm安装的集群，证书默认有效期为1年，可以通过如下方式修改为10年。
+cd /etc/kubernetes/pki
+
+# 查看当前证书有效期
+for i in $(ls *.crt); do echo "===== $i ====="; openssl x509 -in $i -text -noout | grep -A 3 'Validity' ; done
+
+mkdir backup_key; cp -rp ./* backup_key/
+#git clone https://github.com/yuyicai/update-kube-cert.git
+#cd update-kube-cert/ 
+wget https://gitee.com/chengkanghua/script/raw/master/k8s/update-kubeadm-cert.sh
+bash update-kubeadm-cert.sh all
+#若无法clone项目，可以手动在浏览器中打开后，复制update-kubeadm-cert.sh 脚本内容到机器中执行
+
+#观察集群节点是否全部Ready
+kubectl get nodes  
+
+
+# 测试nginx 服务
+kubectl run  test-nginx --image=nginx:alpine
+
+kubectl get po -o wide
+curl `kubectl get po -o wide |awk 'NR==2{print $6}'`
+
+
+
+
+</code></pre>
+<p>containerd客户端介绍</p>
+<pre class="highlight"><code>由于新版本的k8s直接采用`containerd`作为容器运行时，因此，后续创建的服务，通过`docker`的命令无法查询，因此，如果有需要对节点中的容器进行操作的需求，需要用`containerd`的命令行工具来替换，
+目前总共有三种，包含：
+- ctr
+- crictl
+- nerctl
+
+ctr为最基础的containerd的操作命令行工具，安装containerd时已默认安装，因此无需再单独安装。
+ctr的可操作的命令很少，且很不人性化，因此极力不推荐使用
+Containerd 也有 namespaces 的概念，对于上层编排系统的支持，ctr 客户端 主要区分了 3 个命名空间分别是k8s.io、moby和default
+
+# 查看containerd的命名空间
+ctr ns ls;
+# 查看containerd启动的容器列表
+ctr -n k8s.io container ls
+# 查看镜像列表
+ctr -n k8s.io image ls
+# 导入镜像
+ctr -n=k8s.io image import dashboard.tar
+# 从私有仓库拉取镜像，前提是/etc/containerd/certs.d下已经配置过该私有仓库的非安全认证
+ctr images pull --user admin:admin  --hosts-dir "/etc/containerd/certs.d"  10.0.0.80:5000/eladmin/eladmin-api:v1-rc1
+# ctr命令无法查看容器的日志，也无法执行exec等操作
+
+
+crictl 是遵循 CRI 接口规范的一个命令行工具，通常用它来检查和管理kubelet节点上的容器运行时和镜像。
+主机安装了 k8s 后，命令行会有 crictl 命令，无需单独安装。
+crictl 命令默认使用k8s.io 这个名称空间，因此无需单独指定，使用前，需要先加一下配置文件
+cat &gt; /etc/crictl.yaml &lt;&lt;EOF
+runtime-endpoint: unix:///run/containerd/containerd.sock
+image-endpoint: unix:///run/containerd/containerd.sock
+timeout: 10
+debug: false
+EOF
+
+# 查看容器列表
+crictl ps
+# 查看镜像列表
+crictl images 
+# 删除镜像
+crictl rmi 10.0.0.80:5000/eladmin/eladmin-api:v1-rc1
+# 拉取镜像， 若拉取私有镜像，需要修改containerd配置添加认证信息，比较麻烦且不安全
+crictl pull nginx:alpine
+# 执行exec操作
+crictl ps 
+# 注意只能使用containerid
+crictl exec -ti d23fe516d2eeb bash
+# 查看容器日志
+crictl logs -f d23fe516d2eeb
+# 清理镜像
+crictl rmi --prune
+
+
+
+推荐使用 nerdctl，使用效果与 docker 命令的语法基本一致 , 
+官网https://github.com/containerd/nerdctl
+
+#安装
+# 下载精简版安装包，精简版的包无法使用nerdctl进行构建镜像
+wget https://github.com/containerd/nerdctl/releases/download/v0.23.0/nerdctl-0.23.0-linux-amd64.tar.gz
+
+# 解压后，将nerdctl 命令拷贝至$PATH下即可
+cp nerdctl /usr/bin/
+---------------------浏览器下载
+https://gitee.com/chengkanghua/script/raw/master/k8s/nerdctl-0.23.0-linux-amd64.tar.gz
+tar xvf nerdctl-0.23.0-linux-amd64.tar.gz
+mv nerdctl /usr/bin/
+
+# 常用操作
+nerdctl ns ls
+# 查看容器列表
+nerdctl -n k8s.io ps -a
+# 执行exec
+nerdctl -n k8s.io exec -ti e2cd02190005 sh
+#删除容器
+nerdctl -n k8s.io rm -f de6837094ca7
+
+# 登录镜像仓库
+nerdctl login 10.0.0.80:5000
+# 拉取镜像,如果是想拉取了让k8s使用，一定加上-n k8s.io,否则会拉取到default空间中， k8s默认只使用k8s.io
+nerdctl -n k8s.io pull 10.0.0.80:5000/eladmin/eladmin-api:v1
+#查看镜像列表
+nerdctl -n k8s.io images
+# 按镜像名删除
+nerdctl -n k8s.io rmi 10.0.0.80:5000/eladmin/eladmin-api:v1
+# 按镜像ID删除（先通过上面images拿到IMAGE ID）
+nerdctl -n k8s.io rmi -f 镜像ID
+# 清理所有未被容器使用的镜像
+nerdctl -n k8s.io image prune -a -f
+# 批量删除&lt;none&gt;悬空镜像
+nerdctl -n k8s.io images --filter "dangling=true" -q | xargs nerdctl -n k8s.io rmi -f
+
+# 启动容器
+nerdctl -n k8s.io run -d --name test nginx:alpine
+# exec
+nerdctl -n k8s.io  exec -ti test sh
+# 查看日志, 注意，nerdctl 只能查看使用nerdctl命令创建从容器的日志，k8s中kubelet创建的产生的容器无法查看
+nerdctl -n k8s.io logs -f test
+# 构建，但是需要额外安装buildkit的包
+nerdctl build . -t xxxx:tag -f Dockerfile
+
+
+使用小经验
+用了k8s后，对于业务应用的基本操作，90%以上都可以通过kubectl命令行完成
+对于镜像的构建，仍然推荐使用docker build 来完成，推送到镜像仓库后，containerd可以直接使用
+对于查看containerd中容器的日志，使用 crictl logs完成，因为ctr、nerdctl均不支持
+对于其他常规的containerd容器操作，建议使用nerdctl完成
+更多命令可以参考下文：
+https://www.modb.pro/db/485911
+https://github.com/containerd/nerdctl#container-management
+
+
+
+</code></pre>
+<hr />
+<h2 id="kubernetes_1">三、Kubernetes 落地实践之旅<a class="headerlink" href="#kubernetes_1" title="Permanent link">&para;</a></h2>
+<h3 id="31-kubernetes">3.1 为什么需要 Kubernetes<a class="headerlink" href="#31-kubernetes" title="Permanent link">&para;</a></h3>
+<p>容器解决“环境不一致”，但单机跑容器遇扩缩容、故障自愈、服务发现仍需人工。K8s 把运维经验变成平台能力。</p>
+<pre class="highlight"><code>单机容器                Kubernetes 集群
+┌─────────┐            ┌──────────────────────────┐
+│  容器A   │   ——&gt;     │  Master(调度/控制)        │
+│  容器B   │            │  ┌────┐ ┌────┐ ┌────┐    │
+│ (人工管) │            │  │Node│ │Node│ │Node│    │
+└─────────┘            │  │ Pods    Pods    Pods │ │
+                       └──────────────────────────┘</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> k8s 解决的核心不是“跑容器”，而是容器的<strong>编排</strong>（调度 + 自愈 + 扩缩 + 服务发现）。</p>
+</blockquote>
+<p><strong>k8s核心价值</strong></p>
+<p>通过集群级声明式容器编排，自动实现自愈、服务发现、弹性伸缩、滚动发布、智能调度、统一配置管理，大幅提升业务可用性与运维效率。</p>
+<h3 id="32">3.2 官方标准架构（控制平面 + 工作节点）<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>┌──────────────────────────────────────────────────────────────────┐
+│                      控制平面 Control Plane                        │
+│  ┌──────────────┐   ┌──────────┐   ┌───────────┐  ┌────────────┐  │
+│  │ kube-apiserver│   │  etcd    │   │ scheduler  │  │ controller │  │
+│  │ (集群唯一入口) │◀──│(状态存储)│   │ (Pod 调度) │  │  -manager  │  │
+│  └──────┬───────┘   └────▲─────┘   └─────┬─────┘  └─────┬─────┘  │
+│         │  唯一读写 etcd  │             │               │         │
+│         └────────────────┴─────────────┴───────────────┘         │
+└─────────────────────────────────┬────────────────────────────────┘
+                                   │ kubelet 心跳 / 指令
+            ┌──────────────────────┼──────────────────────┐
+            ▼                      ▼                      ▼
+   ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+   │   Worker Node   │    │   Worker Node   │    │   Worker Node   │
+   │ kubelet         │    │ kubelet         │    │ kubelet         │
+   │ kube-proxy      │    │ kube-proxy      │    │ kube-proxy      │
+   │ 容器运行时      │    │ 容器运行时      │    │ 容器运行时      │
+   │  ┌──Pod──┐      │    │  ┌──Pod──┐      │    │  ┌──Pod──┐      │
+   │  │container│     │    │  │container│     │    │  │container│     │
+   │  └───────┘      │    │  └───────┘      │    │  └───────┘      │
+   └─────────────────┘    └─────────────────┘    └─────────────────┘</code></pre>
+<ul>
+<li><strong>API Server</strong>：唯一入口。<strong>etcd</strong>：唯一真实数据源。<strong>Scheduler</strong>：调度 Pod。<strong>Controller Manager</strong>：维持期望状态。</li>
+<li><strong>Node</strong>：<strong>kubelet</strong> 管本机 Pod；<strong>kube-proxy</strong> 实现 Service 转发。</li>
+</ul>
+<blockquote>
+<p>一张图记住：控制平面（大脑）管决策、存状态；工作节点（手脚）跑 Pod。组件间只通过 apiserver 通信，etcd 是唯一数据源。</p>
+<p>💡 <strong>面试重点：</strong> etcd 是 k8s 的“唯一事实来源”；API Server 是所有组件通信中枢。</p>
+</blockquote>
+<h4 id="1">1. 控制平面组件（集群大脑，全局决策）<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<p>控制平面负责集群管控、调度、状态存储，不运行业务容器，生产环境建议多节点高可用部署。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">组件</th>
+<th style="text-align: left;">官方定义与核心作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>kube-apiserver</strong></td>
+<td style="text-align: left;">集群唯一入口，暴露 RESTful API；所有组件的交互中枢，负责认证、授权、准入校验；是唯一直接读写 etcd 的组件，可水平扩容</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>etcd</strong></td>
+<td style="text-align: left;">一致性、高可用的键值数据库；集群所有资源状态、配置、元数据的唯一持久化存储；生产必须做数据备份</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>kube-scheduler</strong></td>
+<td style="text-align: left;">监听未绑定节点的新建 Pod，通过「预选过滤 + 优选打分」算法，为 Pod 选择最合适的工作节点</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>kube-controller-manager</strong></td>
+<td style="text-align: left;">运行各类控制器进程，核心机制是<strong>调和循环</strong>：持续监听资源变化，驱动「实际状态」向「期望状态」收敛；内置节点控制器、副本控制器、端点控制器、命名空间控制器等</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>cloud-controller-manager</strong></td>
+<td style="text-align: left;">可选组件，对接公有云 API；管理云厂商负载均衡、云盘存储、路由网络等资源，私有化部署可不用</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2">2. 工作节点组件（运行业务负载）<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<p>每个工作节点负责运行 Pod 并提供容器运行环境，受控于控制平面。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">组件</th>
+<th style="text-align: left;">官方定义与核心作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>kubelet</strong></td>
+<td style="text-align: left;">节点上的常驻代理，是控制平面与节点的通信桥梁；接收 apiserver 指令，管理本机 Pod 的全生命周期（创建、启停、健康检查、资源限制），确保 Pod 状态符合规约</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>kube-proxy</strong></td>
+<td style="text-align: left;">节点网络代理；维护节点上的 iptables/ipvs 网络规则，实现 Service 负载均衡、集群内服务发现与流量转发</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>容器运行时</strong></td>
+<td style="text-align: left;">遵循 CRI（容器运行时接口）标准，负责拉取镜像、创建 / 销毁容器；主流实现为 containerd，早期版本使用 Docker</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>集群插件（Addons）</strong></td>
+<td style="text-align: left;">可选扩展能力，包括 CoreDNS（集群内部 DNS 解析）、Ingress Controller、监控日志组件等</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="deployment">二、官方标准工作流程（以创建 Deployment 为例）<a class="headerlink" href="#deployment" title="Permanent link">&para;</a></h3>
+<p>K8s 核心设计是<strong>声明式 API + 调和循环</strong>：用户只提交期望状态，系统通过 List-Watch 机制持续监听，自动收敛到目标状态。</p>
+<p>以「提交一个 3 副本 Nginx 的 Deployment」为例，完整执行链路：</p>
+<ol>
+<li><strong>请求接入</strong>：用户通过 <code>kubectl apply</code> 提交 Deployment 配置，请求经认证授权后到达 kube-apiserver</li>
+<li><strong>状态持久化</strong>：apiserver 校验资源合法性，将 Deployment 的期望状态写入 etcd</li>
+<li><strong>控制器调和</strong>：Deployment Controller 监听到资源变更，对比期望状态，创建对应 ReplicaSet 资源并写入 etcd；ReplicaSet Controller 继续创建 3 个未绑定节点的 Pod 资源</li>
+<li><strong>Pod 调度</strong>：kube-scheduler 监听到未调度的 Pod，执行预选 + 优选算法，为每个 Pod 分配目标节点，更新 Pod 的节点绑定信息写入 etcd</li>
+<li><strong>Pod 启动</strong>：目标节点的 kubelet 监听到分配给自己的 Pod，调用本地容器运行时拉取镜像、创建并启动容器</li>
+<li><strong>状态上报</strong>：kubelet 持续上报 Pod 健康状态到 apiserver，同步存入 etcd</li>
+<li><strong>服务网络生效</strong>：Endpoints 控制器监听到 Pod 就绪，更新对应 Service 的后端端点列表；各节点 kube-proxy 同步更新网络规则，完成服务负载均衡配置</li>
+</ol>
+<hr />
+<h3 id="_4">三、核心设计原则（官方核心思想）<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>声明式 API</strong>：用户只定义最终期望状态，不关心执行步骤，系统自动完成编排</li>
+<li><strong>List-Watch 机制</strong>：所有组件通过监听 apiserver 资源变化触发动作，无轮询开销，实时响应</li>
+<li><strong>不可变基础设施</strong>：容器镜像不可变，更新通过重建 Pod 实现，保证环境一致性</li>
+<li><strong>自愈能力</strong>：节点故障、Pod 异常时，控制器自动重建 / 迁移 Pod，维持期望副本数</li>
+</ol>
+<h3 id="_5">什么是分布式？<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>把<strong>原本跑在一台机器上的整套系统</strong>，拆分多个组件，部署在<strong>多台独立服务器</strong>上协同工作，通过网络互相通信、分工协作、共同对外提供服务，任意单台机器故障不会导致整个系统瘫痪，这就是分布式。</p>
+<p>与之对立的是<strong>单体架构（集中式）</strong>：所有组件只部署在一台服务器，机器宕机，整套服务直接不可用。</p>
+<h4 id="k8s_1">二、结合 K8s 控制平面 + 工作节点，拆解分布式三层含义<a class="headerlink" href="#k8s_1" title="Permanent link">&para;</a></h4>
+<h5 id="1_1">1. 组件分布式拆分（功能拆分，各司其职）<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h5>
+<p>K8s 不再是一个单一程序，被拆成多个独立组件，各自负责不同工作：</p>
+<p><strong>控制平面组件（Master 节点）</strong></p>
+<ul>
+<li><code>etcd</code>：分布式键值数据库，存储集群所有元数据</li>
+<li><code>kube-apiserver</code>：集群唯一入口、鉴权、数据网关</li>
+<li><code>kube-controller-manager</code>：控制器，持续调谐期望状态</li>
+<li><code>kube-scheduler</code>：调度器，把 Pod 调度到合适的 Worker 节点</li>
+</ul>
+<p><strong>工作节点组件（Worker 节点）</strong></p>
+<ul>
+<li><code>kubelet</code>：管理本机 Pod 生命周期</li>
+<li><code>kube-proxy</code>：维护 Service 网络转发规则</li>
+<li>容器运行时（containerd/cri-o）：真正跑容器</li>
+</ul>
+<p>每个组件独立部署、独立演进、可以单独扩容升级，一个组件故障不会连带其他组件挂掉。</p>
+<h5 id="2_1">2. 多节点集群部署（物理机器分布式，高可用核心）<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h5>
+<ol>
+<li>控制平面可以多主部署（3/5 个 Master 节点）</li>
+</ol>
+<p><strong>apiserver</strong>无状态可水平扩容，多个 Master 同时对外提供服务；后端etcd天然分布式集群，采用 Raft 一致性算法，少数节点故障（比如 3 节点挂 1 台），集群数据不丢失、集群依然可用。</p>
+<ol>
+<li>Worker 节点横向无限扩容</li>
+</ol>
+<p>业务不够就新增服务器加入集群，所有 Worker 统一受控制平面调度，实现算力分布式扩容，突破单台机器硬件上限。</p>
+<blockquote>
+<p>传统单体架构只能靠升级单台机器 CPU、内存纵向扩容；分布式架构支持多机器横向扩容。</p>
+</blockquote>
+<h5 id="3_1">3. 任务分布式调度执行（业务负载分布式）<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h5>
+<ol>
+<li>用户提交部署需求给<code>apiserver</code>，调度器把 Pod 打散调度到不同 Worker 节点；</li>
+<li>同一个应用的多个 Pod 副本分散在多台宿主机，某一台 Worker 宕机，该节点上的 Pod 会被控制器重新调度到其他健康节点，业务不会中断；</li>
+<li>集群把计算、存储、网络压力分摊到所有节点，避免单点服务器压力过载。</li>
+</ol>
+<h4 id="k8s_2">三、分布式架构给 K8s 带来三大核心价值<a class="headerlink" href="#k8s_2" title="Permanent link">&para;</a></h4>
+<ol>
+<li>高可用</li>
+</ol>
+<p>多副本、多节点部署，单点硬件 / 组件故障不影响整体集群运行；</p>
+<ol>
+<li>可横向扩容</li>
+</ol>
+<p>Master 组件、Worker 节点均可水平扩展，支撑海量业务容器；</p>
+<ol>
+<li>容错 + 数据一致性</li>
+</ol>
+<p>依靠etcd分布式一致性协议保证集群所有节点数据统一，所有节点看到的集群资源状态完全一致。</p>
+<h4 id="vs">四、补充对比：单体 vs 分布式<a class="headerlink" href="#vs" title="Permanent link">&para;</a></h4>
+<ol>
+<li>单体：所有 K8s 组件装在一台服务器，机器宕机 → 整个集群瘫痪；只能纵向升级硬件。</li>
+<li>分布式：多 Master + 多 Worker，单节点故障集群可用；支持横向加机器扩容，负载分散、容错能力强。</li>
+</ol>
+<h4 id="_6">五、延伸小考点<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<p>K8s 控制平面的分布式核心依赖：</p>
+<ol>
+<li><code>etcd</code>分布式存储（保证集群数据一致性、高可用）</li>
+<li><code>kube-apiserver</code>无状态设计（支持多实例水平部署做负载均衡）</li>
+</ol>
+<h3 id="_7">理解集群资源<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<h3 id="_8">核心理解 🎯<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p><strong>资源 = 使用 K8s 各种能力的载体</strong>（想用什么能力，就创建对应类型的资源）。</p>
+<p>所有可通过 <code>kubectl get</code> 查询的对象统称为<strong>集群资源</strong>：以 YAML 声明期望状态存入 etcd，控制器通过调谐循环让实际状态不断趋近期望状态。</p>
+<blockquote>
+<p>🎯 <strong>面试高频</strong>：所有资源通用<strong>五段结构</strong> —— <code>apiVersion</code>（API 版本）、<code>kind</code>（资源类型）、<code>metadata</code>（名称 / 标签 / 命名空间）、<code>spec</code>（期望状态，用户写）、<code>status</code>（实际状态，系统填）。</p>
+</blockquote>
+<h3 id="_9">五大类资源（必背）<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<h4 id="1_2">1. 工作负载类（部署业务）<a class="headerlink" href="#1_2" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Pod</strong>：集群最小调度单元，封装一组容器，生命周期短暂，重建 IP 变化。</li>
+<li><strong>Deployment</strong>：管理无状态应用，实现副本维持、滚动更新、回滚、故障自愈。</li>
+<li><strong>StatefulSet</strong>：管理有状态应用，提供稳定网络标识、有序部署销毁、持久存储。</li>
+<li><strong>DaemonSet</strong>：每个节点仅运行一个 Pod，用于日志、监控、网络插件等节点级组件。</li>
+<li><strong>Job/CronJob</strong>：一次性任务、定时任务。</li>
+</ol>
+<h4 id="2_2">2. 网络服务类（流量访问）<a class="headerlink" href="#2_2" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Service</strong>：Pod 固定访问入口，提供 ClusterIP，实现负载均衡、集群内服务发现。</li>
+<li><strong>Endpoint</strong>：Service 后端绑定的 Pod IP + 端口列表。</li>
+<li><strong>Ingress</strong>：七层反向代理，基于域名、路径转发外部流量到多个 Service。</li>
+</ol>
+<h4 id="3_2">3. 配置管理类（解耦配置与镜像）<a class="headerlink" href="#3_2" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>ConfigMap</strong>：存放明文配置、环境变量、配置文件。</li>
+<li><strong>Secret</strong>：存放密码、证书等敏感数据，仅 Base64 编码，非加密。</li>
+</ol>
+<h4 id="4_2">4. 存储资源类（数据持久化）<a class="headerlink" href="#4_2" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>PV</strong>：管理员预先创建的持久存储卷。</li>
+<li><strong>PVC</strong>：业务存储申请，通过绑定 PV 实现数据持久挂载。</li>
+<li><strong>StorageClass</strong>：动态存储类，无需手动创建 PV，按需自动分配存储。</li>
+</ol>
+<h4 id="5">5. 集群管控类（隔离、权限、资源限制）<a class="headerlink" href="#5" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Namespace</strong>：资源逻辑隔离，用来划分测试、生产等环境。</li>
+<li><strong>Node</strong>：集群节点，承载所有 Pod 运行，自带 CPU、内存硬件资源。</li>
+<li><strong>ResourceQuota</strong>：命名空间级别 CPU、内存、Pod 总数配额限制。</li>
+<li><strong>LimitRange</strong>：给命名空间内 Pod / 容器设置默认、最大最小资源限制。</li>
+<li><strong>RBAC</strong>：基于角色的权限控制，管理用户、服务账号对集群资源的操作权限。</li>
+<li><strong>HPA</strong>：水平 Pod 自动扩缩容控制器，根据监控指标自动调整Deployment、StatefulSet 等工作负载的 Pod 副本数量。</li>
+</ol>
+<h4 id="_10">三、加分总结<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h4>
+<p>所有集群资源本质都是 API 对象，通过标签 Label 筛选资源，注解 Annotation 存储扩展描述；借助控制器实现声明式运维，不用关心具体操作步骤，只需要定义最终想要的集群状态。</p>
+<h3 id="kubectl">kubectl 高频常用命令<a class="headerlink" href="#kubectl" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl api-resources
+
+kubectl get namespaces
+
+kubectl是命令行工具, 用于与APIServer交互，内置了丰富的子命令，功能极其强大。 https://kubernetes.io/docs/reference/kubectl/overview/
+$ kubectl -h
+$ kubectl get -h
+$ kubectl create -h
+$ kubectl create namespace -h
+
+
+一、集群信息
+kubectl get nodes                  # 查看所有节点
+kubectl get ns / namespaces        # 查看命名空间
+kubectl describe node 节点名       # 节点详细信息
+kubectl version                    # 客户端、服务端版本
+kubectl cluster-info               # 集群信息
+二、资源查看（最常用）
+# 查看默认命名空间资源
+kubectl get pods
+kubectl get deploy
+kubectl get svc
+
+# 指定命名空间
+kubectl get pods -n test
+# 所有命名空间
+kubectl get pods --all-namespaces / -A
+
+# 查看详情、事件
+kubectl describe pod pod名 -n ns名
+# 查看标签
+kubectl get pods --show-labels
+
+
+# node节点添加标签
+kubectl label node k8s-slave1 component=gitlab
+# 删除掉标签
+kubectl label node k8s-slave1 component-
+
+# 按标签过滤
+kubectl get pods -l app=nginx
+
+三、资源创建、删除、更新
+# 从yaml创建
+kubectl apply -f xxx.yaml
+# 批量创建目录下所有yaml
+kubectl apply -f ./dir
+
+# 删除资源
+kubectl delete pod pod名 -n ns
+kubectl delete -f xxx.yaml
+kubectl delete ns test             # 删除命名空间（连带内部所有资源）
+
+# 直接命令创建（临时测试）
+kubectl create deploy nginx --image=nginx
+# 扩缩容
+kubectl scale deploy nginx --replicas=3
+# 镜像升级
+kubectl set image deploy nginx nginx=nginx:1.23
+# 回滚
+kubectl rollout undo deploy nginx
+# 查看发布历史
+kubectl rollout history deploy nginx
+
+四、日志、进入容器、文件传输
+# 实时查看日志
+kubectl logs -f pod名 -n ns
+# 查看之前崩溃日志
+kubectl logs --previous pod名
+
+# 进入容器
+kubectl exec -it pod名 -n ns -- /bin/bash
+# 多容器Pod指定容器进入
+kubectl exec -it pod名 -c 容器名 -- sh
+
+# 宿主机 ↔ 容器传文件
+kubectl cp 宿主机路径 pod名:容器内路径 -n ns
+kubectl cp pod名:容器路径 宿主机路径 -n ns
+
+五、配置类资源操作
+kubectl get cm
+kubectl get secret
+kubectl describe cm xxx
+kubectl get configmap xxx -o yaml  # 导出yaml
+
+六、存储、网络、Ingress
+kubectl get pv
+kubectl get pvc
+kubectl get ingress
+
+七、导出资源 yaml（备份 / 模板）
+# 查看yaml格式
+kubectl get deploy nginx -o yaml
+# 导出保存
+kubectl get deploy nginx -o yaml &gt; deploy.yaml
+# 快速生成yaml不创建资源
+kubectl create deploy nginx --image=nginx --dry-run=client -o yaml &gt; nginx.yaml
+
+八、常用格式化输出
+-o wide        # 更多列（节点、IP）
+-o yaml
+-o json
+
+九、上下文 / 命名空间快捷设置
+# 设置默认命名空间
+kubectl config set-context --current --namespace=test
+# 查看当前上下文
+kubectl config get-contexts
+
+</code></pre>
+<h3 id="_11">核心组件<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>ETCD：分布式高性能键值数据库,存储整个集群的所有元数据</li>
+<li>ApiServer: API服务器,集群资源访问控制入口,提供restAPI及安全访问控制</li>
+<li>Scheduler：调度器,负责把业务容器调度到最合适的Node节点</li>
+<li>Controller Manager：控制器管理,确保集群资源按照期望的方式运行</li>
+<li>Replication Controller</li>
+<li>Node controller</li>
+<li>ResourceQuota Controller</li>
+<li>Namespace Controller</li>
+<li>ServiceAccount Controller</li>
+<li>Token Controller</li>
+<li>Service Controller</li>
+<li>Endpoints Controller</li>
+<li>kubelet：运行在每个节点上的主要的“节点代理”，脏活累活</li>
+<li>pod 管理：kubelet 定期从所监听的数据源获取节点上 pod/container 的期望状态（运行什么容器、运行的副本数量、网络或者存储如何配置等等），并调用对应的容器平台接口达到这个状态。</li>
+<li>容器健康检查：kubelet 创建了容器之后还要查看容器是否正常运行，如果容器运行出错，就要根据 pod 设置的重启策略进行处理.</li>
+<li>容器监控：kubelet 会监控所在节点的资源使用情况，并定时向 master 报告，资源使用数据都是通过 cAdvisor 获取的。知道整个集群所有节点的资源情况，对于 pod 的调度和正常运行至关重要</li>
+<li>kube-proxy：维护节点中的iptables或者ipvs规则</li>
+<li>kubectl: 命令行接口，用于对 Kubernetes 集群运行命令 https://kubernetes.io/zh/docs/reference/kubectl/</li>
+</ul>
+<pre class="highlight"><code>K8s架构+工作流程 3分钟面试背诵版
+一、K8s架构（口述1分钟）
+K8s整体采用控制平面 + 工作节点的主从分布式架构。
+首先是控制平面，是整个集群的管控核心，主要包含四个核心组件：
+第一，kube-apiserver，是集群唯一API入口，所有操作、所有组件都和它交互，负责认证授权、准入控制，也是唯一操作etcd的组件。
+第二，etcd，是集群唯一数据库，存储所有资源的元数据和期望状态。
+第三，kube-scheduler，负责监听未调度的Pod，通过预选、优选策略，把Pod调度到最优工作节点。
+第四，kube-controller-manager，内置各类控制器，通过调谐循环，保证集群实际状态和用户期望状态一致，实现自愈能力。
+
+然后是工作节点，负责运行业务Pod，核心组件有三个：
+kubelet 是节点代理，负责管理本机Pod的全生命周期；
+kube-proxy 维护节点网络规则，实现Service负载均衡和服务发现；
+还有容器运行时，负责拉取镜像、运行容器。
+
+
+二、工作流程（口述2分钟，以Deployment部署为例）
+整体流程遵循 K8s 声明式API、List-Watch监听、控制器调谐 的核心机制。
+第一步，我执行kubectl apply，请求经过认证授权后给到apiserver，apiserver校验后把资源信息持久化到etcd。
+第二步，Deployment控制器监听到资源变化，自动创建ReplicaSet，ReplicaSet再根据配置的副本数，创建对应的Pod资源，写入etcd。
+第三步，调度器监听到这批未绑定节点的Pod，经过过滤、打分，选择最合适的Worker节点，完成Pod节点绑定。
+第四步，对应节点的kubelet监听到分配给自己的Pod，调用容器运行时，创建沙箱和业务容器，完成Pod启动。
+第五步，kubelet实时上报Pod状态，更新到集群数据库。同时kube-proxy更新网络规则，实现Service访问和负载均衡。
+最后如果Pod异常退出，控制器会自动重建Pod，始终维持用户定义的期望副本数，实现集群自愈。
+
+三、收尾加分一句话（必说）
+简言之，K8s无需定义操作步骤，仅需配置业务期望状态，集群可自动完成调度、部署、扩缩容和故障自愈。
+
+</code></pre>
+<p><strong>OCI：底层容器通用标准（管镜像、管内核怎么跑容器）</strong>;统一容器标准**（所有容器都遵守）</p>
+<p><strong>CRI：K8s 专属上层接口标准（管 K8s 怎么调用容器运行时）</strong>; K8s 解耦接口**（让 K8s 不绑定 Docker）</p>
+<h3 id="33">3.3 核心对象概览<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>作用</th>
+<th>类比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pod</td>
+<td>最小部署单元，含 1~N 容器（共享网络/存储）</td>
+<td>豌豆荚</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>管理 Pod 副本、滚动更新</td>
+<td>副本管家</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>稳定访问入口，负载均衡到后端 Pod</td>
+<td>固定电话总机</td>
+</tr>
+<tr>
+<td>ConfigMap</td>
+<td>配置外挂（不敏感）</td>
+<td>配置本</td>
+</tr>
+<tr>
+<td>Secret</td>
+<td>敏感配置（密码/token），base64</td>
+<td>保险箱</td>
+</tr>
+<tr>
+<td>Namespace</td>
+<td>资源逻辑隔离</td>
+<td>文件夹</td>
+</tr>
+<tr>
+<td>Volume</td>
+<td>持久化/共享存储</td>
+<td>外接硬盘</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Pod 是原子调度单位；一个 Pod 内多容器共享 <code>localhost</code> 网络与 Volume。Service 通过 selector 关联 Pod，IP 不变而 Pod 会重建。</p>
+</blockquote>
+<h3 id="34-deployment-nginx">3.4 第一个应用：Deployment 跑 Nginx<a class="headerlink" href="#34-deployment-nginx" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25
+        ports:
+        - containerPort: 80</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl apply -f nginx-deploy.yaml
+kubectl get pods
+kubectl get deploy
+kubectl describe pod &lt;pod-name&gt;
+kubectl logs &lt;pod-name&gt;
+kubectl delete -f nginx-deploy.yaml</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>kubectl apply</code> 是“声明式”——你描述期望状态，k8s 自己算差异并收敛，区别于 <code>kubectl create</code> 的命令式。</p>
+</blockquote>
+<h3 id="35-service">3.5 暴露服务：Service 三种类型<a class="headerlink" href="#35-service" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>Client ──&gt; Service(ClusterIP:80)
+              │  selector: app=nginx
+   ┌──────────┼──────────┐
+   ▼          ▼          ▼
+ Pod1        Pod2        Pod3   (Endpoint 动态维护)</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80</code></pre>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>访问范围</th>
+<th>场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ClusterIP</td>
+<td>仅集群内</td>
+<td>内部服务调用</td>
+</tr>
+<tr>
+<td>NodePort</td>
+<td>任一节点 IP:端口</td>
+<td>测试/裸机</td>
+</tr>
+<tr>
+<td>LoadBalancer</td>
+<td>云负载均衡公网 IP</td>
+<td>生产对外</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Service 的 VIP 由 kube-proxy + iptables/IPVS 实现；Pod 重建后 IP 变，但 Service 名不变，调用方无感。</p>
+</blockquote>
+<h3 id="36-configmap-secret">3.6 配置与敏感信息：ConfigMap / Secret<a class="headerlink" href="#36-configmap-secret" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl create configmap app-conf --from-file=app.properties
+kubectl create secret generic db-secret \
+  --from-literal=username=admin \
+  --from-literal=password='S3cr3t!'</code></pre>
+<pre class="highlight"><code class="language-yaml">spec:
+  containers:
+  - name: app
+    image: myapp:1.0
+    env:
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: db-secret
+          key: username
+    volumeMounts:
+    - name: conf
+      mountPath: /etc/app
+  volumes:
+  - name: conf
+    configMap:
+      name: app-conf</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Secret 默认只是 base64 编码（非加密），生产应配合 KMS/加密 etcd；ConfigMap 变更后需重启或支持热加载的进程才生效。</p>
+</blockquote>
+<h3 id="37-volume-pvc">3.7 持久化存储：Volume 与 PVC<a class="headerlink" href="#37-volume-pvc" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>Pod ──(PVC 请求)──&gt; PersistentVolumeClaim
+                        │ 绑定
+                        ▼
+                  PersistentVolume (NFS/云盘/本地)</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi</code></pre>
+<pre class="highlight"><code class="language-yaml">spec:
+  containers:
+  - name: app
+    volumeMounts:
+    - mountPath: "/data"
+      name: data-vol
+  volumes:
+  - name: data-vol
+    persistentVolumeClaim:
+      claimName: pvc-1</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> PVC 是“用户对存储的请求”，PV 是“实际存储资源”；二者解耦，系统自动绑定。</p>
+</blockquote>
+<h3 id="38-k8s">3.8 探针：让 k8s 知道“活没活”<a class="headerlink" href="#38-k8s" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>livenessProbe  ──失败──&gt; 重启容器
+readinessProbe ──失败──&gt; 从 Service 摘流量(不重启)
+startupProbe   ──失败──&gt; 启动期保护(老慢应用)</code></pre>
+<pre class="highlight"><code class="language-yaml">spec:
+  containers:
+  - name: app
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 5
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 8080
+      periodSeconds: 5</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> liveness 决定“重启”，readiness 决定“接流量”；混淆二者是常见故障源。</p>
+</blockquote>
+<h3 id="39-hpa">3.9 扩缩容：HPA 自动伸缩<a class="headerlink" href="#39-hpa" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl scale deploy nginx-deploy --replicas=5</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deploy
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> HPA 基于“实际度量”调副本，依赖 metrics-server；扩的是 Pod 副本，不是 Node。</p>
+</blockquote>
+<h3 id="310">3.10 滚动更新与回滚<a class="headerlink" href="#310" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl set image deploy/nginx-deploy nginx=nginx:1.26
+kubectl rollout status deploy/nginx-deploy
+kubectl rollout undo deploy/nginx-deploy
+kubectl rollout history deploy/nginx-deploy</code></pre>
+<pre class="highlight"><code class="language-yaml">spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 滚动更新靠“新旧 Pod 并存 + 逐步切流量”实现零停机；回滚本质是把 ReplicaSet 切回旧版本，不是重新部署。</p>
+</blockquote>
+<h3 id="311-qos">3.11 资源限制与 QoS<a class="headerlink" href="#311-qos" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">spec:
+  containers:
+  - name: app
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "256Mi"</code></pre>
+<p>QoS 三档（决定驱逐优先级）：<strong>Guaranteed</strong>（requests=limits）&gt; <strong>Burstable</strong> &gt; <strong>BestEffort</strong>（啥都没设，最先被驱逐）。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>requests</code> 影响调度（节点剩余资源够才放得下），<code>limits</code> 影响运行时（内存超限直接 OOMKilled）；生产务必双设。</p>
+</blockquote>
+<h3 id="312">3.12 命名空间与资源配额<a class="headerlink" href="#312" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl create namespace team-a
+kubectl config set-context --current --namespace=team-a</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: quota-a
+  namespace: team-a
+spec:
+  hard:
+    pods: "10"
+    requests.cpu: "4"
+    requests.memory: 4Gi</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Namespace 是逻辑隔离(非网络隔离)；配合 ResourceQuota/LimitRange 防止某团队“占满集群”。</p>
+</blockquote>
+<h3 id="313">3.13 排障套路<a class="headerlink" href="#313" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl get pods -A
+kubectl describe pod &lt;pod&gt;
+kubectl logs &lt;pod&gt; [-c &lt;容器&gt;]
+kubectl exec -it &lt;pod&gt; -- /bin/sh
+kubectl get events --sort-by=.lastTimestamp
+kubectl top pod/node</code></pre>
+<ul>
+<li><strong>ImagePullBackOff</strong>：镜像名错 / 私有仓未配 Secret。</li>
+<li><strong>CrashLoopBackOff</strong>：容器启动即退出，看 <code>logs</code> + <code>describe</code>。</li>
+<li><strong>Pending</strong>：资源不足或节点污点不匹配。</li>
+<li><strong>OOMKilled</strong>：内存 limit 太小。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Pod 状态机 <code>Pending→Running→Succeeded/Failed</code>；CrashLoopBackOff 多半是应用启动报错而非 k8s 问题，先 <code>kubectl logs</code> 再看 Events。</p>
+</blockquote>
+<h3 id="314">3.14 进阶补充<a class="headerlink" href="#314" title="Permanent link">&para;</a></h3>
+<p><strong>优先级与抢占（PriorityClass）</strong>：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000000
+globalDefault: false</code></pre>
+<p>Pod 引用 <code>priorityClassName: high-priority</code>；资源紧张时高优先级可抢占低优先级 Pod。</p>
+<p><strong>资源配额与限制范围（ResourceQuota / LimitRange）</strong>：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limit-range
+  namespace: dev
+spec:
+  limits:
+  - default:
+      cpu: 500m
+      memory: 512Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 128Mi
+    max:
+      cpu: "1"
+      memory: 1Gi
+    min:
+      cpu: 50m
+      memory: 64Mi
+    type: Container</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>ResourceQuota</code> 限制命名空间总量；<code>LimitRange</code> 给未显式设置的容器补默认值并约束上下限。</p>
+</blockquote>
+<p><strong>StatefulSet 有状态应用</strong>：稳定网络标识 + 稳定存储，Pod 名有序（web-0, web-1…）。</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: "web"
+  replicas: 3
+  selector:
+    matchLabels: {app: web}
+  template:
+    metadata:
+      labels: {app: web}
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ReadWriteOnce]
+      resources:
+        requests:
+          storage: 1Gi</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> StatefulSet 删除/缩容不会自动删 PVC；Pod 重建后同名 PVC 重新挂载，数据保留。</p>
+</blockquote>
+<p><strong>Ingress 对外暴露</strong>：</p>
+<pre class="highlight"><code>外部请求 → Ingress Controller → 按规则 → Service → Pod</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+spec:
+  rules:
+  - host: web.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-svc
+            port:
+              number: 80</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Ingress 只是规则，真正转发靠 Ingress Controller（如 nginx-ingress）。</p>
+</blockquote>
+<p><strong>安全上下文 / 网络策略</strong>：</p>
+<pre class="highlight"><code class="language-yaml">securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+  namespace: dev
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>runAsNonRoot + drop ALL</code> 是安全基线；NetworkPolicy 依赖 CNI 支持（如 Calico），未配策略时所有流量允许。</p>
+</blockquote>
+<p><strong>升级与备份 etcd</strong>：</p>
+<pre class="highlight"><code class="language-bash">ETCDCTL_API=3 etcdctl snapshot save snap.db \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key
+kubectl drain node-1 --ignore-daemonsets --delete-emptydir-data
+kubeadm upgrade node
+kubectl uncordon node-1</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 升级顺序为 控制平面 → 工作节点；etcd 快照是灾难恢复的最后防线，必须定期验证可恢复。</p>
+</blockquote>
+<hr />
+<h2 id="kubernetes_2">四、Kubernetes 进阶实践<a class="headerlink" href="#kubernetes_2" title="Permanent link">&para;</a></h2>
+<h3 id="41-kube-scheduler">4.1 调度器（kube-scheduler）<a class="headerlink" href="#41-kube-scheduler" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>[Pod 进入调度队列]
+        │
+        ▼
+[预选 Predicates] ── 过滤不满足条件的节点
+        │
+        ▼
+[优选 Priorities] ── 对剩余节点打分
+        │
+        ▼
+[选出得分最高节点] ── bind 到该 Node</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 调度分两阶段——预选（过滤）和优选（打分）。</p>
+</blockquote>
+<ul>
+<li>预选：<code>PodFitsResources</code>、<code>PodFitsHost</code>、<code>PodMatchNodeSelector</code>、<code>NoDiskConflict</code> 等。</li>
+<li>优选：<code>LeastRequestedPriority</code>、<code>BalancedResourceAllocation</code>、<code>ImageLocalityPriority</code> 等。</li>
+</ul>
+<p><strong>节点亲和性（nodeAffinity）</strong>：</p>
+<pre class="highlight"><code class="language-yaml">affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values: [node1]
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 1
+      preference:
+        matchExpressions:
+        - key: disktype
+          operator: In
+          values: [ssd]</code></pre>
+<p><strong>Pod 亲和/反亲和（podAffinity / podAntiAffinity）</strong>：</p>
+<pre class="highlight"><code class="language-yaml">affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values: [nginx]
+      topologyKey: kubernetes.io/hostname</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>podAntiAffinity</code> + <code>topologyKey: kubernetes.io/hostname</code> 是实现 Pod 跨节点打散的常用手段。</p>
+</blockquote>
+<p><strong>污点（Taint）与容忍（Toleration）</strong>：</p>
+<pre class="highlight"><code class="language-bash">kubectl taint nodes node1 key=value:NoSchedule</code></pre>
+<pre class="highlight"><code class="language-yaml">tolerations:
+- key: "key"
+  operator: "Equal"
+  value: "value"
+  effect: "NoSchedule"</code></pre>
+<p>Taint effect：<code>NoSchedule</code>（不调度）、<code>PreferNoSchedule</code>（尽量不调度）、<code>NoExecute</code>（不调度且驱逐已有 Pod）。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>NoExecute</code> 不仅阻止新 Pod 调度，还会驱逐节点上不兼容的现有 Pod。Master 默认带 <code>node-role.kubernetes.io/control-plane:NoSchedule</code> 污点。</p>
+</blockquote>
+<p><strong>调度优先级与抢占（PriorityClass）</strong>：见第三章 3.14。</p>
+<h3 id="42">4.2 工作负载管理<a class="headerlink" href="#42" title="Permanent link">&para;</a></h3>
+<p><strong>Deployment</strong>（无状态，支持滚动更新与回滚）：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+        ports:
+        - containerPort: 80</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl set image deployment/nginx-deploy nginx=nginx:1.22
+kubectl rollout status deployment/nginx-deploy
+kubectl rollout undo deployment/nginx-deploy</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Deployment 通过 ReplicaSet 管理 Pod 副本，版本回滚实际是切换回旧 ReplicaSet。</p>
+</blockquote>
+<p><strong>StatefulSet</strong>：Pod 名有序且稳定（<code>web-0.nginx.default.svc.cluster.local</code>），每个 Pod 绑定独立 PVC。</p>
+<p><strong>DaemonSet</strong>：每个（或匹配）节点运行一个 Pod 副本，常用于日志采集、监控代理。</p>
+<p><strong>Job 与 CronJob</strong>：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi
+spec:
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: perl
+        command: ["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: Never
+  backoffLimit: 4</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            command: ["/bin/sh", "-c", "date; echo Hello"]
+          restartPolicy: OnFailure</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>restartPolicy</code> 对 Job/CronJob 只能是 <code>Never</code> 或 <code>OnFailure</code>，不能是 <code>Always</code>。</p>
+</blockquote>
+<h3 id="43">4.3 配置与存储管理<a class="headerlink" href="#43" title="Permanent link">&para;</a></h3>
+<p><strong>ConfigMap</strong>：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-config
+data:
+  game.properties: |
+    enemies=aliens
+    lives=3</code></pre>
+<p><strong>Secret</strong>（默认 base64 编码，非加密）：</p>
+<pre class="highlight"><code class="language-bash">kubectl create secret generic db-secret --from-literal=username=admin --from-literal=password=123456</code></pre>
+<p><strong>Volume 与 PV/PVC</strong>：</p>
+<pre class="highlight"><code>[Pod] → [PVC] → [PV] → [实际存储(NFS/ceph/云盘)]</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes: [ReadWriteMany]
+  nfs:
+    server: 10.0.0.1
+    path: "/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-nfs
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 3Gi</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> PVC 与 PV 绑定基于 <code>accessModes</code> 与 <code>storage</code> 容量匹配；PV 生命周期独立于 Pod。</p>
+</blockquote>
+<p><strong>StorageClass（动态供给）</strong>：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp3</code></pre>
+<h3 id="44">4.4 服务发现与网络<a class="headerlink" href="#44" title="Permanent link">&para;</a></h3>
+<p><strong>Service</strong>：</p>
+<pre class="highlight"><code>[Client] → [Service(ClusterIP:port)] → [Pod1/Pod2/Pod3]  (iptables/IPVS 负载均衡)</code></pre>
+<p>类型：<code>ClusterIP</code>、<code>NodePort</code>、<code>LoadBalancer</code>、<code>ExternalName</code>。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>kube-proxy</code> 通过 iptables 或 IPVS 实现 Service 转发；IPVS 性能更好、支持更多后端。</p>
+</blockquote>
+<p><strong>Ingress</strong>：七层路由，按域名/路径转发（见第三章）。</p>
+<p><strong>DNS 与服务发现</strong>：CoreDNS 提供 <code>service.namespace.svc.cluster.local</code> 解析。</p>
+<h3 id="45-rbac">4.5 权限与安全管理（RBAC）<a class="headerlink" href="#45-rbac" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+- kind: User
+  name: jane
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>Role</code> 作用域为命名空间，<code>ClusterRole</code> 集群级；<code>ClusterRoleBinding</code> 不能限定命名空间。</p>
+</blockquote>
+<p><strong>ServiceAccount</strong>：Pod 访问 API Server 的身份凭证。</p>
+<pre class="highlight"><code class="language-bash">kubectl create serviceaccount my-sa</code></pre>
+<h3 id="46-qos">4.6 资源限制与 QoS<a class="headerlink" href="#46-qos" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">resources:
+  requests:
+    memory: "64Mi"
+    cpu: "250m"
+  limits:
+    memory: "128Mi"
+    cpu: "500m"</code></pre>
+<p>QoS 三档：Guaranteed（requests==limits）&gt; Burstable &gt; BestEffort。节点资源紧张时按 BestEffort→Burstable→Guaranteed 顺序驱逐。</p>
+<h3 id="47">4.7 健康检查（探针）<a class="headerlink" href="#47" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>livenessProbe</code>：失败则重启容器。</li>
+<li><code>readinessProbe</code>：失败则从 Service 后端摘除。</li>
+<li><code>startupProbe</code>：保护慢启动容器不被误杀。</li>
+</ul>
+<pre class="highlight"><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 3
+  periodSeconds: 3
+readinessProbe:
+  tcpSocket:
+    port: 8080
+  periodSeconds: 5</code></pre>
+<h3 id="48">4.8 滚动更新与回滚策略<a class="headerlink" href="#48" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl rollout history deployment/nginx-deploy
+kubectl rollout undo deployment/nginx-deploy --to-revision=2</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>maxUnavailable: 0</code> 保证更新过程零停机；结合 readinessProbe 才能确保流量只打到就绪 Pod。</p>
+</blockquote>
+<h3 id="49-hpa">4.9 自动扩缩容（HPA）<a class="headerlink" href="#49-hpa" title="Permanent link">&para;</a></h3>
+<p>见第三章 3.9。依赖 Metrics Server，扩缩有冷却窗口。</p>
+<h3 id="410">4.10 进阶补充<a class="headerlink" href="#410" title="Permanent link">&para;</a></h3>
+<p><strong>Pod 中断预算（PDB）</strong>：保护自愿中断（drain/升级）期间维持最少可用副本。</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: zk-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: zookeeper</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> PDB 只保护<strong>自愿中断</strong>，不保护节点宕机；<code>minAvailable</code> 与 <code>maxUnavailable</code> 互斥。</p>
+</blockquote>
+<p><strong>准入控制与动态准入（Admission Webhook）</strong>：</p>
+<pre class="highlight"><code>客户端 → kube-apiserver → Authentication → Authorization
+        → MutatingAdmission → ValidatingAdmission → etcd</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Mutating（可改对象）与 Validating（只能拒绝/放行）区别；Webhook 失败行为由 <code>failurePolicy</code>（Fail/Ignore）决定。</p>
+</blockquote>
+<p><strong>自定义资源与控制器（CRD / Operator）</strong>：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: crontabs.stable.example.com
+spec:
+  group: stable.example.com
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              cronSpec:
+                type: string
+              image:
+                type: string
+  scope: Namespaced
+  names:
+    plural: crontabs
+    singular: crontab
+    kind: CronTab
+    shortNames: ["ct"]</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Operator = CRD + 自定义控制器；核心模式是“声明式（Spec）+ 调谐（Reconcile 让实际状态趋近期望状态）”。框架：kubebuilder、operator-sdk。</p>
+</blockquote>
+<p><strong>集群网络模型与 CNI</strong>：K8s 网络需满足 Pod 扁平互通、节点与 Pod 互通、外部可访问 Service。</p>
+<pre class="highlight"><code>Pod A (Node1) ──┐
+                ├── 底层网络/Overlay ── 路由 ── 外部
+Pod B (Node2) ──┘
+Service (ClusterIP) 做负载均衡到后端 Pod</code></pre>
+<p>常见插件：Flannel（VXLAN overlay）、Calico（BGP + 网络策略）、Cilium（eBPF）。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> K8s 网络三大前提（Pod 扁平互通、节点与 Pod 互通、无 NAT 即可通信）；CNI 是“容器网络接口”标准，kubelet 调用插件为 Pod 配网卡。</p>
+</blockquote>
+<p><strong>可观测性</strong>：监控 Prometheus + Grafana，日志 DaemonSet 采集至 ES，链路 Jaeger。</p>
+<p><strong>安全上下文与 Pod 安全（PSA）</strong>：</p>
+<pre class="highlight"><code class="language-bash">kubectl label ns dev pod-security.kubernetes.io/enforce=baseline</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> PSA 三级别严格度 <code>privileged &lt; baseline &lt; restricted</code>；生产建议 <code>restricted</code>。</p>
+</blockquote>
+<p><strong>升级、回滚与维护</strong>：</p>
+<pre class="highlight"><code class="language-bash">kubectl cordon node1
+kubectl drain node1 --ignore-daemonsets --delete-emptydir-data
+kubeadm upgrade node
+kubectl uncordon node1</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>cordon</code>（不可调度但不驱逐）、<code>drain</code>（驱逐并不可调度，受 PDB 约束）、<code>uncordon</code>（恢复）。</p>
+</blockquote>
+<p><strong>常见问题排查清单</strong>：</p>
+<pre class="highlight"><code class="language-bash">kubectl get pods -A | grep -v Running
+kubectl describe pod &lt;pod&gt;
+kubectl logs &lt;pod&gt; --previous
+kubectl exec -it &lt;pod&gt; -- sh
+kubectl get events --sort-by=.lastTimestamp
+kubectl describe node &lt;node&gt;
+journalctl -u kubelet -f</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>Pending</code> 多因资源/污点/亲和；<code>CrashLoopBackOff</code> 多因应用启动失败/探针误配；<code>ImagePullBackOff</code> 多因镜像名/密钥错误。</p>
+</blockquote>
+<h3 id="411">4.11 小结<a class="headerlink" href="#411" title="Permanent link">&para;</a></h3>
+<p>进阶实践围绕“<strong>稳定、安全、可观测、可控中断</strong>”：用 PDB/优先级保护可用性，用资源配额规范用量，用污点/亲和精细调度，用 PV/PVC 与 StatefulSet 承载有状态负载，用 Operator 扩展能力，用 Ingress/Service 暴露服务，并配套监控、安全与标准排查流程。</p>
+<hr />
+<h2 id="efk-kubernetes">五、基于 EFK 的 Kubernetes 日志采集方案<a class="headerlink" href="#efk-kubernetes" title="Permanent link">&para;</a></h2>
+<h3 id="51">5.1 为什么要做日志采集<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
+<p>容器随时被调度、重启、漂移，日志落在节点本地会随 Pod 销毁丢失。集中式日志统一收集、存储、检索，便于排障与审计。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> K8s 日志是“易失”的，生产必须借助集中式日志系统（如 EFK）做持久化与检索。</p>
+</blockquote>
+<h3 id="52-efk">5.2 EFK 是什么<a class="headerlink" href="#52-efk" title="Permanent link">&para;</a></h3>
+<p>EFK = <strong>E</strong>lasticsearch + <strong>F</strong>luentd/Fluent Bit + <strong>K</strong>ibana。</p>
+<pre class="highlight"><code>[ Pod 容器 stdout/stderr ]
+        |
+        v
+[ Fluent Bit / Fluentd ]  (DaemonSet, 每节点一个)
+        |  过滤/解析/打标签
+        v
+[ Elasticsearch ]  (索引存储 + 检索)
+        |
+        v
+[ Kibana ]  (Web 可视化查询)</code></pre>
+<ul>
+<li><strong>Elasticsearch</strong>：分布式搜索引擎，存储与全文检索。</li>
+<li><strong>Fluentd / Fluent Bit</strong>：采集与转发 Agent。</li>
+<li><strong>Kibana</strong>：可视化查询。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> EFK 与 ELK 的区别主要在采集端（Fluentd/Fluent Bit 替代 Logstash）；ES 与 Kibana 两者共用。</p>
+</blockquote>
+<h3 id="53-kubernetes">5.3 Kubernetes 日志来源<a class="headerlink" href="#53-kubernetes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>标准输出/错误</strong>：kubelet 写入节点 <code>/var/log/containers/*.log</code>（软链指向 <code>/var/lib/docker/containers/...</code>）。</li>
+<li><strong>容器内文件日志</strong>：需挂载 volume 或由 sidecar 采集。</li>
+<li><strong>系统组件日志</strong>：kube-apiserver、etcd 等。</li>
+</ul>
+<pre class="highlight"><code>/var/log/containers/&lt;pod&gt;_&lt;namespace&gt;_&lt;container&gt;-&lt;hash&gt;.log
+        -&gt; 软链接到
+/var/lib/docker/containers/&lt;container-id&gt;/&lt;container-id&gt;-json.log</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> kubelet 把容器 stdout/stderr 统一写成 JSON 文件，路径在 <code>/var/log/containers/</code>，是 Fluent Bit 默认采集位置。</p>
+</blockquote>
+<h3 id="54-fluent-bit-vs-fluentd">5.4 采集端选型：Fluent Bit vs Fluentd<a class="headerlink" href="#54-fluent-bit-vs-fluentd" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>Fluent Bit</th>
+<th>Fluentd</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>语言</td>
+<td>C</td>
+<td>Ruby</td>
+</tr>
+<tr>
+<td>资源占用</td>
+<td>极低（MB 级）</td>
+<td>较高</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>边缘/节点级采集</td>
+<td>服务端聚合/复杂路由</td>
+</tr>
+</tbody>
+</table>
+<p>生产实践：Fluent Bit 作为 DaemonSet 跑在每节点采集，上游再接 Fluentd 做聚合。</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluent-bit
+  namespace: logging
+spec:
+  selector:
+    matchLabels:
+      app: fluent-bit
+  template:
+    metadata:
+      labels:
+        app: fluent-bit
+    spec:
+      containers:
+      - name: fluent-bit
+        image: fluent/fluent-bit:2.1.0
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibcontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibcontainers
+        hostPath:
+          path: /var/lib/docker/containers</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 采集 Agent 用 DaemonSet 部署，保证“每个节点一个 Pod”，无遗漏采集本节点所有容器日志。</p>
+</blockquote>
+<h3 id="55-fluent-bit">5.5 Fluent Bit 核心配置<a class="headerlink" href="#55-fluent-bit" title="Permanent link">&para;</a></h3>
+<p>配置分三段：<strong>INPUT（输入）→ FILTER（处理）→ OUTPUT（输出）</strong>。</p>
+<pre class="highlight"><code class="language-ini">[SERVICE]
+    Flush        1
+    Log_Level    info
+    Parsers_File parsers.conf
+
+[INPUT]
+    Name              tail
+    Path              /var/log/containers/*.log
+    Parser            docker
+    Tag               kube.*
+    Refresh_Interval  10
+
+[FILTER]
+    Name              kubernetes
+    Match             kube.*
+    Kube_URL          https://kubernetes.default.svc:443
+    Kube_CA_File      /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    Kube_Token_File   /var/run/secrets/kubernetes.io/serviceaccount/token
+
+[FILTER]
+    Name              parser
+    Match             kube.*
+    Key_Name          log
+    Parser            json
+
+[OUTPUT]
+    Name   es
+    Match  *
+    Host   elasticsearch
+    Port   9200
+    Index  kube-logs</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Fluent Bit 内存占用极低（约 1MB），是采集侧首选；<code>tail</code> 模拟 <code>tail -f</code>，<code>kubernetes</code> 过滤器自动补全 Pod/Namespace/容器名等元数据。</p>
+</blockquote>
+<h3 id="56-elasticsearch-ilm">5.6 Elasticsearch 索引与生命周期管理（ILM）<a class="headerlink" href="#56-elasticsearch-ilm" title="Permanent link">&para;</a></h3>
+<p>为避免单索引无限膨胀，采用 <strong>ILM（Index Lifecycle Management）</strong> 滚动索引。</p>
+<pre class="highlight"><code class="language-json">PUT _ilm/policy/kube-logs-policy
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "actions": {
+          "rollover": { "max_size": "50gb", "max_age": "1d" }
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": { "delete": {} }
+      }
+    }
+  }
+}</code></pre>
+<pre class="highlight"><code class="language-json">PUT _index_template/kube-logs-template
+{
+  "index_patterns": ["kube-logs-*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "index.lifecycle.name": "kube-logs-policy",
+      "index.lifecycle.rollover_alias": "kube-logs"
+    }
+  }
+}</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 滚动别名(<code>rollover_alias</code>) + ILM 是生产标配；按天/按大小滚动，老数据自动删除，避免 ES 磁盘被日志写爆。</p>
+</blockquote>
+<h3 id="57-kibana">5.7 Kibana 可视化与查询<a class="headerlink" href="#57-kibana" title="Permanent link">&para;</a></h3>
+<p>创建索引模式 <code>kube-logs-*</code> 后检索，常用 KQL：</p>
+<pre class="highlight"><code>kubernetes.namespace_name : "default" and level : "error"</code></pre>
+<h3 id="58">5.8 整体数据流<a class="headerlink" href="#58" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>+--------------+     +----------------+     +-------------------+     +-----------+
+| K8s 节点      |     | Fluent Bit     |     | Elasticsearch     |     | Kibana    |
+| (容器 stdout) | --&gt; | DaemonSet 采集 | --&gt; | 存储+索引+ILM     | --&gt; | 检索/可视化|
++--------------+     +----------------+     +-------------------+     +-----------+
+     文件: /var/log/containers/*.log</code></pre>
+<h3 id="59">5.9 常见问题与调优<a class="headerlink" href="#59" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>日志丢失</strong>：检查 <code>Mem_Buf_Limit</code>、ES 健康。</li>
+<li><strong>字段映射冲突</strong>：用模板固定 <code>dynamic</code> 策略。</li>
+<li><strong>性能瓶颈</strong>：调 <code>Flush</code> 间隔、ES 分片数。</li>
+</ul>
+<pre class="highlight"><code class="language-bash">curl -X GET "localhost:9200/_cluster/health?pretty"
+curl -X GET "localhost:2020/api/v1/metrics"</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> ES 默认磁盘使用率超过 85% 会进入只读保护，日志写不进去是典型“采集中断”原因，排查先看集群健康与水位。</p>
+</blockquote>
+<h3 id="510">5.10 小结<a class="headerlink" href="#510" title="Permanent link">&para;</a></h3>
+<p>DaemonSet 部署 Fluent Bit 零侵入采集；ES 负责存储与检索，ILM 控制成本；Kibana 提供统一入口。日志方案本质是一条“采集→解析→存储→检索”管道。</p>
+<hr />
+<h2 id="prometheus-kubernetes">六、基于 Prometheus 的 Kubernetes 监控方案<a class="headerlink" href="#prometheus-kubernetes" title="Permanent link">&para;</a></h2>
+<h3 id="61">6.1 为什么需要监控<a class="headerlink" href="#61" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 监控核心价值不是“出事了报警”，而是“用数据驱动容量规划、故障定位与稳定性保障”。</p>
+</blockquote>
+<ul>
+<li>集群规模增长后，靠人肉观察不现实。</li>
+<li>三件事：<strong>采集</strong>、<strong>存储</strong>、<strong>告警/展示</strong>。</li>
+</ul>
+<h3 id="62-prometheus">6.2 Prometheus 是什么<a class="headerlink" href="#62-prometheus" title="Permanent link">&para;</a></h3>
+<ul>
+<li>拉模型（Pull）：主动去目标抓 <code>/metrics</code>。</li>
+<li>多维数据模型：指标 = <code>metric name</code> + 一组 <code>label</code>。</li>
+<li>查询语言 <strong>PromQL</strong>。</li>
+<li>不依赖分布式存储，单机即可用；通过联邦/远程写扩展。</li>
+</ul>
+<h3 id="63">6.3 整体架构<a class="headerlink" href="#63" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>            ┌────────────┐
+            │  Prometheus │
+            │  Server     │
+            └─────┬───────┘
+   pull /metrics │
+        ┌────────┼───────────────┐
+        ▼        ▼               ▼
+   Node/Service  Exporter    Kubernetes
+   (node/kube-   (mysql/      (kube-state/
+    let/cadvisor)redis/...)   apiserver)
+        │
+        ▼
+   ┌──────────┐   push   ┌─────────┐
+   │  Pushgateway │◄──────│ 短时任务 │
+   └──────────┘          └─────────┘
+        │
+        ▼
+   ┌──────────┐   rule   ┌──────────┐
+   │  TSDB 存储 │────────►│ Alertmanager │──► 邮件/钉钉/Slack
+   └──────────┘ 评估告警  └──────────┘
+        │
+        ▼
+   ┌──────────┐
+   │  Grafana  │  (可视化)
+   └──────────┘</code></pre>
+<ul>
+<li><strong>Prometheus Server</strong>：采集、存储、查询、告警评估。</li>
+<li><strong>Exporter</strong>：暴露 <code>/metrics</code>，如 node-exporter、kube-state-metrics。</li>
+<li><strong>Pushgateway</strong>：接收短生命周期任务推送。</li>
+<li><strong>Alertmanager</strong>：去重、分组、路由、静默。</li>
+<li><strong>Grafana</strong>：可视化前端。</li>
+</ul>
+<h3 id="64-prometheus-server">6.4 部署 Prometheus Server<a class="headerlink" href="#64-prometheus-server" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+rule_files:
+  - "rules/*.yml"
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: "node"
+    static_configs:
+      - targets: ["192.168.1.10:9100", "192.168.1.11:9100"]</code></pre>
+<pre class="highlight"><code class="language-bash">./prometheus \
+  --config.file=prometheus.yml \
+  --storage.tsdb.path=/data/prometheus \
+  --web.listen-address=:9090</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>scrape_interval</code> 是抓取间隔，<code>evaluation_interval</code> 是告警规则评估间隔，二者独立。</p>
+</blockquote>
+<h3 id="65-promql">6.5 指标模型与 PromQL 基础<a class="headerlink" href="#65-promql" title="Permanent link">&para;</a></h3>
+<ul>
+<li>格式：<code>metric_name{label="value",...} value timestamp</code></li>
+<li>示例：<code>node_cpu_seconds_total{mode="idle"} 12345.6 1700000000000</code></li>
+</ul>
+<pre class="highlight"><code class="language-promql">100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100
+rate(http_requests_total[5m])</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>rate()</code> 用于计数器（Counter）求单位时间增量速率；<code>irate()</code> 更灵敏但短期波动大。</p>
+</blockquote>
+<h3 id="66-node-exporter">6.6 部署 Node Exporter<a class="headerlink" href="#66-node-exporter" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">./node_exporter --web.listen-address=:9100</code></pre>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      hostNetwork: true
+      containers:
+        - name: node-exporter
+          image: prom/node-exporter:latest
+          ports:
+            - containerPort: 9100</code></pre>
+<h3 id="67-kubernetes">6.7 在 Kubernetes 中抓取指标<a class="headerlink" href="#67-kubernetes" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>┌─────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+│  cAdvisor       │  │ kube-state-       │  │  kube-apiserver  │
+│ (容器/ Pod 资源) │  │ metrics(对象状态) │  │ (控制面组件)      │
+└────────┬────────┘  └─────────┬────────┘  └─────────┬────────┘
+         └─────────────────────┼─────────────────────┘
+                               ▼
+                    Prometheus 抓取 /metrics</code></pre>
+<ul>
+<li>容器级指标来自 kubelet 内置 cAdvisor；集群对象状态来自 kube-state-metrics；控制面组件自带 <code>/metrics</code>。</li>
+</ul>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://github.com/kubernetes/kube-state-metrics/releases/latest/download/kube-state-metrics.yaml</code></pre>
+<h3 id="68-alertmanager">6.8 告警规则与 Alertmanager<a class="headerlink" href="#68-alertmanager" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">groups:
+  - name: example
+    rules:
+      - alert: NodeCpuHigh
+        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) &gt; 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "节点 {{ $labels.instance }} CPU 使用率过高"</code></pre>
+<pre class="highlight"><code class="language-yaml">route:
+  receiver: "dingtalk"
+  group_by: ["alertname", "instance"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+receivers:
+  - name: "dingtalk"
+    webhook_configs:
+      - url: "http://dingtalk-webhook:8060/dingtalk/send"</code></pre>
+<pre class="highlight"><code>Prometheus 评估规则 ──► 触发告警 ──► Alertmanager
+                                     │ 去重/分组/路由
+                                     ▼
+                              通知渠道(邮件/钉钉/Slack)</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>for</code> 字段表示条件持续多久才真正触发，避免瞬时抖动误报；Alertmanager 负责“分组/抑制/静默/路由”，Prometheus 本身只负责“触发告警”。</p>
+</blockquote>
+<h3 id="69-grafana">6.9 可视化（Grafana）<a class="headerlink" href="#69-grafana" title="Permanent link">&para;</a></h3>
+<ul>
+<li>添加 Prometheus 为数据源（URL 指向 <code>http://prometheus:9090</code>）。</li>
+<li>导入官方 Dashboard（如 Node Exporter Full ID <code>1860</code>）。</li>
+</ul>
+<h3 id="610-kube-state-metrics-metrics-server">6.10 kube-state-metrics 与 metrics-server 的区别<a class="headerlink" href="#610-kube-state-metrics-metrics-server" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>metrics-server</strong>：节点/Pod 的 CPU、内存等资源使用率，供 HPA、<code>kubectl top</code> 使用。</li>
+<li><strong>kube-state-metrics</strong>：监听 apiserver，把集群对象状态（副本数、Pod 状态）暴露为指标，不存历史。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> metrics-server 管“资源用量”，kube-state-metrics 管“对象状态”，二者互补。</p>
+</blockquote>
+<pre class="highlight"><code class="language-bash">kubectl top nodes
+kubectl top pods</code></pre>
+<h3 id="611-prometheus-kubernetes_sd_configs">6.11 Prometheus 服务发现（kubernetes_sd_configs）<a class="headerlink" href="#611-prometheus-kubernetes_sd_configs" title="Permanent link">&para;</a></h3>
+<p>按 role 区分：<code>node</code>、<code>pod</code>（最常用）、<code>service</code>、<code>endpoints</code>（最精准）、<code>ingress</code>。</p>
+<pre class="highlight"><code class="language-yaml">- job_name: 'kubernetes-pods'
+  kubernetes_sd_configs:
+  - role: pod
+  relabel_configs:
+  - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+    action: keep
+    regex: true
+  - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+    action: replace
+    target_label: __metrics_path__
+    regex: (.+)
+  - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+    action: replace
+    regex: ([^:]+)(?::\d+)?;(\d+)
+    replacement: $1:$2
+    target_label: __address__</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>relabel_configs</code> 的 <code>keep</code>/<code>replace</code> 用于在采集前<strong>过滤目标、重写标签和地址</strong>，是 K8s 动态环境落地的关键。</p>
+</blockquote>
+<p>Pod 上声明暴露指标：</p>
+<pre class="highlight"><code class="language-yaml">metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"</code></pre>
+<h3 id="612-remote-write-thanos-victoriametrics">6.12 持久化存储（Remote Write / Thanos / VictoriaMetrics）<a class="headerlink" href="#612-remote-write-thanos-victoriametrics" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">remote_write:
+  - url: "http://victoria-metrics:8428/api/v1/write"</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 标签基数爆炸是 Prometheus 生产事故头号原因——标签值必须“低基数、可枚举”。</p>
+</blockquote>
+<h3 id="613-promql">6.13 常用 PromQL 速查<a class="headerlink" href="#613-promql" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-promql">100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+sum(container_memory_usage_bytes{pod=~"myapp.*"}) by (pod) / 1024 / 1024
+sum(rate(http_requests_total{code=~"5.."}[5m])) by (service) / sum(rate(http_requests_total[5m])) by (service)
+increase(kube_pod_container_status_restarts_total[1h])</code></pre>
+<h3 id="614-prometheus-operator-kube-prometheus">6.14 Prometheus-Operator / kube-prometheus<a class="headerlink" href="#614-prometheus-operator-kube-prometheus" title="Permanent link">&para;</a></h3>
+<p>用 <code>ServiceMonitor</code> 声明“要监控哪个 Service”，Operator 自动生成 scrape 配置。</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: myapp-monitor
+  labels:
+    release: kube-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  endpoints:
+  - port: web
+    path: /metrics
+    interval: 30s</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> ServiceMonitor 是“声明式服务发现”，比手写 <code>kubernetes_sd_configs</code> 更贴近 K8s 原生运维方式。</p>
+</blockquote>
+<h3 id="615">6.15 常见排错清单<a class="headerlink" href="#615" title="Permanent link">&para;</a></h3>
+<ul>
+<li>目标 <code>DOWN</code>：检查 Pod annotation、Service port、NetworkPolicy。</li>
+<li>无数据：确认 <code>__metrics_path__</code> 与端口，curl 手动验证 <code>/metrics</code> 可达。</li>
+<li>高基数：避免用 <code>id</code>、<code>timestamp</code> 做标签。</li>
+</ul>
+<pre class="highlight"><code class="language-bash">kubectl exec -it prometheus-0 -- sh
+curl http://myapp:8080/metrics</code></pre>
+<h3 id="616">6.16 小结<a class="headerlink" href="#616" title="Permanent link">&para;</a></h3>
+<p>Prometheus 是 <strong>Pull</strong> 模型，数据持久化靠本地 TSDB，长期存储可对接 Thanos / VictoriaMetrics；高可用通常“双副本 + 联邦/远程写”。监控指标来自 <code>/metrics</code>（exporter 模式）。</p>
+<hr />
+<h2 id="kubernetes-devops">七、基于 Kubernetes 的 DevOps 平台实践<a class="headerlink" href="#kubernetes-devops" title="Permanent link">&para;</a></h2>
+<h3 id="71-devops">7.1 为什么需要 DevOps 平台<a class="headerlink" href="#71-devops" title="Permanent link">&para;</a></h3>
+<p>传统交付存在“开发—测试—运维”壁垒：环境不一致、手工部署易错、发布慢、回滚难。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> DevOps 核心目标是打破部门墙，通过<strong>自动化流水线 + 统一平台</strong>实现 CI/CD，提升交付效率与稳定性。</p>
+</blockquote>
+<p>K8s 提供声明式、自愈、弹性能力，是 DevOps 理想底座：环境一致、发布可控、回滚简单、资源弹性。</p>
+<h3 id="72">7.2 整体架构<a class="headerlink" href="#72" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>开发人员   代码仓库     CI 系统    镜像仓库      K8s 集群     监控/日志
+  │─push─► │ ─webhook► │ ─构建──► │ ─推送──►  │ ─部署────►  │</code></pre>
+<p>核心组件：代码仓库（GitLab）、CI 引擎（Jenkins/GitLab CI/Tekton）、镜像仓库（Harbor）、K8s 集群、可观测（Prometheus + EFK）。</p>
+<h3 id="73-cicd">7.3 CI/CD 流水线设计<a class="headerlink" href="#73-cicd" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>[代码拉取] → [构建与单测] → [镜像构建与推送] → [部署到 K8s]
+    └──失败则通知──┴────失败则通知─────┴────失败则通知───────┴──失败则回滚/告警──</code></pre>
+<ul>
+<li><strong>CI</strong> 关注“构建+测试+出镜像”，<strong>CD</strong> 关注“把镜像可靠部署到集群”。</li>
+<li><strong>GitOps</strong>：把“期望状态”写在 Git 里，由控制器自动 reconcile。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 流水线即代码（Pipeline as Code）相比页面点配，最大优势是“版本化、可评审、可回滚”。</p>
+</blockquote>
+<p>示例 GitLab CI：</p>
+<pre class="highlight"><code class="language-yaml">stages:
+  - build
+  - test
+  - package
+  - deploy
+variables:
+  IMAGE: registry.example.com/myapp:$CI_COMMIT_SHORT_SHA
+build:
+  stage: build
+  script:
+    - mvn clean package -DskipTests
+test:
+  stage: test
+  script:
+    - mvn test
+package:
+  stage: package
+  script:
+    - docker build -t $IMAGE .
+    - docker push $IMAGE
+deploy:
+  stage: deploy
+  script:
+    - kubectl set image deployment/myapp app=$IMAGE -n prod</code></pre>
+<h3 id="74">7.4 镜像构建与仓库管理<a class="headerlink" href="#74" title="Permanent link">&para;</a></h3>
+<p>多阶段构建减小体积、用非 root 用户、固定基础镜像版本：</p>
+<pre class="highlight"><code class="language-dockerfile">FROM maven:3.8 AS build
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/app.jar app.jar
+USER 1000
+ENTRYPOINT ["java","-jar","app.jar"]</code></pre>
+<p>私有仓库需 <code>imagePullSecret</code>：</p>
+<pre class="highlight"><code class="language-bash">kubectl create secret docker-registry regcred \
+  --docker-server=registry.example.com \
+  --docker-username=admin \
+  --docker-password='****' -n prod</code></pre>
+<pre class="highlight"><code class="language-yaml">spec:
+  imagePullSecrets:
+    - name: regcred
+  containers:
+    - name: app
+      image: registry.example.com/myapp:v1</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 镜像安全三件事——<strong>最小化基础镜像、扫描漏洞、私有仓库鉴权</strong>。生产禁止 <code>latest</code> 标签，必须可回溯。</p>
+</blockquote>
+<h3 id="75">7.5 部署策略<a class="headerlink" href="#75" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0</code></pre>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>说明</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>滚动更新</td>
+<td>逐批替换 Pod</td>
+<td>无状态常规发布</td>
+</tr>
+<tr>
+<td>蓝绿</td>
+<td>两套环境切换流量</td>
+<td>需瞬时回滚</td>
+</tr>
+<tr>
+<td>金丝雀</td>
+<td>小流量验证再全量</td>
+<td>高风险变更</td>
+</tr>
+</tbody>
+</table>
+<p>Ingress 按权重分流（金丝雀）：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "10"</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 蓝绿切换快但需双倍资源；金丝雀更平滑。Argo Rollouts 可声明式做金丝雀与分析门禁。</p>
+</blockquote>
+<h3 id="76">7.6 配置与密钥管理<a class="headerlink" href="#76" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl create configmap app-conf --from-file=app.yaml -n prod</code></pre>
+<pre class="highlight"><code class="language-yaml">envFrom:
+  - configMapRef:
+      name: app-conf
+  - secretRef:
+      name: app-secret</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> ConfigMap 存非敏感配置，Secret 存密码/令牌（默认 base64，需用 SealedSecret / Vault 加密）。配置与镜像解耦，改配置不重建镜像。</p>
+</blockquote>
+<h3 id="77-helm">7.7 Helm 与包管理<a class="headerlink" href="#77-helm" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">helm upgrade --install myapp ./chart -n prod -f values-prod.yaml
+helm history myapp -n prod
+helm rollback myapp 2 -n prod</code></pre>
+<pre class="highlight"><code class="language-yaml">replicaCount: 3
+image:
+  repository: registry.example.com/myapp
+  tag: v1.2.0
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi</code></pre>
+<h3 id="78">7.8 流水线中的质量门禁<a class="headerlink" href="#78" title="Permanent link">&para;</a></h3>
+<p>在 CI 嵌入“卡点”：单元测试覆盖率阈值、SonarQube 扫描、Trivy 漏洞扫描、OPA/Kyverno 准入校验。</p>
+<pre class="highlight"><code class="language-bash">trivy image --exit-code 1 --severity CRITICAL registry.example.com/myapp:v1</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 质量门禁要“左移”——在 CI 阶段就拦住问题，显著降低故障成本。</p>
+</blockquote>
+<h3 id="79-gitops-argo-cd">7.9 GitOps 实践（Argo CD）<a class="headerlink" href="#79-gitops-argo-cd" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">argocd app create myapp \
+  --repo https://git.example.com/apps.git \
+  --path prod/myapp \
+  --dest-server https://kubernetes.default.svc \
+  --dest-namespace prod \
+  --sync-policy auto</code></pre>
+<pre class="highlight"><code>Git 仓库(期望状态)  ──Argo CD 持续比对──►  K8s 集群(实际状态)
+        ▲                                      │
+        └──── 手动改集群会被自动纠正 ──────────┘</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> GitOps 优势——<strong>审计清晰（每次变更都是 Git commit）、回滚即 <code>git revert</code>、防配置漂移</strong>。</p>
+</blockquote>
+<h3 id="710">7.10 可观测性接入<a class="headerlink" href="#710" title="Permanent link">&para;</a></h3>
+<ul>
+<li>指标：Prometheus + Grafana</li>
+<li>日志：EFK</li>
+<li>链路：Jaeger / OpenTelemetry</li>
+</ul>
+<h3 id="711">7.11 常见问题与排错<a class="headerlink" href="#711" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl describe pod myapp-xxx -n prod
+kubectl logs myapp-xxx -n prod --previous
+kubectl rollout status deployment/myapp -n prod
+kubectl get events -n prod --sort-by=.lastTimestamp</code></pre>
+<ul>
+<li><code>ImagePullBackOff</code>：仓库地址/密钥/标签错。</li>
+<li><code>CrashLoopBackOff</code>：启动命令/配置/依赖缺失。</li>
+<li>发布后无流量：Service 选择器与 Pod 标签不匹配。</li>
+</ul>
+<h3 id="712">7.12 进阶补充<a class="headerlink" href="#712" title="Permanent link">&para;</a></h3>
+<p><strong>多环境管理（Kustomize）</strong>：</p>
+<pre class="highlight"><code class="language-bash">kustomize build overlays/prod | kubectl apply -f -</code></pre>
+<pre class="highlight"><code class="language-yaml"># overlays/prod/kustomization.yaml
+resources:
+  - ../../base
+patches:
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 5</code></pre>
+<p><strong>密钥管理</strong>：用 Sealed Secrets / External Secrets / Vault，密钥不进 Git。</p>
+<pre class="highlight"><code class="language-bash">kubectl create secret generic db-pass \
+  --from-literal=password=secret -o yaml --dry-run=client \
+  | kubeseal --format yaml &gt; sealed-secret.yaml</code></pre>
+<p><strong>混沌工程与韧性验证（Chaos Mesh）</strong>：</p>
+<pre class="highlight"><code class="language-bash">kubectl apply -f - &lt;&lt;EOF
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    labelSelectors:
+      app: my-app
+  scheduler:
+    cron: "@every 5m"
+EOF</code></pre>
+<p><strong>成本优化</strong>：设 requests/limits 防争抢；HPA 闲时缩容；Spot 节点跑可中断批处理；定期清理 Completed/Evicted Pod。</p>
+<p><strong>平台总体架构</strong>：</p>
+<pre class="highlight"><code>┌────────────┐   ┌────────────┐   ┌────────────┐
+│  代码仓库   │──▶│  CI 流水线  │──▶│  镜像仓库   │
+└────────────┘   └─────┬──────┘   └─────┬──────┘
+                       │                │
+                       ▼                ▼
+                 ┌──────────────────────────┐
+                 │    GitOps 控制器(ArgoCD)  │
+                 └────────────┬─────────────┘
+                              ▼
+                 ┌──────────────────────────┐
+                 │  Kubernetes 集群(多环境)   │
+                 └────────────┬─────────────┘
+                              ▼
+                 ┌──────────────────────────┐
+                 │ 监控/日志/告警 可观测性平台  │
+                 └──────────────────────────┘</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 能讲清“Git 提交 → CI 构建 → GitOps 同步 → 集群运行 → 监控反馈”这条闭环，是评价 DevOps 熟练度的关键。</p>
+</blockquote>
+<h3 id="713">7.13 小结<a class="headerlink" href="#713" title="Permanent link">&para;</a></h3>
+<p>构建 K8s 上的 DevOps 平台，关键是把“人肉流程”变成“声明式 + 自动化”：CI 自动化构建测试出镜像，CD/GitOps 可靠部署回滚，Helm 模板化管理多环境，质量门禁左移风险，可观测性 + 混沌工程保障韧性。</p>
+<hr />
+<h2 id="sharedlibrary-cicd">八、基于 sharedLibrary 的 CICD 流程优化<a class="headerlink" href="#sharedlibrary-cicd" title="Permanent link">&para;</a></h2>
+<h3 id="81-jenkins-shared-library">8.1 为什么要用 Jenkins Shared Library<a class="headerlink" href="#81-jenkins-shared-library" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 当多个 Pipeline 项目存在大量重复逻辑（拉代码、构建、推送镜像、部署）时，应抽成 <strong>Shared Library</strong>，实现“一次编写、多处复用”，降低维护成本。</p>
+</blockquote>
+<pre class="highlight"><code>                 ┌────────────┐
+                 │ Git 仓库 A │
+                 └─────┬──────┘
+                       │ 引用
+                 ┌─────▼──────┐
+   多个业务仓库──▶│ Shared     │
+                 │ Library    │
+                 └─────┬──────┘
+                       │ 提供步骤
+                 ┌─────▼──────┐
+                 │ Jenkins    │
+                 │ Pipeline   │
+                 └────────────┘</code></pre>
+<h3 id="82-shared-library">8.2 Shared Library 的目录结构<a class="headerlink" href="#82-shared-library" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>(root)
+├── vars/
+│   ├── helloWorld.groovy      # 全局变量/步骤，可在 Jenkinsfile 直接调用
+│   └── buildApp.groovy
+├── src/
+│   └── org/foo/               # 普通 Groovy 源码（类），需 import 使用
+│       └── Utils.groovy
+└── resources/                # 静态资源（json、模板等）</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>vars/</code> 下的 <code>.groovy</code> 文件暴露成<strong>全局变量（步骤）</strong>，文件名即步骤名；<code>src/</code> 是标准 Groovy 源码树，需 <code>import</code>。<code>resources/</code> 放静态资源。</p>
+</blockquote>
+<h3 id="83-jenkins-shared-library">8.3 在 Jenkins 中配置 Shared Library<a class="headerlink" href="#83-jenkins-shared-library" title="Permanent link">&para;</a></h3>
+<p>方式一：Jenkinsfile 内 <code>@Library</code> 注解：</p>
+<pre class="highlight"><code class="language-groovy">@Library('my-shared-library') _
+pipeline {
+    agent any
+    stages {
+        stage('Demo') {
+            steps { helloWorld() }
+        }
+    }
+}</code></pre>
+<p>方式二：Jenkins 全局配置（Manage Jenkins → Configure System → Global Pipeline Libraries）。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>@Library('库名@分支') _</code> 中的下划线 <code>_</code> 不能省略，它表示“导入全部全局变量/步骤”；不写会导致 <code>buildApp()</code> 等无法识别。</p>
+</blockquote>
+<h3 id="84-vars">8.4 编写 vars 步骤（全局变量）<a class="headerlink" href="#84-vars" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-groovy">#!/usr/bin/env groovy
+def call(String name = 'human') {
+    echo "Hello, ${name}."
+}</code></pre>
+<p>带参数构建步骤：</p>
+<pre class="highlight"><code class="language-groovy">#!/usr/bin/env groovy
+def call(Map config) {
+    sh "echo 构建项目: ${config.projectName}"
+    sh "mvn -B -DskipTests clean package -f ${config.pomPath}"
+}</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> <code>vars/*.groovy</code> 中定义 <code>call</code> 方法，文件即步骤名；支持无参、单参、Map 等多种签名。</p>
+</blockquote>
+<h3 id="85-src-groovy">8.5 使用 src 下的 Groovy 类<a class="headerlink" href="#85-src-groovy" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-groovy">// src/com/example/Utils.groovy
+package com.example
+class Utils {
+    static String getGitCommit() {
+        return 'git rev-parse --short HEAD'.execute().text.trim()
+    }
+}</code></pre>
+<pre class="highlight"><code class="language-groovy">// vars/buildApp.groovy
+import com.example.Utils
+def call() {
+    def commit = Utils.getGitCommit()
+    echo "Current commit: ${commit}"
+}</code></pre>
+<h3 id="86-ci">8.6 完整 CI 流程示例<a class="headerlink" href="#86-ci" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-groovy">@Library('my-shared-library') _
+
+pipeline {
+    agent any
+    environment {
+        REGISTRY = 'registry.example.com'
+    }
+    stages {
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+        stage('Build') {
+            steps { buildApp(projectName: 'demo', pomPath: 'pom.xml') }
+        }
+        stage('Docker Build &amp; Push') {
+            steps { dockerBuildPush(image: "${REGISTRY}/demo", tag: 'latest') }
+        }
+        stage('Deploy') {
+            steps { kubeDeploy(namespace: 'default', yaml: 'deploy.yaml') }
+        }
+    }
+}</code></pre>
+<pre class="highlight"><code>CI 流程（Shared Library 封装后）
+┌─────────┐  ┌─────────┐  ┌──────────────┐  ┌─────────┐
+│ Checkout│─▶│ Build   │─▶│ Docker Build  │─▶│ Deploy  │
+│(scm)    │  │buildApp │  │  &amp; Push       │  │kubeDeploy│
+└─────────┘  └─────────┘  │dockerBuildPush│  └─────────┘
+                           └──────────────┘
+   所有步骤来自 my-shared-library</code></pre>
+<h3 id="87">8.7 版本管理与最佳实践<a class="headerlink" href="#87" title="Permanent link">&para;</a></h3>
+<p>锁版本引用，保证可重现：</p>
+<pre class="highlight"><code class="language-groovy">@Library('my-shared-library@v1.2.3') _</code></pre>
+<ul>
+<li>给 Library 仓库打 tag，避免 <code>main</code> 变动破坏旧流水线。</li>
+<li>公共步骤加单元测试；把“易变”参数留在 Jenkinsfile，把“不变”逻辑放进 Library。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 生产环境务必用<strong>固定 tag/分支</strong>引用 Library（<code>@v1.2.3</code>），不要用浮动 <code>main</code>，否则 Library 改动会无预警影响所有流水线。</p>
+</blockquote>
+<h3 id="88">8.8 常见问题速查<a class="headerlink" href="#88" title="Permanent link">&para;</a></h3>
+<ul>
+<li>步骤找不到：检查 <code>vars/</code> 文件名、Jenkins 全局库 Name。</li>
+<li><code>src</code> 类报找不到：确认 <code>package</code> 与目录层级一致、<code>import</code> 路径正确。</li>
+<li>权限问题：Library 仓库需 Jenkins 凭据可访问。</li>
+</ul>
+<pre class="highlight"><code>排错路径
+Jenkinsfile 调用失败
+   ├─ 步骤不存在? 查 vars/ 文件名 + 全局库 Name
+   ├─ 类导入失败? 查 package 与目录层级
+   └─ 拉取失败?   查仓库凭据 (SSH/Token)</code></pre>
+<h3 id="89">8.9 小结<a class="headerlink" href="#89" title="Permanent link">&para;</a></h3>
+<p>sharedLibrary 将“流程定义”与“实现细节”解耦：Jenkinsfile 仅声明阶段 → vars 封装步骤 → src 提供工具。是大型团队 CICD 治理的核心手段。</p>
+<hr />
+<h2 id="springcloud">九、SpringCloud 微服务项目交付<a class="headerlink" href="#springcloud" title="Permanent link">&para;</a></h2>
+<h3 id="91">9.1 微服务扫盲<a class="headerlink" href="#91" title="Permanent link">&para;</a></h3>
+<p><strong>单体 vs 微服务</strong>：单体把用户/订单/支付全塞进一个 ALL-IN-ONE 应用，耦合高、难扩展；微服务把业务拆成独立服务，各自开发/部署/扩展，经 REST API 通信，客户端通常经 <strong>API Gateway</strong> 访问。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 微服务的核心不是“小”，而是“独立”——独立开发、独立部署、独立扩缩容，代价是分布式复杂度（服务发现、容错、链路追踪、配置）。</p>
+</blockquote>
+<p><strong>框架对比（高频）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>核心要素</th>
+<th>Dubbo</th>
+<th>Spring Cloud</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务注册</td>
+<td>Zookeeper</td>
+<td>Eureka</td>
+</tr>
+<tr>
+<td>调用方式</td>
+<td>RPC</td>
+<td>REST API</td>
+</tr>
+<tr>
+<td>断路器</td>
+<td>不完善</td>
+<td>Hystrix</td>
+</tr>
+<tr>
+<td>网关</td>
+<td>无</td>
+<td>Zuul</td>
+</tr>
+<tr>
+<td>配置/链路</td>
+<td>无</td>
+<td>Config / Sleuth</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Dubbo 是 SOA 时代的“服务治理”工具（重 RPC 调用），Spring Cloud 是微服务时代的“生态”；Dubbo 能力只是 Spring Cloud 体系的一部分。</p>
+</blockquote>
+<h3 id="92-springboot">9.2 SpringBoot 交付实战<a class="headerlink" href="#92-springboot" title="Permanent link">&para;</a></h3>
+<p>Maven：依赖查找顺序 本地 <code>~/.m2</code> → 私服/镜像 → 中央仓库；<code>groupId+artifactId+version</code> 唯一锁定；<code>parent</code> 统一定义版本。</p>
+<p>私服镜像配置（提速）：</p>
+<pre class="highlight"><code class="language-xml">&lt;mirrors&gt;
+    &lt;mirror&gt;
+      &lt;id&gt;alimaven&lt;/id&gt;
+      &lt;name&gt;aliyun maven&lt;/name&gt;
+      &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public/&lt;/url&gt;
+      &lt;mirrorOf&gt;central&lt;/mirrorOf&gt;
+    &lt;/mirror&gt;
+&lt;/mirrors&gt;</code></pre>
+<p>镜像制作与 CICD：</p>
+<pre class="highlight"><code class="language-dockerfile">FROM openjdk:8-jdk-alpine
+COPY target/springboot-demo.jar app.jar
+CMD [ "sh", "-c", "java -jar /app.jar" ]</code></pre>
+<pre class="highlight"><code class="language-bash">docker build . -t springboot-demo:v1 -f Dockerfile
+docker run -d --name springboot-demo -p 8080:8080 springboot-demo:v1
+curl localhost:8080</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> slave-pod 销毁会清掉 maven 缓存，需把 <code>/opt/maven-repo</code> 挂载出来，否则每次全量拉依赖。</p>
+</blockquote>
+<h3 id="93-eureka">9.3 服务注册中心 Eureka<a class="headerlink" href="#93-eureka" title="Permanent link">&para;</a></h3>
+<p><strong>作用</strong>：维护“服务名 → 实例列表”，微服务通过 HTTP 互相发现调用。</p>
+<p>新建 Eureka Server：</p>
+<pre class="highlight"><code class="language-yaml">server:
+  port: 8761
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    hostname: localhost</code></pre>
+<p>注册服务（客户端）：</p>
+<pre class="highlight"><code class="language-yaml">eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_USER:admin}:${EUREKA_PASS:admin}@localhost:8761/eureka/
+  instance:
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    prefer-ip-address: true
+    hostname: user-service
+spring:
+  application:
+    name: user-service</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 自我保护模式（self-preservation）——15 分钟内心跳续约率低于 85%（默认 <code>renewalPercentThreshold=0.85</code>），Eureka 进入保护态，不再注销任何实例，防止网络抖动误杀健康服务。<strong>生产保持默认开启</strong>。</p>
+</blockquote>
+<p><strong>K8s 交付</strong>（StatefulSet + Headless Service）：</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eureka-cluster
+  namespace: dev
+spec:
+  serviceName: "eureka"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eureka-cluster
+  template:
+    metadata:
+      labels:
+        app: eureka-cluster
+    spec:
+      containers:
+        - name: eureka
+          image: 172.21.51.143:5000/spring-cloud/eureka-cluster:v1
+          ports:
+            - containerPort: 8761
+          env:
+            - name: EUREKA_SERVER
+              value: "http://admin:admin@eureka-cluster-0.eureka:8761/eureka/,http://admin:admin@eureka-cluster-1.eureka:8761/eureka/,http://admin:admin@eureka-cluster-2.eureka:8761/eureka/"
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: ${MY_POD_NAME}.eureka</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 为什么 Eureka 用 StatefulSet 而非 Deployment？注册中心需要稳定网络标识和有序启动，StatefulSet 提供固定 Pod 名 + 持久化网络身份。</p>
+</blockquote>
+<h3 id="94">9.4 服务间调用（消费者）<a class="headerlink" href="#94" title="Permanent link">&para;</a></h3>
+<p>三种调用方式：原生 <code>RestTemplate</code>（写死 IP）→ <code>@LoadBalanced RestTemplate</code>（按服务名路由）→ <strong>Feign（声明式，最优雅）</strong>。本质底层都是 <code>RestTemplate</code>，只是封装增强。</p>
+<p><strong>Feign</strong>：</p>
+<pre class="highlight"><code class="language-java">@FeignClient(name="user-service")
+public interface UserServiceCli {
+    @GetMapping("/user")
+    public String getUserService();
+    @GetMapping("/user/{id}")
+    public User getUserInfo(@PathVariable("id") int id);
+}</code></pre>
+<p><strong>Ribbon 客户端负载均衡</strong>：<code>eureka-client</code> 已含 ribbon，从注册中心拉实例列表在客户端侧选一个。</p>
+<pre class="highlight"><code class="language-yaml">user-service:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 客户端负载均衡 vs 服务端负载均衡——Ribbon 在调用方进程内选实例（客户端），Nginx 在调用方之前转发（服务端）。默认轮询，可用注解/配置换 RandomRule 等。</p>
+</blockquote>
+<h3 id="95-hystrix">9.5 断路器 Hystrix<a class="headerlink" href="#95-hystrix" title="Permanent link">&para;</a></h3>
+<p><strong>机制</strong>：统计失败次数，维护<strong>打开/关闭/半开</strong>三态，提供 fallback 降级。</p>
+<pre class="highlight"><code class="language-java">@FeignClient(name="user-service", fallback = UserServiceFallbackImpl.class)
+public interface UserServiceCli { ... }
+
+@Component
+public class UserServiceFallbackImpl implements UserServiceCli{
+    @Override public String getUserService() { return "fallback user service"; }
+}</code></pre>
+<p>启动类加 <code>@EnableCircuitBreaker</code>，配置 <code>feign.hystrix.enabled: true</code>。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 断路器三态机——关闭（正常）→ 失败率超阈值打开（直接走 fallback，快速失败）→ 休眠窗后半开（放部分流量探测，成功则关闭，失败继续打开）。核心是“故障隔离 + 快速失败”。</p>
+</blockquote>
+<h3 id="96-zuul">9.6 微服务网关 Zuul<a class="headerlink" href="#96-zuul" title="Permanent link">&para;</a></h3>
+<p>统一入口，按 URL 路由到不同服务，承担鉴权、限流、日志、协议转换。</p>
+<pre class="highlight"><code class="language-java">@SpringBootApplication
+@EnableZuulProxy
+@EnableDiscoveryClient
+public class GatewayZuulApplication { ... }</code></pre>
+<pre class="highlight"><code class="language-yaml">zuul:
+  routes:
+    user-service: /users/**
+    bill-service:
+      path: /bill/**
+      service-id: bill-service</code></pre>
+<p>访问 <code>localhost:10000/users/user/1</code> → <code>user-service:7000/user/1</code>；<code>/actuator/routes</code> 查看路由表。</p>
+<h3 id="97-sleuth-zipkin">9.7 调用链路追踪 Sleuth + Zipkin<a class="headerlink" href="#97-sleuth-zipkin" title="Permanent link">&para;</a></h3>
+<p>一次请求从入口到返回称为一个 <strong>trace</strong>，链路中每调一个服务埋一个 <strong>span</strong>，多个有序 span 组成 trace。</p>
+<pre class="highlight"><code class="language-yaml">spring:
+  zipkin:
+    base-url: http://zipkin.luffy.com
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1
+logging:
+  level:
+    org.springframework.cloud: debug</code></pre>
+<h3 id="98-springboot-admin">9.8 SpringBoot Admin 监控<a class="headerlink" href="#98-springboot-admin" title="Permanent link">&para;</a></h3>
+<p>服务端引 <code>spring-boot-admin-starter-server</code> + <code>@EnableAdminServer</code> 并注册到 Eureka；客户端加 <code>spring-boot-admin-starter-client</code> 即被纳管。</p>
+<h3 id="99">9.9 整体架构<a class="headerlink" href="#99" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>                        ┌─────────────────────────────┐
+   外部请求 ───────────▶ │        Zuul 网关 (10000)      │  统一入口/路由/鉴权/限流
+                        └──────────────┬──────────────┘
+                                       │ 按服务名路由
+              ┌────────────────────────┼────────────────────────┐
+              ▼                        ▼                        ▼
+      [user-service:7000]    [bill-service:7001]        [其他微服务...]
+              │  @FeignClient            │  Ribbon 客户端负载均衡
+              └────────────┬─────────────┘
+                           ▼
+                  ┌──────────────────┐
+                  │  Eureka 注册中心   │  StatefulSet ×3
+                  │     (8761)        │
+                  └──────────────────┘
+        Hystrix 断路器 · Sleuth+Zipkin 链路追踪 · SpringBoot Admin 监控</code></pre>
+<h3 id="910">9.10 小结<a class="headerlink" href="#910" title="Permanent link">&para;</a></h3>
+<ol>
+<li>业务复杂化催生微服务，微服务带来“服务治理”难题（发现、调用、负载、追踪）。</li>
+<li>Spring Cloud 是生态（基于 Java），Netflix 套件提供 eureka/ribbon/feign/hystrix/zuul，sleuth+zipkin 做追踪。</li>
+<li>SpringBoot 是开发框架，靠 Maven 与 Cloud 组件集成。</li>
+</ol>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Spring Cloud Netflix 组件本职——Eureka 发现、Ribbon 负载、Feign 声明式调用、Hystrix 熔断、Zuul 网关，五者通过 Eureka 串联成治理闭环。</p>
+</blockquote>
+<p><strong>演进思考</strong>：Dubbo/Spring Cloud 绑定 Java、对业务有代码侵入；K8s 原生自带服务发现与负载均衡；以 Istio 为代表的 Service Mesh（Sidecar 模式）正成为第二代服务治理主流。</p>
+<hr />
+<h2 id="istio">十、基于 Istio 实现微服务治理<a class="headerlink" href="#istio" title="Permanent link">&para;</a></h2>
+<h3 id="101-istio">10.1 服务网格与 Istio 是什么<a class="headerlink" href="#101-istio" title="Permanent link">&para;</a></h3>
+<p><strong>服务网格（Service Mesh）</strong> 解决微服务化后的服务间通信与治理：把流量治理逻辑从业务代码剥离到 Sidecar 代理，实现“数据面（业务）”与“控制面（治理）”解耦。</p>
+<pre class="highlight"><code>Service Mesh 核心：数据面 / 控制面解耦
+  驾驶者(业务) 专注跑赛道
+  边车领航员(网格) 专注导航/治理</code></pre>
+<ul>
+<li>第一代：Linkerd、Envoy（以 Sidecar 为核心 proxy）。</li>
+<li>第二代：<strong>Istio</strong>（Google + IBM + Lyft），事实标准。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Service Mesh 的本质是“将服务治理能力下沉到与应用同生命周期的 Sidecar 中”，相比 Spring Cloud 做到语言无关、无侵入、业务无感知。</p>
+</blockquote>
+<h3 id="102">10.2 安装与注入<a class="headerlink" href="#102" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">wget https://github.com/istio/istio/releases/download/1.13.2/istio-1.13.2-linux-amd64.tar.gz
+tar zxf istio-1.13.2-linux-amd64.tar.gz
+cp bin/istioctl /bin/
+istioctl install --set profile=demo
+kubectl -n istio-system get po</code></pre>
+<p>Sidecar 注入两种方式：
+- 手动：<code>istioctl kube-inject -f xxx.yaml | kubectl apply -f -</code>
+- 自动：给命名空间打 <code>istio-injection=enabled</code> 标签</p>
+<pre class="highlight"><code class="language-bash">kubectl label namespace default istio-injection=enabled</code></pre>
+<p>注入后每个 Pod 新增：<code>istio-init</code>（初始化，写 iptables 后退出）、<code>istio-proxy</code>（Envoy，含 pilot-agent + envoy）。</p>
+<pre class="highlight"><code class="language-bash">istio-iptables -p 15001 -z 15006 -u 1337 -m REDIRECT -i '*' -x "" -b '*' -d 15090,15021,15020</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Istio 通过 <code>istio-init</code> 注入的 iptables 规则把 Pod 全部入站/出站 TCP 流量重定向到 Envoy（15001 出站 / 15006 入站），业务容器完全无感知。</p>
+</blockquote>
+<h3 id="103-envoy-xds">10.3 Envoy 与 xDS<a class="headerlink" href="#103-envoy-xds" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Listener</strong>：监听地址/端口；<strong>Filter</strong>：可插拔处理层；<strong>Route</strong>：路由规则；<strong>Cluster</strong>：上游服务集群。</li>
+</ul>
+<p><strong>xDS</strong>：Envoy 的动态配置发现服务（LDS/RDS/CDS/EDS）。Istiod 中的 <strong>Pilot</strong> 是 xDS 服务端。</p>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Envoy 靠 xDS（LDS/RDS/CDS/EDS）从控制面动态获取配置并热 reload，无需重启即可生效——这是 Istio 实时治理的基础。</p>
+</blockquote>
+<h3 id="104">10.4 工作原理（一次调用的完整链路）<a class="headerlink" href="#104" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>Pod 内业务容器
+  -&gt; iptables 重定向出站(15001)  [virtualOutbound]
+  -&gt; 0.0.0.0_&lt;Port&gt; 虚拟监听器
+  -&gt; RDS route(按 domains 匹配 VirtualService)
+  -&gt; 加权 cluster(outbound|9999|v1=90% / v2=10%)
+  -&gt; EDS endpoint(Pod IP)
+  -&gt; 经 k8s 网络发出(UID=1337 不再被拦截)
+  -&gt; 目标 Pod 入站被 15006 拦截 [virtualInbound]
+  -&gt; inbound cluster -&gt; 127.0.0.1:&lt;业务端口&gt;</code></pre>
+<p>排障命令：</p>
+<pre class="highlight"><code class="language-bash">istioctl pc listener &lt;pod&gt;.ns --port 15001 -ojson
+istioctl pc route &lt;pod&gt;.ns --name 9999
+istioctl pc cluster &lt;pod&gt;.ns --fqdn &lt;svc&gt;.svc.cluster.local -ojson
+istioctl pc endpoint &lt;pod&gt;.ns --cluster &lt;cluster&gt; -ojson</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> 在 Istio 网格内，服务间流量<strong>完全绕过 kube-proxy</strong>（停掉 kube-proxy 后网格内互访仍正常），由 Envoy 直接接管。</p>
+</blockquote>
+<h3 id="105-crdvirtualservice-destinationrule">10.5 核心 CRD：VirtualService 与 DestinationRule<a class="headerlink" href="#105-crdvirtualservice-destinationrule" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>VirtualService</strong>：定义“怎么路由”（权重、路径、header、重试、故障注入、镜像）。</li>
+<li><strong>DestinationRule</strong>：定义“目标子集与策略”（subsets 按 label 划分版本、负载均衡、连接池）。</li>
+</ul>
+<pre class="highlight"><code class="language-yaml">apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: dest-bill-service
+  namespace: istio-demo
+spec:
+  host: bill-service
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vs-bill-service
+  namespace: istio-demo
+spec:
+  hosts:
+  - bill-service
+  http:
+  - name: bill-service-route
+    route:
+    - destination:
+        host: bill-service
+        subset: v1
+      weight: 90
+    - destination:
+        host: bill-service
+        subset: v2
+      weight: 10</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> VS 管“路由规则”，DR 管“目标与策略”；权重是 VS 上的 <code>weight</code>，版本划分是 DR 上的 <code>subsets</code>（按 label）。权重按“请求数”分配，与副本数无关。</p>
+</blockquote>
+<p>负载均衡策略（DestinationRule 配置）：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ROUND_ROBIN</code></td>
+<td>轮询（默认）</td>
+</tr>
+<tr>
+<td><code>LEAST_CONN</code></td>
+<td>最少连接</td>
+</tr>
+<tr>
+<td><code>RANDOM</code></td>
+<td>随机</td>
+</tr>
+<tr>
+<td><code>PASSTHROUGH</code></td>
+<td>透传原 IP（慎用）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="106-gateway-vs-ingress">10.6 入口流量：Gateway vs Ingress<a class="headerlink" href="#106-gateway-vs-ingress" title="Permanent link">&para;</a></h3>
+<p>K8s Ingress 只能表达最基础 HTTP 路由；Istio <strong>Gateway</strong> 把 L4-L6（端口、TLS）与 L7（路由）分离：Gateway 管入口与 TLS，VirtualService 绑定 Gateway 控 HTTP/TCP 路由。</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: front-tomcat-gateway
+  namespace: istio-demo
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - tomcat.istio-demo.com
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: gateway-front-tomcat
+  namespace: istio-demo
+spec:
+  gateways:
+  - front-tomcat-gateway
+  hosts:
+  - tomcat.istio-demo.com
+  http:
+  - name: front-tomcat-route
+    route:
+    - destination:
+        host: front-tomcat
+        subset: v1
+      weight: 90
+    - destination:
+        host: front-tomcat
+        subset: v2
+      weight: 10</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Gateway 规则只对“经该网关进入的外部流量”生效，网格内其他服务的内部调用不受其约束。</p>
+</blockquote>
+<h3 id="107">10.7 路由匹配类型<a class="headerlink" href="#107" title="Permanent link">&para;</a></h3>
+<p><strong>权重路由</strong>（灰度基础）：见上 VS <code>weight</code>。</p>
+<p><strong>路径路由 / 路径重写</strong>：</p>
+<pre class="highlight"><code class="language-yaml">  http:
+  - name: ratings-route
+    match:
+    - uri:
+        prefix: /rate
+    rewrite:
+      uri: "/ratings"
+    route:
+    - destination:
+        host: ratings</code></pre>
+<p><strong>Header 路由</strong>（金丝雀）：</p>
+<pre class="highlight"><code class="language-yaml">  http:
+  - match:
+    - headers:
+        end-user:
+          exact: luffy
+    route:
+    - destination:
+        host: reviews
+        subset: v3
+  - route:
+    - destination:
+        host: reviews
+        subset: v2</code></pre>
+<h3 id="108-shadow-traffic">10.8 流量镜像（Shadow Traffic）<a class="headerlink" href="#108-shadow-traffic" title="Permanent link">&para;</a></h3>
+<p>把生产流量复制一份到镜像服务，主链路不受影响，用真实流量验证新版本。</p>
+<pre class="highlight"><code class="language-yaml">    route:
+    - destination:
+        host: httpbin
+        subset: v1
+    mirror:
+      host: httpbin
+      subset: v2
+    mirror_percent: 100</code></pre>
+<h3 id="109">10.9 重试与熔断<a class="headerlink" href="#109" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-yaml">    retries:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: 5xx</code></pre>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Istio 的重试/超时/熔断/故障注入全部是“声明式、无侵入”配置在 VirtualService / DestinationRule 上，业务代码零改动。</p>
+</blockquote>
+<h3 id="1010">10.10 故障注入与超时<a class="headerlink" href="#1010" title="Permanent link">&para;</a></h3>
+<p>两类：<code>delay</code>（注入延迟）、<code>abort</code>（注入异常状态码）。</p>
+<pre class="highlight"><code class="language-yaml">  http:
+  - fault:
+      delay:
+        percentage:
+          value: 100
+        fixedDelay: 2s
+    route:
+    - destination:
+        host: ratings</code></pre>
+<pre class="highlight"><code class="language-yaml">  http:
+  - fault:
+      abort:
+        percentage:
+          value: 50
+        httpStatus: 500
+    route:
+    - destination:
+        host: details</code></pre>
+<p>超时在 VS 的 <code>http</code> 顶层 <code>timeout</code> 设置：</p>
+<pre class="highlight"><code class="language-yaml">  http:
+  - route:
+    - destination:
+        host: reviews
+        subset: v2
+    timeout: 0.5s</code></pre>
+<h3 id="1011">10.11 可观测性<a class="headerlink" href="#1011" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">kubectl apply -f samples/addons/prometheus.yaml
+kubectl apply -f samples/addons/grafana.yaml
+kubectl apply -f samples/addons/jaeger.yaml
+kubectl apply -f samples/addons/kiali.yaml</code></pre>
+<ul>
+<li><strong>Prometheus</strong>：核心 target 是 <code>kubernetes-pods</code>，指标由每个 Sidecar（Envoy 15020 <code>/stats/prometheus</code>）直接提供。</li>
+<li><strong>Grafana</strong>：Istio Mesh Dashboard。</li>
+<li><strong>Jaeger</strong>：分布式追踪。</li>
+<li><strong>Kiali</strong>：服务拓扑与流量可视化。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>面试重点：</strong> Istio 可观测性（指标/追踪/日志）由 Sidecar 自动产生并上报，业务无侵入；Prometheus 指标直接来自 Envoy，无需业务埋点。</p>
+</blockquote>
+<h3 id="1012-productpage-reviews">10.12 重点回顾（Productpage → Reviews 全流程）<a class="headerlink" href="#1012-productpage-reviews" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>1. Productpage 调用 http://reviews:9080/reviews/0
+2. 出站被 iptables 重定向到本机 15001 [virtualOutbound]
+3. 转到 0.0.0.0_9080 监听器
+4. RDS route(9080) 按 domains 匹配 -&gt; outbound|9080|vX|reviews... cluster
+5. cluster 为 EDS, 经 endpoint 拿到 Reviews Pod IP
+6. Envoy(UID=1337) 直接经 k8s 网络发出(不再被拦截)
+7. 目标 Pod 入站被 15006 [virtualInbound] 拦截
+8. virtualInbound 直接转给 inbound cluster -&gt; 127.0.0.1:&lt;业务端口&gt;</code></pre>
+<p>核心结论速记：
+- Sidecar = 每个 Pod 一个 Envoy，接管全部出入流量（15001/15006）。
+- 控制面 Istiod(Pilot) 经 xDS 下发规则，Envoy 热更新。
+- 网格内流量<strong>不走 kube-proxy</strong>。
+- VS（路由规则）+ DR（目标/策略）是治理两大基石。
+- 重试/熔断/故障注入/镜像/灰度 = 声明式、无侵入。</p>
+<hr />
+<blockquote>
+<p>全文完。本文档为十篇 K8s 系列文档的精简面试向总结，删图改 ASCII、保留全部操作命令与代码、标注常考知识点。</p>
+</blockquote>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" class="btn btn-neutral float-left" title="问题记录"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href=".." class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../assets/javascripts/mermaid-init.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
